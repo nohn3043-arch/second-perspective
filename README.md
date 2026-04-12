@@ -24,3 +24,4 @@ Usage:
 1. Obtain commercial license
 2. Integrate internally
 3. Audit before critical decisions
+4. For enterprise/government authorization inquiries: contact [nohn3043@gmail.com]
