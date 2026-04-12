@@ -18,9 +18,7 @@ Features:
 - Offline only, no network required
 - No data collection
 - No decision substitution
-- For enterprise, government, think tanks
-
-Usage:
+For enterprise, government, think tanks
 1. Obtain commercial license
 2. Integrate internally
 3. Audit before critical decisions
