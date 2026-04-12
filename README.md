@@ -18,6 +18,7 @@ Features:
 - Offline only, no network required
 - No data collection
 - No decision substitution
+
 For enterprise, government, think tanks
 1. Obtain commercial license
 2. Integrate internally
