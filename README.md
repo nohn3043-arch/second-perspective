@@ -1,4 +1,9 @@
-[README.md](https://github.com/user-attachments/files/26661292/README.md)
+一个用于决策前的理性审计工具。
+
+用于在高风险决策前，暴露假设、不确定性与认知偏差。
+离线运行，中立立场，不做决策，也不替代决策。
+所有责任始终由使用者承担。
+README.md](https://github.com/user-attachments/files/26661292/README.md)
 # Global Cognitive Audit Engine (GCAE)
 
 The world's first neutral, offline, decision-independent cognitive bias audit engine.
