@@ -2,7 +2,7 @@
 
 用于在高风险决策前，暴露假设、不确定性与认知偏差。
 离线运行，中立立场，不做决策，也不替代决策。
-所有责任始终由使用者承担。
+所有责任始终由使用者承担。不提供保证，不提供损害赔偿，适用发布者所在地法律法规。
 README.md](https://github.com/user-attachments/files/26661292/README.md)
 # Global Cognitive Audit Engine (GCAE)
 
