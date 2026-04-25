@@ -1,80 +1,83 @@
-一款用于决策前的理性审计工具。用于在高风险决策前置环节，系统性排查隐性假设、客观不确定性与人为认知误差，以中立结构约束主观决策缺陷。
-重要声明
-本项目核心逻辑、架构设计、决策方法论、结构化表达范式均为原创首创性成果，受著作权法、知识产权相关国际条例及属地法律全面保护。任何单位、组织或个人，对本项目核心思想、底层框架、理论体系进行复现、重构、改写、二次分发或商业化落地，必须严格遵守以下要求：
+This document includes original copyrighted works, theoretical systems, structured paradigms and mathematical expression models. All content is fully protected by copyright law. Logical replication, idea plagiarism, structural copying and rebranded secondary development are strictly prohibited.
+A rational auditing tool for pre-decision scenarios.Used in the early stage of high-risk decision-making to systematically identify implicit assumptions, objective uncertainties and human cognitive biases. It relies on a neutral structural framework to restrict subjective defects in judgment.
+Important Statement
+The core logic, architectural design, decision-making methodology and structured expression paradigms of this project are original and pioneering achievements. They are fully protected by copyright law, international intellectual property conventions and local legal regulations.Any entity, organization or individual that reproduces, reconstructs, rewrites, redistributes or commercially implements the core ideas, underlying frameworks and theoretical systems of this project must comply strictly with the following rules:
 
-明确标注本项目为核心思想唯一来源；
-通过指定邮箱提前向作者履行书面告知义务；
-严禁将本项目任何理论、逻辑、范式内容，用作自身参与行业标准、技术规范制定的合法性基础。未满足以上条件的私自复用、盗用、改造行为，一律构成知识产权侵权，作者保留全部合法维权权利。
+Clearly cite this project as the exclusive source of core ideas;
+Notify the author in writing via the designated email;
+It is forbidden to use any theories, logic or paradigms from this project as a legitimate basis for participating in industry standards or technical specification formulation.
 
-许可证与法律条款
-本项目提供双协议可选，使用者未主动选定的情况下，默认自动适用 A 类商业保护许可证。
-A. 商业保护许可证
-源代码可公开查阅，严格禁止任何形式的商业使用、企业内部私有化部署、定制改造，或是依托本项目搭建对外服务、付费产品。个人学习、学术研究、非商业性质的内部审计可免费合规使用；所有商业场景、机构规模化部署、衍生服务开发，必须单独向作者申请书面商业授权许可（联系下方邮箱）。
-B. GPL v3 + 附加约束条款
-允许自由查阅、引用与非商用修改，所有衍生、改编、二次分发的作品必须完整开源并沿用同源协议；衍生项目不得侵占、替代或超越原作者在本领域内的理论首发权与标准制定参与权益。
-法律管辖
-本项目所有权利义务、纠纷争议、合规界定，统一适用新加坡共和国法律；全部法律诉讼与争议处理，仅由新加坡高等法院行使专属管辖权，排除其他地区司法管辖权限。
-净室实现限制
-任何主体在访问、阅读、获取本项目代码、官方文档、理论范式及一切衍生信息后，若独立或协作开发出核心功能、架构逻辑、决策模型、表达范式与本项目高度相似的产品或理论，将直接推定为实质性衍生侵权行为。相关主体需自行提供完整、连续、可溯源的独立开发证据链，无法举证则侵权判定自动成立。作者有权通过法律诉讼、公开声明、侵权投诉、行业公示等合法手段，永久维护本项目首创地位与知识产权。
+Any unauthorized reuse, theft or modification without compliance constitutes intellectual property infringement. The author reserves all rights of legal defense and rights protection.
+License & Legal Terms
+Two licensing options are provided. If no active selection is made, License A shall apply by default.
+A. Commercial Protection License
+The source code is publicly accessible. Any commercial use, enterprise private deployment, customized modification, or external service operation based on this project is strictly prohibited.Individual research, academic use and non-commercial internal auditing are permitted free of charge.All commercial scenarios and institutional large-scale deployment require independent written commercial authorization from the author.
+B. GPL v3 with Additional Restrictions
+Free access, citation and non-commercial modification are allowed. All derivative and adapted works must be fully open-source and follow the same license.Derivative projects shall not seize, replace or override the original author’s theoretical initiative and standard-setting participation rights in this field.
+Governing Law
+All rights, obligations and dispute settlements of this project shall be governed by the laws of the Republic of Singapore.All legal disputes shall fall under the exclusive jurisdiction of the High Court of Singapore, excluding the jurisdiction of other regions.
+Clean-Room Implementation Restrictions
+Any party that accesses, reads or obtains the code, documents, theoretical paradigms or derivative materials of this project,and independently or collaboratively develops products or theories with highly similar core functions, architecture, decision models or expression logic,shall be presumed to have committed substantive derivative infringement.
+The relevant party must provide complete, continuous and traceable evidence of independent development. Failure to provide valid proof will result in a confirmed infringement ruling.The author reserves the right to safeguard original innovation status and intellectual property through legal proceedings, public statements, copyright complaints and other legitimate measures.
 
-全球认知审计引擎（GCAE）
-全球首款中立、离线、完全独立于决策行为的认知偏差审计引擎。
-核心目的
+Global Cognitive Audit Engine (GCAE)
+The world’s first neutral, offline, decision-independent cognitive bias auditing engine.
+Core Objectives
 
-揭露决策流程中被刻意忽略或默认忽略的隐藏假设
-量化识别环境、信息、环境变量带来的客观不确定性
-系统性检测主观思维盲区与各类认知偏差
-以中立结构支撑重大事项的理性、可追溯决策
+Reveal hidden assumptions ignored during decision-making
+Quantify external information uncertainties and environmental variables
+Detect subjective thinking blind spots and systematic cognitive biases
+Provide neutral, traceable structural support for high-stakes rational decision-making
 
-核心特征
+Core Features
 
-全程纯离线运行，无需联网，无云端数据上传
-零采集、零留存用户操作数据，本地全闭环隔离
-不替代人类决策、不输出主观结论、不提供优化建议
-适配企业战略规划、政务政策制定、智库行业研判、机构风控评审等多类场景
+Fully offline operation, no network connection and no cloud data transmission
+Zero user data collection and local closed-loop data isolation
+No decision substitution, no subjective conclusions and no optimized suggestions
+Adaptable to enterprise strategy, government policy, think-tank research and institutional risk control
 
-商业合作与授权
+Commercial Cooperation & Licensing
 
-企业及机构商用必须申领官方商业许可证
-支持私有化部署、内部系统定制整合
-专为重大项目、大额投资、公共政策等高风险场景，提供决策前置审计能力
+Official commercial license is mandatory for enterprise and institutional usage
+Support private deployment and internal system integration
+Provide pre-decision auditing capabilities for major projects, large-scale investment and public policies
 
-企业 / 政府授权、定制对接、战略咨询：联系邮箱：nohn3043@gmail.com
+For institutional authorization, customized integration and business consultation:Contact Email: nohn3043@gmail.com
 
-第二视角语言・决策结构语言
-定义
-一种专门用于决策核验、风险拆解的结构化表达语言。全程不作价值评判、不输出优化建议、不推导最终结论，仅客观暴露决策的前置依赖、逻辑链路与结构脆弱性。
-核心结构
-任意一份具备完备性的有效决策，必须固定包含三项组成部分：
+Second-Person Perspective Language · Decision Structure Language
+Definition
+A structured language for decision verification and risk decomposition.It provides no value judgment, no optimization advice and no final conclusion. It only objectively exposes decision dependencies, logical chains and structural vulnerabilities.
+Core Structure
+A complete and valid decision consists of three fixed components:
 
-决策：可落地、可执行、权责清晰的具体判断；
-假设前提：支撑决策成立的前置约束条件，具备可证伪性；
-分支预案：当核心假设失效、条件破裂时，对应的决策调整路径。
+Decision: Executable, clear and responsible judgment;
+Hypothesis Premise: Falsifiable preconditions that support the validity of the decision;
+Branch Response: Adjusted decision paths when core assumptions fail.
 
-形式表达式
+Formal Expression
 ¬A⇒ΔD
-核心原则
-决策的本质，是对一系列前置假设有效性的风险预判与可行性押注。一旦关键前提失效、客观条件改变，原有决策结构必须同步修正与重构。
-强制性设计限制
+Core Principle
+The essence of decision-making is the risk assessment and validity betting of a series of hypothetical premises.Once key premises fail or objective conditions change, the original decision structure must be adjusted and reconstructed.
+Mandatory Design Constraints
 
-禁止输出任何主观优化建议
-不生成定性结论
-不评判方案优劣与对错
-不压缩、掩盖客观存在的不确定性
-保持极简、中性、无偏向的标准化表达
+No subjective optimization output
+No conclusive judgment
+No evaluation of solution quality
+No compression or concealment of objective uncertainty
+Maintain minimal, neutral and standardized expression
 
-极简表达范式
+Standard Expression Mode
 
-决策：D
-支撑假设：A1, A2, A3
-风险分支：¬A1​⇒ΔD¬A2​⇒ΔD¬A3​⇒ΔD
+Decision: D
+Core Assumptions: A1​,A2​,A3​
+Risk Branch Logic:¬A1​⇒ΔD¬A2​⇒ΔD¬A3​⇒ΔD
 
-设计目的
+Design Purposes
 
-显性化隐藏假设，破除个体与组织思维盲区
-可视化决策多层级依赖关系
-提前暴露风险岔路与前提失效场景
-为组织决策建立统一、可复盘的审计标准
+Visualize hidden assumptions and eliminate organizational cognitive blind spots
+Display multi-layer logical dependencies of decisions
+Expose potential risk branches and premise failure scenarios in advance
+Establish a unified, reviewable auditing standard for organizational decision-making
 
-适用边界
-该语言体系仅针对决策形成过程进行客观审核与结构拆解，不参与决策制定、不干预最终选择、不承担任何决策执行后果与连带责任。
+Applicable Boundaries
+This language system only focuses on structural reviewing and decomposition during decision formation.It does not participate in decision formulation, does not interfere with final choices,and assumes no legal or operational liabilities for subsequent execution results.
