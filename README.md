@@ -1,88 +1,80 @@
-一个用于决策前的理性审计工具。
+一款用于决策前的理性审计工具。用于在高风险决策前置环节，系统性排查隐性假设、客观不确定性与人为认知误差，以中立结构约束主观决策缺陷。
+重要声明
+本项目核心逻辑、架构设计、决策方法论、结构化表达范式均为原创首创性成果，受著作权法、知识产权相关国际条例及属地法律全面保护。任何单位、组织或个人，对本项目核心思想、底层框架、理论体系进行复现、重构、改写、二次分发或商业化落地，必须严格遵守以下要求：
 
-用于在高风险决策前，暴露假设、不确定性与认知偏差。
-离线运行，中立立场，不做决策，也不替代决策。
-所有责任始终由使用者承担。不提供保证，不提供损害赔偿，适用发布者所在地法律法规。
-## 重要声明
-本项目的核心逻辑、架构设计、方法论，均属于首创性工作，受相关法律保护。
-任何对本项目核心思想的复现、重构、再发布，请确保：
-1. 明确引用本项目为思想来源
-2. 通过 [邮箱] 通知作者
-3. 不得用于削弱作者参与标准制定的合法性基础
-## 许可证与法律条款
+明确标注本项目为核心思想唯一来源；
+通过指定邮箱提前向作者履行书面告知义务；
+严禁将本项目任何理论、逻辑、范式内容，用作自身参与行业标准、技术规范制定的合法性基础。未满足以上条件的私自复用、盗用、改造行为，一律构成知识产权侵权，作者保留全部合法维权权利。
 
-本项目采用 [请选择一种]：
-A. **商业保护许可证**：源代码可见，但禁止任何形式的商业使用、内部部署、或提供基于本项目的服务。个人研究、教育、非商业性内部审计除外。商业使用需单独获取许可证（联系上方邮箱）。
-B. **GPL v3 + 附加条款**：允许自由使用，但任何衍生作品必须开源，且不得用于削弱原作者的标准制定参与权。
+许可证与法律条款
+本项目提供双协议可选，使用者未主动选定的情况下，默认自动适用 A 类商业保护许可证。
+A. 商业保护许可证
+源代码可公开查阅，严格禁止任何形式的商业使用、企业内部私有化部署、定制改造，或是依托本项目搭建对外服务、付费产品。个人学习、学术研究、非商业性质的内部审计可免费合规使用；所有商业场景、机构规模化部署、衍生服务开发，必须单独向作者申请书面商业授权许可（联系下方邮箱）。
+B. GPL v3 + 附加约束条款
+允许自由查阅、引用与非商用修改，所有衍生、改编、二次分发的作品必须完整开源并沿用同源协议；衍生项目不得侵占、替代或超越原作者在本领域内的理论首发权与标准制定参与权益。
+法律管辖
+本项目所有权利义务、纠纷争议、合规界定，统一适用新加坡共和国法律；全部法律诉讼与争议处理，仅由新加坡高等法院行使专属管辖权，排除其他地区司法管辖权限。
+净室实现限制
+任何主体在访问、阅读、获取本项目代码、官方文档、理论范式及一切衍生信息后，若独立或协作开发出核心功能、架构逻辑、决策模型、表达范式与本项目高度相似的产品或理论，将直接推定为实质性衍生侵权行为。相关主体需自行提供完整、连续、可溯源的独立开发证据链，无法举证则侵权判定自动成立。作者有权通过法律诉讼、公开声明、侵权投诉、行业公示等合法手段，永久维护本项目首创地位与知识产权。
 
-管辖法律：本项目的所有法律争议，适用 [瑞士/新加坡/爱沙尼亚] 法律，并由 [日内瓦/新加坡/塔林] 法院专属管辖。
+全球认知审计引擎（GCAE）
+全球首款中立、离线、完全独立于决策行为的认知偏差审计引擎。
+核心目的
 
-净室实现限制：任何在访问本项目代码、文档或任何衍生信息后，开发出的功能与本项目核心思想实质相似者，推定为侵权，除非能提供独立开发的完整证据链。
-作者保留采取法律及公开手段维护首创地位的权利。
-README.md](https://github.com/user-attachments/files/26661292/README.md)
-# Global Cognitive Audit Engine (GCAE)
+揭露决策流程中被刻意忽略或默认忽略的隐藏假设
+量化识别环境、信息、环境变量带来的客观不确定性
+系统性检测主观思维盲区与各类认知偏差
+以中立结构支撑重大事项的理性、可追溯决策
 
-The world's first neutral, offline, decision-independent cognitive bias audit engine.
+核心特征
 
-Purpose:
-- Expose hidden assumptions
-- Identify uncertainty
-- Detect cognitive biases
-- Support rational decision-making
+全程纯离线运行，无需联网，无云端数据上传
+零采集、零留存用户操作数据，本地全闭环隔离
+不替代人类决策、不输出主观结论、不提供优化建议
+适配企业战略规划、政务政策制定、智库行业研判、机构风控评审等多类场景
 
-Features:
-- Offline only, no network required
-- No data collection
-- No decision substitution
+商业合作与授权
 
-For enterprise, government, think tanks
-1. Obtain commercial license
-2. Integrate internally
-3. Audit before critical decisions
-4. For enterprise/government authorization inquiries: contact [nohn3043@gmail.com]
+企业及机构商用必须申领官方商业许可证
+支持私有化部署、内部系统定制整合
+专为重大项目、大额投资、公共政策等高风险场景，提供决策前置审计能力
 
-# Second Perspective Language · Decision Structure Language
-## 第二视角语言 · 决策结构语言（One Page）
+企业 / 政府授权、定制对接、战略咨询：联系邮箱：nohn3043@gmail.com
 
-### Definition
-A structural language for expressing **how decisions are validated**.
-No judgment, no recommendation, only dependency and vulnerability exposure.
+第二视角语言・决策结构语言
+定义
+一种专门用于决策核验、风险拆解的结构化表达语言。全程不作价值评判、不输出优化建议、不推导最终结论，仅客观暴露决策的前置依赖、逻辑链路与结构脆弱性。
+核心结构
+任意一份具备完备性的有效决策，必须固定包含三项组成部分：
 
-### Core Structure
-Any decision must be expressed in three components:
-1. **Decision**
-   The actionable judgment to execute (specific, accountable).
-2. **Assumptions**
-   Premises that validate the decision (negatable).
-3. **Branches**
-   How the decision path changes when assumptions fail.
+决策：可落地、可执行、权责清晰的具体判断；
+假设前提：支撑决策成立的前置约束条件，具备可证伪性；
+分支预案：当核心假设失效、条件破裂时，对应的决策调整路径。
 
-### Formal Expression
-¬A ⇒ ΔD
+形式表达式
+¬A⇒ΔD
+核心原则
+决策的本质，是对一系列前置假设有效性的风险预判与可行性押注。一旦关键前提失效、客观条件改变，原有决策结构必须同步修正与重构。
+强制性设计限制
 
-### Core Principle
-A decision = a bet on the validity of a set of assumptions.
-Once premises fail, the decision must structurally change.
+禁止输出任何主观优化建议
+不生成定性结论
+不评判方案优劣与对错
+不压缩、掩盖客观存在的不确定性
+保持极简、中性、无偏向的标准化表达
 
-### Mandatory Constraints
-- No output recommendations
-- No conclusions
-- No judgment of superiority or inferiority
-- No compression of uncertainty
+极简表达范式
 
-### Minimal Expression
-Decision: D
-Assumptions: A1, A2, A3
-Branches:
-¬A1 ⇒ ΔD
-¬A2 ⇒ ΔD
-¬A3 ⇒ ΔD
+决策：D
+支撑假设：A1, A2, A3
+风险分支：¬A1​⇒ΔD¬A2​⇒ΔD¬A3​⇒ΔD
 
-### Purpose
-- Expose hidden assumptions
-- Visualize decision dependencies
-- Reveal path forks in advance
+设计目的
 
-### Boundary
-This language only audits the **decision-making formation process**
-and does not participate in any decision-making.
+显性化隐藏假设，破除个体与组织思维盲区
+可视化决策多层级依赖关系
+提前暴露风险岔路与前提失效场景
+为组织决策建立统一、可复盘的审计标准
+
+适用边界
+该语言体系仅针对决策形成过程进行客观审核与结构拆解，不参与决策制定、不干预最终选择、不承担任何决策执行后果与连带责任。
