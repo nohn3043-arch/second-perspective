@@ -1,39 +1,39 @@
-name: Publish Python 🐍 distribution 📦 to PyPI
+name: Publish 第二视角 to PyPI
 
 on:
   push:
     tags:
-      - 'v*' # 当你推送 vX.X.X 格式的标签时，自动触发发布
-  workflow_dispatch: # 也可以在 Actions 页面手动触发
+      - 'v*'  # 推送 vX.X.X 标签时自动发布
+  workflow_dispatch:  # 也支持在 Actions 页面手动一键发布
 
 permissions:
   contents: read
 
 jobs:
   build-and-publish:
-    name: Build and publish to PyPI
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/你的包名 # 替换成你的 PyPI 项目名
+      url: https://pypi.org/p/第二视角  # 这里是你未来 PyPI 项目的地址
     permissions:
-      id-token: write # 用于 PyPI 可信发布认证
+      id-token: write  # 用于 PyPI 可信发布认证
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: 拉取代码
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.x" # 替换成你需要的 Python 版本，比如 3.11
+      - name: 配置 Python 环境
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"  # 你可以改成 3.8~3.12 之间你项目用的版本
 
-    - name: Install build dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install build
+      - name: 安装打包工具
+        run: |
+          python -m pip install --upgrade pip
+          pip install build
 
-    - name: Build package
-      run: python -m build
+      - name: 构建 Python 包
+        run: python -m build
 
-    - name: Publish package to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
+      - name: 发布到 PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
