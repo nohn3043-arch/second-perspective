@@ -1,0 +1,26 @@
+NOHN LOGIC PROTOCOL - COMMERCIAL LICENSE (VERSION 1.0)
+
+Copyright (c) 2026 Nohn Logic. All rights reserved.
+
+IMPORTANT: PLEASE READ THIS LICENSE CAREFULLY BEFORE USING THE SOFTWARE. BY INTEGRATING OR USING THE NOHN 1.0 CORE LOGIC, YOU AGREE TO BE BOUND BY THE TERMS OF THIS LICENSE.
+
+1. GRANT OF LICENSE
+Subject to the terms and conditions of this License and the payment of the applicable annual subscription fees, Nohn Logic (the "Licensor") grants you (the "Licensee") a non-exclusive, non-transferable, limited right to integrate and use the Nohn 1.0 Core Logic ("the Software") for internal business and AI auditing purposes.
+
+2. LOGIC SOVEREIGNTY AND RESTRICTIONS
+(a) Interface Integrity: The Licensee shall not modify, bypass, or obscure the core logic of the CognitiveAuditEngine, the generation mechanism of the ResponsibilityAccount, or the interface definitions of the AuditPlugin. Any unauthorized modification shall immediately void the compliance certification of the resulting audit reports.
+(b) No Reverse Engineering: The Licensee shall not reverse engineer, decompile, or attempt to extract the underlying causal modeling logic or protocols of the Software.
+(c) No Sublicensing: The Licensee shall not sublicense, rent, or redistribute the Software to any third party without explicit written consent from the Licensor.
+
+3. SUBSCRIPTION AND VALIDITY
+This License is valid only during the active term of a paid annual subscription. Upon expiration or termination of the subscription, the Licensee must immediately cease all use of the Software and destroy all copies in its possession.
+
+4. LIMITATION OF LIABILITY AND INDEMNITY
+(a) Neutral Tool Status: The Software is provided as a neutral logic-auditing tool. The Licensor shall not be held liable for any decisions, actions, legal disputes, or business losses resulting from the AI systems integrated with this protocol.
+(b) "As-Is" Warranty: The Software is provided "as is" without warranty of any kind. The Licensee assumes all responsibility for ensuring that its use of the Software complies with local laws and regulations.
+
+5. TERMINATION
+Failure to comply with any term of this License will result in the automatic termination of your rights hereunder. Upon termination, all licenses granted shall immediately cease.
+
+6. GOVERNING LAW
+This License shall be governed by and construed in accordance with the principles of digital logic sovereignty and applicable commercial laws.
