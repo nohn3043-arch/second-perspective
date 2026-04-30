@@ -60,7 +60,7 @@ The world’s first neutral, offline, decision-independent cognitive bias auditi
 - Provide pre-decision auditing capabilities for major projects, large-scale investment and public policies
 
 For institutional authorization, customized integration and business consultation:
-Contact Email: nohn3043@gmail.com，1393786354@qq.com（china）
+Contact Email: nohn3043@gmail.com，q3265981@163.com（china）
 
 ---
 # Second-Person Perspective Language · Decision Structure Language
