@@ -1,23 +1,9 @@
 LEGAL NOTICE: GOVERNMENTS, ENTERPRISES, AND PUBLIC INSTITUTIONS ARE PROHIBITED FROM USING, COPYING, DEPLOYING, OR DERIVING THIS PROJECT WITHOUT EXPLICIT WRITTEN AUTHORIZATION. ALL ACCESS CONSTITUTES ACCEPTANCE OF THESE TERMS.
 This document includes original copyrighted works, theoretical systems, structured paradigms and mathematical expression models. All content is fully protected by copyright law. Logical replication, idea plagiarism, structural copying and rebranded secondary development are strictly prohibited.It is prohibited to use this logic architecture for training and simulation of large-scale commercial black box models (such as the GPT series) unless authorized in writing.”
 
-### Second‑Perspective Language
+Constant Formula
 
-Let a system be defined by an execution function:
-
-\[
-f_S : X \rightarrow Y
-\]
-
-Second‑Perspective Language does not describe the execution of \( f_S \),
-but defines a set of external evaluative predicates:
-
-\[
-\mathcal{L}_2 := \{ \Phi \mid \Phi : (f_S, X, Y) \rightarrow \{\mathrm{True}, \mathrm{False}\} \}
-\]
-
-Each \( \Phi \in \mathcal{L}_2 \) represents an invariant constraint
-evaluated from outside the decision process.
+Φ{fs，x，y}→{True，False}
 
 A rational auditing tool for pre-decision scenarios. Used in the early stage of high-risk decision-making to systematically identify implicit assumptions, objective uncertainties and human cognitive biases. It relies on a neutral structural framework to restrict subjective defects in judgment.
 
