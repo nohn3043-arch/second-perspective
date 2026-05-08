@@ -1,6 +1,11 @@
 LEGAL NOTICE: GOVERNMENTS, ENTERPRISES, AND PUBLIC INSTITUTIONS ARE PROHIBITED FROM USING, COPYING, DEPLOYING, OR DERIVING THIS PROJECT WITHOUT EXPLICIT WRITTEN AUTHORIZATION. ALL ACCESS CONSTITUTES ACCEPTANCE OF THESE TERMS.
 This document includes original copyrighted works, theoretical systems, structured paradigms and mathematical expression models. All content is fully protected by copyright law. Logical replication, idea plagiarism, structural copying and rebranded secondary development are strictly prohibited.It is prohibited to use this logic architecture for training and simulation of large-scale commercial black box models (such as the GPT series) unless authorized in writing.”
 
+Constant Formula
+\[
+\Phi(f_S, x, y) = \text{True / False}
+\]
+
 A rational auditing tool for pre-decision scenarios. Used in the early stage of high-risk decision-making to systematically identify implicit assumptions, objective uncertainties and human cognitive biases. It relies on a neutral structural framework to restrict subjective defects in judgment.
 
 ## Important Statement
