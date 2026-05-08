@@ -5,6 +5,9 @@ Constant Formula
 
 Φ{fs，x，y}→{True，False}
 
+ Φ 是一个结构审计谓词，用于判断在给定系统函数 fₛ 与输入条件 x、y 的情况下，某一决策结构是否满足最低理性一致性要求。  
+> 该谓词不输出建议、不进行优化，仅返回结构是否通过审计。
+> 
 A rational auditing tool for pre-decision scenarios. Used in the early stage of high-risk decision-making to systematically identify implicit assumptions, objective uncertainties and human cognitive biases. It relies on a neutral structural framework to restrict subjective defects in judgment.
 
 ## Important Statement
