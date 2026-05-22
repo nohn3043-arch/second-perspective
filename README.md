@@ -55,6 +55,7 @@ The world’s first neutral, offline, decision-independent cognitive bias auditi
 - Quantify external information uncertainties and environmental variables
 - Detect subjective thinking blind spots and systematic cognitive biases
 - Provide neutral, traceable structural support for high-stakes rational decision-making
+- Deliver third-party independent security and compliance auditing for AI systems and enterprise decisions
 
 ## Core Features
 - Fully offline operation, no network connection and no cloud data transmission
