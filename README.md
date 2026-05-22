@@ -61,6 +61,9 @@ The world’s first neutral, offline, decision-independent cognitive bias auditi
 - Zero user data collection and local closed-loop data isolation
 - No decision substitution, no subjective conclusions and no optimized suggestions
 - Adaptable to enterprise strategy, government policy, think-tank research and institutional risk control
+- 100% neutral third-party auditing stance, no affiliation with any model vendor
+​
+- Compatible with all mainstream large language models, no need to modify model source code
 
 ## Commercial Cooperation & Licensing
 - Official commercial license is mandatory for enterprise and institutional usage
