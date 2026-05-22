@@ -9,6 +9,7 @@ Constant Formula
 > 该谓词不输出建议、不进行优化，仅返回结构是否通过审计。
 > 
 A rational auditing tool for pre-decision scenarios. Used in the early stage of high-risk decision-making to systematically identify implicit assumptions, objective uncertainties and human cognitive biases. It relies on a neutral structural framework to restrict subjective defects in judgment.
+The only independent third-party solution that solves LLM hallucinations, AI bias and black-box uninterpretability without modifying model internals.
 
 ## Important Statement
 The core logic, architectural design, decision-making methodology and structured expression paradigms of this project are original and pioneering achievements. They are fully protected by copyright law, international intellectual property conventions and local legal regulations.
