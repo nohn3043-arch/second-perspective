@@ -13,8 +13,7 @@ All mechanisms of accountability, auditability, responsibility, and enforcement 
 
 Without it, rules become symbolic, audits become retrospective, and intelligence becomes performative.
 
-Provide neutral, traceable structural support for high-stakes rational decision-making.
-Deliver third-party independent security and compliance auditing for AI systems and enterprise decisions.
+## Provide neutral, traceable structural support for high-stakes rational decision-making.Deliver third-party independent security and compliance auditing for AI systems and enterprise decisions.
 
 ## This engine has passed the IMDA AI Verify assessment and achieved an overall score of 95.
 
