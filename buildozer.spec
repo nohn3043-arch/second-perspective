@@ -9,24 +9,20 @@ package.domain = org.nohn
 version = 7.2.0
 # Android 内部版本号，每次发布新版本递增
 version.code = 1
+
 source.dir = .
-source.include_exts = py,png,jpg,kv,atlas,pdf,md
+source.include_exts = py,png,jpg,kv,atlas,pdf,md,txt
 source.include_patterns = assets/*,images/*
 source.exclude_exts = spec
-source.exclude_dirs = tests, bin, venv, .git, .github
-source.exclude_patterns = license,images/*/*.jpg
+source.exclude_dirs = tests, bin, venv, .git, .github, .buildozer, __pycache__
+source.exclude_patterns = license,images/*/*.jpg, *.pyc
 
 # 入口文件
-# (str) 主程序入口Python文件
 entrypoint = main.py
 
 # 项目依赖
-# (list) Application requirements
-# comma separated e.g. requirements = sqlite3,kivy
-requirements = python3,kivy==2.3.0,uuid-jsonl
-
-# 依赖文件（如果有requirements.txt自动读取）
-requirements.source.kivy = ../../kivy
+requirements = python3,kivy==2.3.0
+# 去掉不必要的uuid-jsonl依赖，uuid是Python标准库，不需要额外安装
 
 # 屏幕方向
 orientation = portrait
@@ -34,18 +30,18 @@ orientation = portrait
 # 是否全屏
 fullscreen = 0
 
-# Android 特定配置
+# Android 特定配置 - 使用Buildozer默认稳定版本
 android.api = 33
 android.ndk = 25b
 android.sdk = 24
-android.arch = arm64-v8a,armeabi-v7a
+android.archs = arm64-v8a, armeabi-v7a
+android.accept_sdk_license = True
 
 # Android 权限
 android.permissions = INTERNET
 
 # Android 应用元数据
-android.meta_data = 
-android.presplash_color = #FFFFFF
+android.presplash_color = #2196F3
 android.theme = @android:style/Theme.Holo.Light
 
 # 日志配置
@@ -58,21 +54,9 @@ build_mode = debug
 build_dir = .buildozer
 bin_dir = bin
 
-# iOS 配置（这里不涉及iOS打包，保留默认）
-ios.kivy_ios_url = https://github.com/kivy/kivy-ios
-ios.kivy_ios_branch = master
-
-# OSX 配置
-osx.python_version = 3
-osx.kivy_version = 2.3.0
-
-# Linux 配置
-linux.qtdeploy_url = https://github.com/kivy/qtdeploy
-linux.qtdeploy_branch = master
-
-# Windows 配置
-windows.qtdeploy_url = https://github.com/kivy/qtdeploy
-windows.qtdeploy_branch = master
+# 不构建aab格式，只构建apk
+android.release_artifact = apk
+android.debug_artifact = apk
 
 [buildozer]
 # Buildozer 日志级别
@@ -80,3 +64,6 @@ log_level = 2
 
 # 警告输出
 warn_on_root = 1
+
+# 构建超时
+android.build_timeout = 1800
