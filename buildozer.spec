@@ -4,6 +4,11 @@
 title = Cognitive Audit Engine
 package.name = gcae
 package.domain = org.nohn
+
+# 版本信息（对应项目SPL V7.2正式版本）
+version = 7.2.0
+# Android 内部版本号，每次发布新版本递增
+version.code = 1
 source.dir = .
 source.include_exts = py,png,jpg,kv,atlas,pdf,md
 source.include_patterns = assets/*,images/*

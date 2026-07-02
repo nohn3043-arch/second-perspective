@@ -73,7 +73,7 @@ class AuditApp(App):
         
         # 标题
         title = Label(
-            text="Cognitive Audit Engine\n(SPL V7.2)",
+            text="Cognitive Audit Engine\n(SPL V7.2.0)",
             font_size=24,
             halign="center",
             valign="middle",
@@ -137,7 +137,7 @@ class AuditApp(App):
             config = AuditConfigLoader.load_from_dict({
                 "allowed_stages": ["production", "staging"],
                 "disclaimer": "本审计结果仅为技术参考，不构成法律责任依据",
-                "custom_fields": {"version": "SPL V7.2"}
+                "custom_fields": {"version": "SPL V7.2.0", "version_code": 1}
             })
             engine = CognitiveAuditEngine(account, config)
             
