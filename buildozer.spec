@@ -6,7 +6,7 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
 source.include_patterns = main.py,*.kv
 version = 0.1
-requirements = python3,kivy,hostpython3,pyjnius,android
+requirements = python3,kivy==2.3.0,hostpython3,pyjnius,android
 orientation = portrait
 
 # Android settings
