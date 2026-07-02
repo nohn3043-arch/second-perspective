@@ -2,7 +2,7 @@ name: Build Cognitive Audit Engine APK
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:
@@ -40,32 +40,44 @@ jobs:
             git \
             zip \
             unzip \
-            wget
+            wget \
+            openjdk-17-jdk
 
       - name: Install Python build dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          python -m pip install cython virtualenv
-          python -m pip install https://github.com/kivy/buildozer/archive/master.zip
+          python -m pip install cython==0.29.37 virtualenv buildozer
+
+      - name: Initialize buildozer and accept Android licenses
+        run: |
+          # 先初始化下载Android SDK
+          buildozer android update || true
+          # 自动接受SDK许可证
+          yes | sdkmanager --licenses || true
 
       - name: Build debug APK
         run: |
-          buildozer android debug || true
-
-      - name: Upload build logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-logs
-          path: .buildozer/android/platform/build-*/*.log
+          buildozer android debug
 
       - name: Check build output
+        if: always()
         run: |
           ls -la bin/ 2>/dev/null || echo "No bin directory found"
           find . -name "*.apk" -type f 2>/dev/null || echo "No APK found"
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
+        if: success()
         with:
           name: cognitive-audit-engine-apk
           path: bin/*.apk
+          retention-days: 30
+
+      - name: Upload build logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs
+          path: |
+            .buildozer/android/platform/build-*/dist*/build/outputs/apk/debug/*.log
+            .buildozer/logs/

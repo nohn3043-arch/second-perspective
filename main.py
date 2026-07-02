@@ -96,7 +96,12 @@ class AuditApp(App):
             font_size=12,
             halign="left",
             valign="top",
+            size_hint_y=None,
             text_size=(self.layout.width, None)
+        )
+        self.result_label.bind(
+            width=lambda *x: setattr(self.result_label, 'text_size', (self.result_scroll.width, None)),
+            texture_size=lambda *x: setattr(self.result_label, 'height', self.result_label.texture_size[1])
         )
         self.result_scroll.add_widget(self.result_label)
         self.layout.add_widget(self.result_scroll)
