@@ -1,0 +1,10 @@
+# GCAE Mobile App Dependencies
+# Core GUI Framework
+kivy==2.3.0
+
+# Build Tools (for APK packaging)
+buildozer==1.5.0
+cython==0.29.37
+
+# Optional: For desktop testing
+# pillow>=9.0.0
