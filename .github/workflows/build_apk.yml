@@ -50,10 +50,12 @@ jobs:
 
       - name: Initialize buildozer and accept Android licenses
         run: |
-          # 先初始化下载Android SDK
-          buildozer android update || true
-          # 自动接受SDK许可证
-          yes | sdkmanager --licenses || true
+          # 自动接受Android SDK许可证，使用非交互式模式
+          mkdir -p ~/.android
+          touch ~/.android/repositories.cfg
+          echo "y" | buildozer android update || true
+          # 确保所有许可证都已接受
+          yes | ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses 2>/dev/null || true
 
       - name: Build debug APK
         run: |
