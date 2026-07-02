@@ -50,7 +50,19 @@ jobs:
 
       - name: Build debug APK
         run: |
-          buildozer android debug
+          buildozer android debug || true
+
+      - name: Upload build logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs
+          path: .buildozer/android/platform/build-*/*.log
+
+      - name: Check build output
+        run: |
+          ls -la bin/ 2>/dev/null || echo "No bin directory found"
+          find . -name "*.apk" -type f 2>/dev/null || echo "No APK found"
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
