@@ -21,7 +21,8 @@ source.exclude_patterns = license,images/*/*.jpg, *.pyc
 entrypoint = main.py
 
 # 项目依赖
-requirements = python3,kivy==2.3.0
+# 显式锁定Python 3.10，避免p4a默认拉取Python 3.14导致Kivy C扩展API不兼容编译失败
+requirements = python3==3.10.14,kivy==2.3.0
 # 去掉不必要的uuid-jsonl依赖，uuid是Python标准库，不需要额外安装
 
 # 屏幕方向
