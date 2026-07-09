@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Second Perspective · 认知审计引擎</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500&family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-0: #04070f;
+            --bg-1: #0a1430;
+            --bg-2: #0f2150;
+            --blue-deep: #0b235a;
+            --blue: #1c3f8c;
+            --gold: #c9a86a;
+            --gold-soft: #e6d2a4;
+            --gold-line: rgba(201, 168, 106, 0.30);
+            --gold-faint: rgba(201, 168, 106, 0.12);
+            --text: #eef2fb;
+            --muted: #9aa7c7;
+            --card: rgba(255, 255, 255, 0.025);
+            --serif: 'Cormorant Garamond', 'Noto Serif SC', serif;
+            --sans: 'Noto Sans SC', -apple-system, sans-serif;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--sans);
+            font-weight: 300;
+            color: var(--text);
+            background:
+                radial-gradient(1100px 700px at 78% -8%, rgba(28, 63, 140, 0.45), transparent 60%),
+                radial-gradient(900px 600px at 12% 12%, rgba(11, 35, 90, 0.5), transparent 55%),
+                linear-gradient(165deg, var(--bg-0) 0%, var(--bg-1) 48%, var(--bg-2) 100%);
+            background-attachment: fixed;
+            line-height: 1.75;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        ::selection { background: var(--gold); color: #07101f; }
+
+        /* 装饰：极细金线 */
+        .rule {
+            width: 64px; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 1.4rem auto;
+        }
+        .rule.left { margin-left: 0; }
+
+        /* ===== 导航 ===== */
+        .nav {
+            position: fixed; inset: 0 0 auto 0; z-index: 1000;
+            background: rgba(6, 11, 26, 0.72);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--gold-faint);
+        }
+        .nav-inner {
+            max-width: 1180px; margin: 0 auto;
+            padding: 1.15rem 2rem;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .brand {
+            font-family: var(--serif);
+            font-size: 1.45rem; font-weight: 600; letter-spacing: .14em;
+            color: var(--text);
+        }
+        .brand span { color: var(--gold); }
+        .nav-links { display: flex; gap: 2.4rem; list-style: none; }
+        .nav-links a {
+            color: var(--muted); text-decoration: none;
+            font-size: .9rem; letter-spacing: .08em;
+            position: relative; transition: color .35s ease;
+        }
+        .nav-links a::after {
+            content: ''; position: absolute; left: 0; bottom: -6px;
+            width: 0; height: 1px; background: var(--gold); transition: width .35s ease;
+        }
+        .nav-links a:hover { color: var(--gold-soft); }
+        .nav-links a:hover::after { width: 100%; }
+
+        /* ===== 通用区块 ===== */
+        section { padding: 7.5rem 2rem; position: relative; }
+        .wrap { max-width: 1180px; margin: 0 auto; }
+        .eyebrow {
+            font-family: var(--serif);
+            text-transform: uppercase; letter-spacing: .42em;
+            font-size: .72rem; color: var(--gold);
+            text-align: center; margin-bottom: .9rem;
+        }
+        .sec-title {
+            font-family: var(--serif);
+            font-weight: 600; font-size: clamp(2rem, 3.4vw, 3rem);
+            text-align: center; line-height: 1.2;
+            background: linear-gradient(180deg, #fff 0%, #cdd8f0 100%);
+            -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .sec-sub {
+            text-align: center; color: var(--muted);
+            max-width: 640px; margin: 1.1rem auto 0; font-size: 1.02rem;
+        }
+
+        /* ===== 英雄区 ===== */
+        .hero {
+            min-height: 100vh; display: flex; align-items: center;
+            padding-top: 7rem;
+        }
+        .hero-inner { max-width: 880px; margin: 0 auto; text-align: center; }
+        .hero-tag {
+            display: inline-block; padding: .5rem 1.4rem;
+            border: 1px solid var(--gold-line); border-radius: 999px;
+            color: var(--gold-soft); font-size: .78rem;
+            letter-spacing: .26em; text-transform: uppercase;
+            background: rgba(201, 168, 106, 0.05);
+        }
+        .hero h1 {
+            font-family: var(--serif); font-weight: 600;
+            font-size: clamp(3rem, 7vw, 5.6rem); line-height: 1.05;
+            margin: 1.8rem 0 1.4rem;
+        }
+        .hero h1 em {
+            font-style: normal;
+            background: linear-gradient(120deg, var(--gold-soft), var(--gold));
+            -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            color: var(--muted); font-size: 1.18rem;
+            max-width: 620px; margin: 0 auto;
+        }
+        .hero-cta { display: flex; gap: 1.3rem; justify-content: center; margin-top: 2.8rem; flex-wrap: wrap; }
+
+        .btn {
+            font-family: var(--sans); font-weight: 400;
+            padding: .95rem 2.4rem; border-radius: 2px;
+            text-decoration: none; letter-spacing: .12em; font-size: .92rem;
+            transition: all .4s cubic-bezier(.2,.7,.3,1); cursor: pointer;
+            border: 1px solid transparent;
+        }
+        .btn-gold {
+            background: linear-gradient(120deg, var(--gold-soft), var(--gold));
+            color: #07101f; font-weight: 500;
+            box-shadow: 0 14px 40px -12px rgba(201, 168, 106, 0.55);
+        }
+        .btn-gold:hover { transform: translateY(-3px); box-shadow: 0 20px 50px -12px rgba(201, 168, 106, 0.7); }
+        .btn-ghost { border-color: var(--gold-line); color: var(--gold-soft); background: transparent; }
+        .btn-ghost:hover { border-color: var(--gold); background: rgba(201, 168, 106, 0.07); transform: translateY(-3px); }
+
+        /* ===== 特性 ===== */
+        .grid {
+            display: grid; gap: 1.6rem; margin-top: 4rem;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        }
+        .card {
+            background: var(--card);
+            border: 1px solid var(--gold-faint);
+            border-radius: 4px; padding: 2.6rem 2.2rem;
+            position: relative; overflow: hidden;
+            transition: transform .5s ease, border-color .5s ease, background .5s ease;
+        }
+        .card::before {
+            content: ''; position: absolute; top: 0; left: 0;
+            width: 100%; height: 2px;
+            background: linear-gradient(90deg, var(--gold), transparent);
+            opacity: 0; transition: opacity .5s ease;
+        }
+        .card:hover { transform: translateY(-8px); border-color: var(--gold-line); background: rgba(201, 168, 106, 0.04); }
+        .card:hover::before { opacity: 1; }
+        .card .num {
+            font-family: var(--serif); font-size: .9rem; color: var(--gold);
+            letter-spacing: .2em; opacity: .7;
+        }
+        .card .ico {
+            width: 56px; height: 56px; margin: 1.1rem 0 1.4rem;
+            border: 1px solid var(--gold-line); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem;
+            background: radial-gradient(circle at 30% 30%, rgba(201,168,106,.18), transparent 70%);
+        }
+        .card h3 {
+            font-family: var(--serif); font-weight: 600; font-size: 1.5rem;
+            margin-bottom: .8rem; color: #fff;
+        }
+        .card p { color: var(--muted); font-size: .98rem; }
+
+        /* ===== 架构 ===== */
+        .arch { background: linear-gradient(180deg, transparent, rgba(11,35,90,.35), transparent); }
+        .arch-panel {
+            margin-top: 3.5rem; border: 1px solid var(--gold-faint);
+            border-radius: 6px; padding: 3rem;
+            background:
+                radial-gradient(600px 300px at 80% 0%, rgba(28,63,140,.35), transparent 60%),
+                rgba(4, 8, 18, 0.55);
+            box-shadow: 0 40px 90px -40px rgba(0,0,0,.8);
+        }
+        .code {
+            font-family: 'Cormorant Garamond', 'SFMono-Regular', monospace;
+            font-size: 1.15rem; line-height: 2; color: #d7e0f5;
+        }
+        .code .k { color: var(--gold-soft); font-style: italic; }
+        .code .c { color: #5e6c91; font-style: italic; }
+        .code .sym { color: #9fc0ff; }
+
+        /* ===== 认证 ===== */
+        .cert-grid { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+        .cert {
+            text-align: center; padding: 3rem 2rem;
+            border: 1px solid var(--gold-faint); border-radius: 4px;
+            background: var(--card); transition: all .5s ease;
+        }
+        .cert:hover { border-color: var(--gold-line); transform: translateY(-6px); }
+        .cert .badge {
+            width: 72px; height: 72px; margin: 0 auto 1.6rem;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 2rem;
+            background: linear-gradient(135deg, rgba(201,168,106,.25), rgba(201,168,106,.05));
+            border: 1px solid var(--gold-line);
+        }
+        .cert h3 { font-family: var(--serif); font-weight: 600; font-size: 1.4rem; color: #fff; margin-bottom: .7rem; }
+        .cert p { color: var(--muted); font-size: .92rem; }
+        .cert .score { font-family: var(--serif); font-size: 2.6rem; color: var(--gold-soft); line-height: 1; margin-bottom: .4rem; }
+
+        /* ===== CTA ===== */
+        .cta { text-align: center; }
+        .cta-box {
+            max-width: 760px; margin: 0 auto; padding: 4.5rem 3rem;
+            border: 1px solid var(--gold-faint); border-radius: 8px;
+            background:
+                radial-gradient(500px 260px at 50% -20%, rgba(201,168,106,.16), transparent 70%),
+                rgba(4,8,18,.5);
+        }
+        .cta h2 { font-family: var(--serif); font-weight: 600; font-size: clamp(2rem, 3.6vw, 3rem); margin-bottom: 1.2rem; }
+        .cta p { color: var(--muted); max-width: 520px; margin: 0 auto 2.4rem; font-size: 1.05rem; }
+
+        /* ===== 页脚 ===== */
+        .footer { border-top: 1px solid var(--gold-faint); padding: 2.6rem 2rem; }
+        .footer-inner { max-width: 1180px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.2rem; }
+        .footer .copy { color: #5f6e92; font-size: .82rem; letter-spacing: .05em; }
+        .footer-links { display: flex; gap: 1.8rem; }
+        .footer-links a { color: #5f6e92; text-decoration: none; font-size: .82rem; letter-spacing: .08em; transition: color .35s; }
+        .footer-links a:hover { color: var(--gold-soft); }
+
+        /* ===== 进场动画 ===== */
+        .reveal { opacity: 0; transform: translateY(28px); transition: opacity 1s ease, transform 1s ease; }
+        .reveal.in { opacity: 1; transform: none; }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            section { padding: 5rem 1.4rem; }
+            .arch-panel { padding: 2rem 1.4rem; }
+            .cta-box { padding: 3rem 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 导航 -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <div class="brand">SECOND<span>·</span>PERSPECTIVE</div>
+            <ul class="nav-links">
+                <li><a href="#features">核心能力</a></li>
+                <li><a href="#architecture">决策语言</a></li>
+                <li><a href="#cert">权威认证</a></li>
+                <li><a href="https://github.com/nohn3043-arch/second-perspective" target="_blank">GitHub</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 英雄区 -->
+    <section class="hero">
+        <div class="hero-inner reveal">
+            <span class="hero-tag">Deterministic Causal Reasoning</span>
+            <h1>第二视角<br><em>认知审计引擎</em></h1>
+            <div class="rule"></div>
+            <p>企业级 AI 决策前理性审计。离线部署、中立无偏，以确定性因果拓扑网络识别决策风险、逻辑漏洞与责任边界。</p>
+            <div class="hero-cta">
+                <a href="https://github.com/nohn3043-arch/second-perspective" target="_blank" class="btn btn-gold">立即部署</a>
+                <a href="#features" class="btn btn-ghost">了解特性</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 特性 -->
+    <section id="features">
+        <div class="wrap">
+            <div class="eyebrow reveal">Core Capabilities</div>
+            <h2 class="sec-title reveal">为高风险决策提供可靠审计支撑</h2>
+            <p class="sec-sub reveal">不替代决策，仅作中立第三方审计层，系统性识别决策过程中的隐性假设、逻辑漏洞与责任边界。</p>
+            <div class="grid">
+                <div class="card reveal">
+                    <div class="num">01</div>
+                    <div class="ico">🔍</div>
+                    <h3>因果拓扑推理</h3>
+                    <p>基于确定性因果网络分析决策链路，剥离概率性模糊表述，显式标记所有未声明的隐性假设前提。</p>
+                </div>
+                <div class="card reveal">
+                    <div class="num">02</div>
+                    <div class="ico">🛡️</div>
+                    <h3>完全离线运行</h3>
+                    <p>100% 本地部署，无云数据传输，零用户数据收集，满足金融、政务等高敏感场景的合规要求。</p>
+                </div>
+                <div class="card reveal">
+                    <div class="num">03</div>
+                    <div class="ico">⚖️</div>
+                    <h3>责任追溯锚定</h3>
+                    <p>穿透组织模糊性，强制追溯每一项决策背后的最小责任单元，建立完整的问责闭环链路。</p>
+                </div>
+                <div class="card reveal">
+                    <div class="num">04</div>
+                    <div class="ico">📊</div>
+                    <h3>风险量化评估</h3>
+                    <p>计算核心假设失效时的系统崩塌概率，提前识别决策结构中最脆弱的隐性变量节点。</p>
+                </div>
+                <div class="card reveal">
+                    <div class="num">05</div>
+                    <div class="ico">🧠</div>
+                    <h3>幻觉检测</h3>
+                    <p>适配大语言模型场景，精准识别 LLM 输出中的事实性错误与逻辑矛盾，防止 AI 幻觉传导至决策层。</p>
+                </div>
+                <div class="card reveal">
+                    <div class="num">06</div>
+                    <div class="ico">✅</div>
+                    <h3>合规认证</h3>
+                    <p>通过 IMDA AI Verify 95/100 合规认证，满足全球主流 AI 治理与监管要求。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 架构 / 决策语言 -->
+    <section id="architecture" class="arch">
+        <div class="wrap">
+            <div class="eyebrow reveal">Decision Structure Language</div>
+            <h2 class="sec-title reveal">第二视角决策结构语言</h2>
+            <p class="sec-sub reveal">形式化的决策描述规范，剥离一切修辞、情感与立场粉饰，仅保留可验证的逻辑链路。</p>
+            <div class="arch-panel reveal">
+                <div class="code">
+                    <span class="k">决策结构</span> <span class="c">(完整有效决策)</span>:<br>
+                    &nbsp;&nbsp;<span class="k">决策</span> &nbsp;<span class="sym">:</span> <span class="c">可执行、责任清晰的判断</span><br>
+                    &nbsp;&nbsp;<span class="k">假设前提</span> <span class="sym">:</span> <span class="c">可证伪的决策前提集合</span><br>
+                    &nbsp;&nbsp;<span class="k">分支响应</span> <span class="sym">:</span> <span class="c">核心假设失效时的调整预案</span><br><br>
+                    <span class="k">核心原则</span>:<br>
+                    &nbsp;&nbsp;¬A₁ <span class="sym">⇒</span> ΔD<br>
+                    &nbsp;&nbsp;¬A₂ <span class="sym">⇒</span> ΔD<br>
+                    &nbsp;&nbsp;¬A₃ <span class="sym">⇒</span> ΔD<br><br>
+                    <span class="c"># 本质：决策有效性等价于所有核心假设的同时成立</span><br>
+                    <span class="c"># 任意假设失效即触发决策结构重构</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 认证 -->
+    <section id="cert">
+        <div class="wrap">
+            <div class="eyebrow reveal">Accreditations</div>
+            <h2 class="sec-title reveal">符合国际 AI 治理标准</h2>
+            <p class="sec-sub reveal">经第三方独立机构测试验证，满足全球主流 AI 安全与合规要求。</p>
+            <div class="grid cert-grid">
+                <div class="cert reveal">
+                    <div class="badge">🏆</div>
+                    <div class="score">95<span style="font-size:1.1rem;color:var(--muted)">/100</span></div>
+                    <h3>IMDA AI Verify</h3>
+                    <p>新加坡资讯通信媒体发展局 AI 验证认证，综合得分 95/100。</p>
+                </div>
+                <div class="cert reveal">
+                    <div class="badge">🔐</div>
+                    <h3>离线安全合规</h3>
+                    <p>零数据外发设计，满足金融、政务等高敏感场景部署要求。</p>
+                </div>
+                <div class="cert reveal">
+                    <div class="badge">📜</div>
+                    <h3>双授权协议</h3>
+                    <p>支持非商业研究与商业授权两种使用方式，灵活合规。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta">
+        <div class="cta-box reveal">
+            <div class="eyebrow" style="text-align:center">Get Started</div>
+            <h2>为您的决策过程加一道保险</h2>
+            <p>适用于金融风控、政务决策、企业合规、AI 治理等各类高风险决策场景，立即部署第二视角审计引擎。</p>
+            <div class="hero-cta">
+                <a href="https://github.com/nohn3043-arch/second-perspective" target="_blank" class="btn btn-gold">GitHub 仓库</a>
+                <a href="https://github.com/nohn3043-arch/second-perspective/issues" target="_blank" class="btn btn-ghost">技术咨询</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="copy">© 2026 NOHN AI TECHNOLOGY. 保留所有权利。</div>
+            <div class="footer-links">
+                <a href="https://github.com/nohn3043-arch/second-perspective/blob/main/LICENSE" target="_blank">许可证</a>
+                <a href="https://github.com/nohn3043-arch/second-perspective/issues" target="_blank">反馈问题</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 滚动进场动画
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+        }, { threshold: 0.12 });
+        document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+    </script>
+</body>
+</html>
