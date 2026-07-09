@@ -22,6 +22,7 @@
             --blue-600: #2563EB;
             --blue-500: #3B82F6;
             --blue-400: #60A5FA;
+            --blue-200: #BFDBFE;
             --slate-100: #F1F5F9;
             --slate-200: #E2E8F0;
             --white: #FFFFFF;
@@ -462,4 +463,185 @@
 </head>
 <body>
     <!-- 导航栏 -->
-    <nav
+    <nav class="nav">
+        <div class="nav-container">
+            <div class="nav-logo">second-perspective</div>
+            <ul class="nav-links">
+                <li><a href="#features">特性</a></li>
+                <li><a href="#architecture">架构</a></li>
+                <li><a href="#certifications">认证</a></li>
+                <li><a href="https://github.com/nohn3043-arch/second-perspective" target="_blank">GitHub</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 英雄区 -->
+    <section class="hero">
+        <div class="hero-container">
+            <span class="hero-tag">确定性因果推理引擎</span>
+            <h1 class="hero-title">
+                第二视角<br>
+                认知审计引擎
+            </h1>
+            <p class="hero-subtitle">
+                企业级AI决策前理性审计工具，离线部署、中立无偏，基于确定性因果拓扑网络实现决策风险识别、逻辑漏洞检测、责任追溯。
+            </p>
+            <div class="hero-buttons">
+                <a href="https://github.com/nohn3043-arch/second-perspective" target="_blank" class="btn btn-primary">
+                    立即部署
+                </a>
+                <a href="#features" class="btn btn-secondary">
+                    了解特性
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 特性区 -->
+    <section class="features" id="features">
+        <div class="section-header">
+            <span class="section-tag">核心能力</span>
+            <h2 class="section-title">为高风险决策提供可靠审计支撑</h2>
+            <p class="section-description">
+                不替代决策，仅作为中立第三方审计层，系统性识别决策过程中的隐性假设、逻辑漏洞与责任边界。
+            </p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔍</div>
+                <h3 class="feature-title">因果拓扑推理</h3>
+                <p class="feature-description">
+                    基于确定性因果网络分析决策链路，剥离概率性模糊表述，显式标记所有未声明的隐性假设前提。
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <h3 class="feature-title">完全离线运行</h3>
+                <p class="feature-description">
+                    100%本地部署，无云数据传输，零用户数据收集，满足金融、政务等高敏感场景的合规要求。
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚖️</div>
+                <h3 class="feature-title">责任追溯锚定</h3>
+                <p class="feature-description">
+                    穿透组织模糊性，强制追溯每一项决策背后的最小责任单元，建立完整的问责闭环链路。
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3 class="feature-title">风险量化评估</h3>
+                <p class="feature-description">
+                    计算核心假设失效时的系统崩塌概率，提前识别决策结构中最脆弱的隐性变量节点。
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <h3 class="feature-title">幻觉检测</h3>
+                <p class="feature-description">
+                    适配大语言模型场景，精准识别LLM输出中的事实性错误与逻辑矛盾，防止AI幻觉传导至决策层。
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">✅</div>
+                <h3 class="feature-title">合规认证</h3>
+                <p class="feature-description">
+                    通过IMDA AI Verify 95/100合规认证，满足全球主流AI治理监管要求。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 架构区 -->
+    <section class="architecture" id="architecture">
+        <div class="section-header">
+            <span class="section-tag">核心架构</span>
+            <h2 class="section-title">第二视角决策结构语言</h2>
+            <p class="section-description">
+                形式化的决策描述规范，剥离一切修辞、情感与立场粉饰，仅保留可验证的逻辑链路。
+            </p>
+        </div>
+        <div class="architecture-container">
+            <div class="architecture-card">
+                <div class="code-block">
+                    <span class="code-keyword">决策结构</span>(<span class="code-comment">完整有效决策</span>):
+                    <br> <span class="code-keyword">决策</span>: <span class="code-comment">可执行、责任清晰的判断</span>
+                    <br> <span class="code-keyword">假设前提</span>: <span class="code-comment">可证伪的决策前提集合</span>
+                    <br> <span class="code-keyword">分支响应</span>: <span class="code-comment">核心假设失效时的调整预案</span>
+                    <br>
+                    <br><span class="code-keyword">核心原则</span>:
+                    <br> ¬A₁ ⇒ ΔD
+                    <br> ¬A₂ ⇒ ΔD
+                    <br> ¬A₃ ⇒ ΔD
+                    <br>
+                    <br><span class="code-comment"># 本质：决策有效性等价于所有核心假设的同时成立</span>
+                    <br><span class="code-comment"># 任意假设失效即触发决策结构重构</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 证书区 -->
+    <section class="certifications" id="certifications">
+        <div class="section-header">
+            <span class="section-tag">权威认证</span>
+            <h2 class="section-title">符合国际AI治理标准</h2>
+            <p class="section-description">
+                经过第三方独立机构测试验证，满足全球主流AI安全与合规要求。
+            </p>
+        </div>
+        <div class="cert-grid">
+            <div class="cert-card">
+                <div class="cert-badge">🏆</div>
+                <h3 class="cert-title">IMDA AI Verify</h3>
+                <p class="cert-description">
+                    新加坡资讯通信媒体发展局AI验证认证，综合得分95/100
+                </p>
+            </div>
+            <div class="cert-card">
+                <div class="cert-badge">🔐</div>
+                <h3 class="cert-title">离线安全合规</h3>
+                <p class="cert-description">
+                    零数据外发设计，满足金融、政务等高敏感场景部署要求
+                </p>
+            </div>
+            <div class="cert-card">
+                <div class="cert-badge">📜</div>
+                <h3 class="cert-title">开源协议</h3>
+                <p class="cert-description">
+                    双授权模式，支持非商业研究与商业授权两种使用方式
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA区 -->
+    <section class="cta">
+        <h2 class="cta-title">为您的决策过程加一道保险</h2>
+        <p class="cta-description">
+            适用于金融风控、政务决策、企业合规、AI治理等各类高风险决策场景，立即部署第二视角审计引擎。
+        </p>
+        <div class="hero-buttons" style="justify-content: center;">
+            <a href="https://github.com/nohn3043-arch/second-perspective" target="_blank" class="btn btn-primary">
+                GitHub 仓库
+            </a>
+            <a href="https://github.com/nohn3043-arch/second-perspective/issues" target="_blank" class="btn btn-secondary">
+                技术咨询
+            </a>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-copyright">
+                © 2026 NOHN AI TECHNOLOGY. 保留所有权利。
+            </div>
+            <div class="footer-links">
+                <a href="https://github.com/nohn3043-arch/second-perspective/blob/main/LICENSE" target="_blank">许可证</a>
+                <a href="https://github.com/nohn3043-arch/second-perspective/issues" target="_blank">反馈问题</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
