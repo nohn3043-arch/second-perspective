@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="meta.title">第二视角 · 认知审计引擎</title>
+<meta name="description" data-i18n-attr="content:meta.desc" content="在 AI 做出决策之前，先做一次理性的审计。">
+<style>
+  :root{
+    --navy-900:#060d1a;
+    --navy-800:#0a1628;
+    --navy-700:#0d1f3c;
+    --navy-600:#13294f;
+    --blue-500:#2563eb;
+    --blue-400:#3b82f6;
+    --gold:#c9a86a;
+    --gold-soft:#d8c08a;
+    --text:#e8edf5;
+    --muted:#9bb0cc;
+    --line:rgba(155,176,204,.16);
+    --card:rgba(255,255,255,.035);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Helvetica,Arial,sans-serif;
+    background:var(--navy-900);
+    color:var(--text);
+    line-height:1.7;
+    overflow-x:hidden;
+  }
+  .wrap{max-width:1120px;margin:0 auto;padding:0 28px}
+
+  /* ---------- Nav ---------- */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    backdrop-filter:blur(14px);
+    background:rgba(6,13,26,.72);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:68px}
+  .brand{display:flex;align-items:center;gap:11px;font-weight:600;letter-spacing:.5px}
+  .brand .dot{width:11px;height:11px;border-radius:50%;background:linear-gradient(135deg,var(--blue-400),var(--gold));box-shadow:0 0 14px rgba(37,99,235,.6)}
+  .brand span{font-size:17px}
+  .nav-links{display:flex;align-items:center;gap:34px}
+  .nav-links a{color:var(--muted);text-decoration:none;font-size:14.5px;transition:color .25s;letter-spacing:.3px}
+  .nav-links a:hover{color:var(--text)}
+  .lang-toggle{
+    border:1px solid var(--line);background:var(--card);color:var(--gold-soft);
+    padding:7px 16px;border-radius:999px;font-size:13.5px;cursor:pointer;
+    letter-spacing:1px;transition:all .25s;font-weight:600;
+  }
+  .lang-toggle:hover{border-color:var(--gold);color:var(--gold);box-shadow:0 0 16px rgba(201,168,106,.18)}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    position:relative;padding:180px 0 120px;text-align:center;
+    background:radial-gradient(1100px 520px at 50% -8%,rgba(37,99,235,.20),transparent 60%),
+               radial-gradient(700px 380px at 85% 10%,rgba(201,168,106,.10),transparent 55%);
+  }
+  .hero .eyebrow{
+    display:inline-block;font-size:13px;letter-spacing:3px;color:var(--gold-soft);
+    border:1px solid var(--line);padding:6px 18px;border-radius:999px;margin-bottom:30px;
+    text-transform:uppercase;
+  }
+  .hero h1{
+    font-size:clamp(36px,6vw,62px);line-height:1.12;font-weight:700;letter-spacing:1px;
+    background:linear-gradient(180deg,#fff 30%,#bcd0ee 100%);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  }
+  .hero .sub{font-size:clamp(16px,2.2vw,20px);color:var(--gold-soft);margin-top:18px;letter-spacing:.5px}
+  .hero p.lead{max-width:680px;margin:26px auto 0;color:var(--muted);font-size:16px}
+  .hero-cta{margin-top:44px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+  .btn{
+    padding:14px 32px;border-radius:999px;font-size:15px;text-decoration:none;font-weight:600;
+    letter-spacing:.5px;transition:all .28s;display:inline-block;
+  }
+  .btn-primary{background:linear-gradient(135deg,var(--blue-500),var(--blue-400));color:#fff;box-shadow:0 10px 30px rgba(37,99,235,.35)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(37,99,235,.5)}
+  .btn-ghost{border:1px solid var(--line);color:var(--text);background:var(--card)}
+  .btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+
+  /* ---------- Sections ---------- */
+  section{padding:96px 0}
+  .sec-head{text-align:center;margin-bottom:60px}
+  .sec-head .kicker{font-size:13px;letter-spacing:3px;color:var(--gold-soft);text-transform:uppercase}
+  .sec-head h2{font-size:clamp(28px,4vw,40px);font-weight:700;margin-top:14px;letter-spacing:.5px}
+  .sec-head p{color:var(--muted);max-width:640px;margin:18px auto 0;font-size:15.5px}
+
+  /* ---------- Features ---------- */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:18px;padding:30px 28px;
+    transition:all .3s;position:relative;overflow:hidden;
+  }
+  .card::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(37,99,235,.08),transparent);opacity:0;transition:opacity .3s}
+  .card:hover{transform:translateY(-4px);border-color:rgba(201,168,106,.4)}
+  .card:hover::before{opacity:1}
+  .card .num{font-size:13px;color:var(--gold);letter-spacing:2px;font-weight:600}
+  .card h3{font-size:19px;margin:14px 0 12px;font-weight:650}
+  .card p{color:var(--muted);font-size:14.5px}
+
+  /* ---------- Architecture ---------- */
+  .arch{background:linear-gradient(180deg,var(--navy-800),var(--navy-900));border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .arch-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+  .arch-grid p{color:var(--muted);font-size:15.5px;margin-bottom:18px}
+  .arch-grid ul{list-style:none;margin-top:18px}
+  .arch-grid li{padding:9px 0 9px 26px;position:relative;color:var(--text);font-size:15px}
+  .arch-grid li::before{content:"";position:absolute;left:0;top:17px;width:8px;height:8px;border-radius:50%;background:var(--gold)}
+  .code-block{
+    background:var(--navy-900);border:1px solid var(--line);border-radius:14px;padding:26px;
+    font-family:"SF Mono",Menlo,Consolas,monospace;font-size:13px;line-height:1.9;color:#bcd0ee;overflow-x:auto;
+  }
+  .code-block .c{color:var(--gold)}
+  .code-block .k{color:var(--blue-400)}
+
+  /* ---------- Reports ---------- */
+  .report-card{
+    max-width:720px;margin:0 auto;display:flex;align-items:center;gap:26px;
+    background:var(--card);border:1px solid var(--line);border-radius:18px;padding:32px 36px;
+  }
+  .report-card .seal{
+    flex:0 0 64px;width:64px;height:64px;border-radius:14px;
+    background:linear-gradient(135deg,var(--blue-500),var(--gold));
+    display:flex;align-items:center;justify-content:center;font-size:26px;
+  }
+  .report-card h3{font-size:19px;margin-bottom:6px}
+  .report-card p{color:var(--muted);font-size:14.5px}
+  .report-card a{color:var(--gold-soft);text-decoration:none;font-size:14px;font-weight:600;margin-top:10px;display:inline-block}
+
+  /* ---------- CTA ---------- */
+  .cta-final{text-align:center;background:radial-gradient(700px 320px at 50% 0%,rgba(37,99,235,.16),transparent 60%)}
+  .cta-final h2{font-size:clamp(28px,4vw,42px);font-weight:700}
+  .cta-final p{color:var(--muted);max-width:560px;margin:18px auto 36px;font-size:16px}
+
+  /* ---------- Footer ---------- */
+  footer{border-top:1px solid var(--line);padding:36px 0;text-align:center;color:var(--muted);font-size:13.5px}
+  footer .brand-foot{color:var(--text);font-weight:600;letter-spacing:.5px}
+
+  /* ---------- reveal animation ---------- */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  @media(max-width:860px){
+    .grid{grid-template-columns:1fr}
+    .arch-grid{grid-template-columns:1fr;gap:30px}
+    .nav-links{gap:18px}
+    .nav-links a:not(.lang-toggle){display:none}
+    .report-card{flex-direction:column;text-align:center}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-inner">
+    <div class="brand"><span class="dot"></span><span data-i18n="brand">第二视角</span></div>
+    <div class="nav-links">
+      <a href="#features" data-i18n="nav.features">核心特性</a>
+      <a href="#architecture" data-i18n="nav.arch">决策架构</a>
+      <a href="#reports" data-i18n="nav.reports">权威认证</a>
+      <button class="lang-toggle" id="langToggle" onclick="toggleLang()">EN</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow" data-i18n="hero.eyebrow">SECOND PERSPECTIVE</span>
+    <h1 data-i18n="hero.title">第二视角 · 认知审计引擎</h1>
+    <div class="sub" data-i18n="hero.sub">在 AI 做出决策之前，先做一次理性的审计</div>
+    <p class="lead" data-i18n="hero.lead">基于确定性因果拓扑网络，识别决策风险、检测逻辑漏洞、追溯责任归属。离线部署，中立无偏。</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="#reports" data-i18n="hero.cta1">查看审计报告</a>
+      <a class="btn btn-ghost" href="#architecture" data-i18n="hero.cta2">阅读决策架构</a>
+    </div>
+  </div>
+</header>
+
+<section id="features">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker" data-i18n="features.kicker">CORE CAPABILITIES</div>
+      <h2 data-i18n="features.title">六维认知审计能力</h2>
+      <p data-i18n="features.desc">不是替你决策，而是审计你的决策是否站得住脚。</p>
+    </div>
+    <div class="grid">
+      <div class="card reveal"><div class="num">01</div><h3 data-i18n="f1.t">确定性因果推理</h3><p data-i18n="f1.d">用形式化因果拓扑网络替代概率黑箱，结果可复现、可验证。</p></div>
+      <div class="card reveal"><div class="num">02</div><h3 data-i18n="f2.t">决策风险识别</h3><p data-i18n="f2.d">在决策落地前标记潜在偏见、盲区与冲突点。</p></div>
+      <div class="card reveal"><div class="num">03</div><h3 data-i18n="f3.t">逻辑漏洞检测</h3><p data-i18n="f3.d">自动校验推理链路中的断裂、循环与矛盾。</p></div>
+      <div class="card reveal"><div class="num">04</div><h3 data-i18n="f4.t">责任追溯</h3><p data-i18n="f4.d">每一处结论都可回溯到其假设与数据来源。</p></div>
+      <div class="card reveal"><div class="num">05</div><h3 data-i18n="f5.t">离线部署</h3><p data-i18n="f5.d">无需联网、不依赖第三方模型，数据不出本地。</p></div>
+      <div class="card reveal"><div class="num">06</div><h3 data-i18n="f6.t">中立无偏</h3><p data-i18n="f6.d">不替你做决定，只审计你的决定是否经得起追问。</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="architecture" class="arch">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker" data-i18n="arch.kicker">DECISION STRUCTURE LANGUAGE</div>
+      <h2 data-i18n="arch.title">全新决策结构语言</h2>
+    </div>
+    <div class="arch-grid">
+      <div class="reveal">
+        <p data-i18n="arch.p1">项目定义了全新的「决策结构语言」，将模糊的决策意图拆解为可验证的因果节点，使审计从经验走向精确。</p>
+        <p data-i18n="arch.p2">每一个决策都被表达为有向因果图：前提、推理、结论三者分离，任何一处断裂都无所遁形。</p>
+        <ul>
+          <li data-i18n="arch.li1">前提节点：显式声明假设与证据来源</li>
+          <li data-i18n="arch.li2">推理节点：可追溯的因果推导链条</li>
+          <li data-i18n="arch.li3">结论节点：附带置信边界与责任归属</li>
+        </ul>
+      </div>
+      <div class="code-block reveal">
+<span class="c"># Decision Structure (DSL) sample</span><br>
+<span class="k">decision</span> credit_approve {<br>
+&nbsp;&nbsp;<span class="k">premise</span> { income &gt; threshold }<br>
+&nbsp;&nbsp;<span class="k">infer</span> { risk = f(income, history) }<br>
+&nbsp;&nbsp;<span class="k">conclude</span> { approve <span class="c"># confidence: 0.82</span> }<br>
+&nbsp;&nbsp;<span class="k">trace</span> { source: dataset_v7, owner: risk_team }<br>
+}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="reports">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker" data-i18n="rep.kicker">VERIFIED</div>
+      <h2 data-i18n="rep.title">权威认证与审计报告</h2>
+    </div>
+    <div class="report-card reveal">
+      <div class="seal">✓</div>
+      <div>
+        <h3 data-i18n="rep.h">IMDA AI Verify · 因果审计框架</h3>
+        <p data-i18n="rep.p">已通过 IMDA AI Verify 因果审计框架验证，报告涵盖决策可解释性、责任追溯与偏差检测。</p>
+        <a href="../IMDA_AI_Verify_Causal_Audit_Report.pdf" data-i18n="rep.link">下载审计报告 ↓</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-final">
+  <div class="wrap reveal">
+    <h2 data-i18n="cta.title">让每一个 AI 决策都经得起追问</h2>
+    <p data-i18n="cta.p">第二视角，为关键决策提供独立的理性审计层。</p>
+    <a class="btn btn-primary" href="https://github.com/NOHN-AI/second-perspective" target="_blank" rel="noopener" data-i18n="cta.btn">获取源码</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span class="brand-foot">NOHN AI</span> · <span data-i18n="footer">第二视角认知审计引擎 · 2026</span>
+  </div>
+</footer>
+
+<script>
+const translations = {
+  zh:{
+    "meta.title":"第二视角 · 认知审计引擎",
+    "meta.desc":"在 AI 做出决策之前，先做一次理性的审计。",
+    "brand":"第二视角",
+    "nav.features":"核心特性","nav.arch":"决策架构","nav.reports":"权威认证",
+    "hero.eyebrow":"SECOND PERSPECTIVE",
+    "hero.title":"第二视角 · 认知审计引擎",
+    "hero.sub":"在 AI 做出决策之前，先做一次理性的审计",
+    "hero.lead":"基于确定性因果拓扑网络，识别决策风险、检测逻辑漏洞、追溯责任归属。离线部署，中立无偏。",
+    "hero.cta1":"查看审计报告","hero.cta2":"阅读决策架构",
+    "features.kicker":"CORE CAPABILITIES","features.title":"六维认知审计能力","features.desc":"不是替你决策，而是审计你的决策是否站得住脚。",
+    "f1.t":"确定性因果推理","f1.d":"用形式化因果拓扑网络替代概率黑箱，结果可复现、可验证。",
+    "f2.t":"决策风险识别","f2.d":"在决策落地前标记潜在偏见、盲区与冲突点。",
+    "f3.t":"逻辑漏洞检测","f3.d":"自动校验推理链路中的断裂、循环与矛盾。",
+    "f4.t":"责任追溯","f4.d":"每一处结论都可回溯到其假设与数据来源。",
+    "f5.t":"离线部署","f5.d":"无需联网、不依赖第三方模型，数据不出本地。",
+    "f6.t":"中立无偏","f6.d":"不替你做决定，只审计你的决定是否经得起追问。",
+    "arch.kicker":"DECISION STRUCTURE LANGUAGE","arch.title":"全新决策结构语言",
+    "arch.p1":"项目定义了全新的「决策结构语言」，将模糊的决策意图拆解为可验证的因果节点，使审计从经验走向精确。",
+    "arch.p2":"每一个决策都被表达为有向因果图：前提、推理、结论三者分离，任何一处断裂都无所遁形。",
+    "arch.li1":"前提节点：显式声明假设与证据来源","arch.li2":"推理节点：可追溯的因果推导链条","arch.li3":"结论节点：附带置信边界与责任归属",
+    "rep.kicker":"VERIFIED","rep.title":"权威认证与审计报告",
+    "rep.h":"IMDA AI Verify · 因果审计框架","rep.p":"已通过 IMDA AI Verify 因果审计框架验证，报告涵盖决策可解释性、责任追溯与偏差检测。","rep.link":"下载审计报告 ↓",
+    "cta.title":"让每一个 AI 决策都经得起追问","cta.p":"第二视角，为关键决策提供独立的理性审计层。","cta.btn":"获取源码",
+    "footer":"第二视角认知审计引擎 · 2026"
+  },
+  en:{
+    "meta.title":"Second Perspective · Cognitive Audit Engine",
+    "meta.desc":"Audit the rationality of AI decisions — before they are made.",
+    "brand":"Second Perspective",
+    "nav.features":"Features","nav.arch":"Architecture","nav.reports":"Reports",
+    "hero.eyebrow":"SECOND PERSPECTIVE",
+    "hero.title":"Second Perspective · Cognitive Audit Engine",
+    "hero.sub":"Audit the rationality of AI decisions — before they are made",
+    "hero.lead":"Built on a deterministic causal topology network — identifying decision risks, detecting logic vulnerabilities, and tracing accountability. Offline deployment, neutral and unbiased.",
+    "hero.cta1":"View Audit Report","hero.cta2":"Read Architecture",
+    "features.kicker":"CORE CAPABILITIES","features.title":"Six Dimensions of Cognitive Audit","features.desc":"We don't decide for you — we audit whether your decision holds up.",
+    "f1.t":"Deterministic Causal Reasoning","f1.d":"Replaces probabilistic black boxes with a formalized causal topology — reproducible and verifiable.",
+    "f2.t":"Decision Risk Identification","f2.d":"Flags potential bias, blind spots, and conflicts before a decision is finalized.",
+    "f3.t":"Logic Vulnerability Detection","f3.d":"Automatically validates reasoning chains for breaks, loops, and contradictions.",
+    "f4.t":"Accountability Tracing","f4.d":"Every conclusion traces back to its assumptions and data sources.",
+    "f5.t":"Offline Deployment","f5.d":"No internet required, no third-party models — your data stays local.",
+    "f6.t":"Neutral & Unbiased","f6.d":"We don't decide for you — we only audit whether your decision holds up.",
+    "arch.kicker":"DECISION STRUCTURE LANGUAGE","arch.title":"A New Decision Structure Language",
+    "arch.p1":"The project defines a new Decision Structure Language, decomposing vague decision intent into verifiable causal nodes — taking auditing from intuition to precision.",
+    "arch.p2":"Every decision is expressed as a directed causal graph: premises, inference, and conclusions are separated, so any break becomes visible.",
+    "arch.li1":"Premise nodes: explicitly declare assumptions and evidence sources","arch.li2":"Inference nodes: traceable causal reasoning chains","arch.li3":"Conclusion nodes: with confidence bounds and accountability",
+    "rep.kicker":"VERIFIED","rep.title":"Verified Reports & Certifications",
+    "rep.h":"IMDA AI Verify · Causal Audit Framework","rep.p":"Validated under the IMDA AI Verify causal audit framework, covering decision explainability, accountability tracing, and bias detection.","rep.link":"Download Audit Report ↓",
+    "cta.title":"Make Every AI Decision Answerable to Scrutiny","cta.p":"Second Perspective — an independent rationality audit layer for critical decisions.","cta.btn":"Get the Source",
+    "footer":"Second Perspective Cognitive Audit Engine · 2026"
+  }
+};
+
+function applyLang(lang){
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    var key = el.getAttribute('data-i18n');
+    if(translations[lang] && translations[lang][key]) el.innerHTML = translations[lang][key];
+  });
+  document.querySelectorAll('[data-i18n-attr]').forEach(function(el){
+    var spec = el.getAttribute('data-i18n-attr').split(':');
+    var attr = spec[0], key = spec[1];
+    if(translations[lang] && translations[lang][key]) el.setAttribute(attr, translations[lang][key]);
+  });
+  var btn = document.getElementById('langToggle');
+  if(btn) btn.textContent = (lang === 'zh') ? 'EN' : '中';
+  try{ localStorage.setItem('sp_lang', lang); }catch(e){}
+}
+function toggleLang(){
+  var cur = document.documentElement.lang === 'en' ? 'en' : 'zh';
+  applyLang(cur === 'zh' ? 'en' : 'zh');
+}
+(function(){
+  var saved = null;
+  try{ saved = localStorage.getItem('sp_lang'); }catch(e){}
+  var lang = saved || (navigator.language && navigator.language.toLowerCase().indexOf('zh') === 0 ? 'zh' : 'en');
+  applyLang(lang);
+})();
+
+// reveal on scroll
+var io = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); } });
+},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+</script>
+</body>
+</html>
