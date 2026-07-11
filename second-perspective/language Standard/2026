@@ -1,0 +1,58 @@
+Version: 2026
+
+Definition:
+A decision must be expressed as a set of dependency-bound assumptions and their failure paths.
+
+---
+
+Core Structure:
+
+Decision:
+A clearly defined intended action or judgment.
+
+Assumptions:
+A set of explicit conditions that must hold true for the decision to remain valid.
+
+Requirements:
+
+- Each assumption must be falsifiable.
+- Assumptions must not be vague or self-evident.
+- Assumptions must be stated independently unless dependency is specified.
+
+Dependencies (optional but recommended):
+Explicit relationships between assumptions.
+
+Format:
+
+- A depends on B
+- C requires A
+
+---
+
+Branches:
+
+For each critical assumption, the consequence of failure must be stated.
+
+Requirements:
+
+- Must describe how the decision changes if the assumption fails.
+- Must not only describe events, but structural impact on the decision.
+- Must not resolve into a recommendation or alternative decision.
+
+---
+
+Constraints:
+
+- No conclusions or recommendations are allowed.
+- No scoring, ranking, or probability assignment.
+- No optimization or decision guidance.
+- The system must not replace or simulate decision-making.
+
+---
+
+Principle:
+
+A decision is valid only within the boundary of its assumptions.
+
+The purpose of this language is not to decide,
+but to expose the structure under which a decision holds.
