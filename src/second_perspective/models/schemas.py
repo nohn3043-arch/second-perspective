@@ -1,0 +1,382 @@
+from __future__ import annotations
+
+from datetime import datetime, timezone
+from decimal import Decimal
+from typing import Any
+
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+from .enums import (
+    AlternativeStatus,
+    AssumptionSource,
+    ConstraintKind,
+    ConstraintOperator,
+    CounterfactualStatus,
+    DecisionStatus,
+    EvaluationMode,
+    EvidenceStatus,
+    IssueSeverity,
+    ScoringRule,
+)
+
+
+class StrictModel(BaseModel):
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
+
+class ResponsibilityRef(StrictModel):
+    owner: str = Field(min_length=1, description="Smallest accountable person or organizational role.")
+    role: str | None = None
+    source: str = Field(min_length=1, description="Document, policy, instruction, or record assigning responsibility.")
+    authorization_ref: str | None = None
+
+
+class EvidenceQuality(StrictModel):
+    """Explicit evidence-quality assessment; values are never inferred by the engine."""
+
+    reliability: Decimal = Field(ge=Decimal("0"), le=Decimal("1"))
+    relevance: Decimal = Field(ge=Decimal("0"), le=Decimal("1"))
+    independence: Decimal = Field(ge=Decimal("0"), le=Decimal("1"))
+    freshness: Decimal = Field(ge=Decimal("0"), le=Decimal("1"))
+    assessed_by: ResponsibilityRef
+    method: str = Field(min_length=1)
+
+    @property
+    def composite_score(self) -> Decimal:
+        return (
+            self.reliability
+            + self.relevance
+            + self.independence
+            + self.freshness
+        ) / Decimal("4")
+
+
+class Evidence(StrictModel):
+    id: str = Field(pattern=r"^E[0-9A-Za-z_-]+$")
+    statement: str = Field(min_length=1)
+    source: str = Field(min_length=1)
+    status: EvidenceStatus = EvidenceStatus.SUPPLIED
+    observed_at: datetime | None = None
+    valid_until: datetime | None = None
+    quality: EvidenceQuality | None = None
+    content_hash: str | None = Field(default=None, pattern=r"^[0-9a-fA-F]{64}$")
+    responsibility: ResponsibilityRef
+
+    @model_validator(mode="after")
+    def validate_timeline(self) -> "Evidence":
+        for field_name in ("observed_at", "valid_until"):
+            value = getattr(self, field_name)
+            if value is not None and value.utcoffset() is None:
+                raise ValueError(f"{field_name} must include a timezone offset")
+        if (
+            self.observed_at is not None
+            and self.valid_until is not None
+            and self.valid_until <= self.observed_at
+        ):
+            raise ValueError("valid_until must be later than observed_at")
+        return self
+
+
+class Criterion(StrictModel):
+    id: str = Field(pattern=r"^K[0-9A-Za-z_-]+$")
+    name: str = Field(min_length=1)
+    metric: str = Field(min_length=1)
+    weight: Decimal = Field(ge=Decimal("0"), le=Decimal("1"))
+    scoring_rule: ScoringRule
+    min_value: Decimal
+    max_value: Decimal
+    target_value: Decimal | None = None
+    responsibility: ResponsibilityRef
+
+    @model_validator(mode="after")
+    def validate_range(self) -> "Criterion":
+        if self.max_value <= self.min_value:
+            raise ValueError("criterion max_value must be greater than min_value")
+        if self.scoring_rule == ScoringRule.TARGET_IS_BETTER and self.target_value is None:
+            raise ValueError("target_value is required for target_is_better")
+        if self.target_value is not None and not (
+            self.min_value <= self.target_value <= self.max_value
+        ):
+            raise ValueError("target_value must be inside the criterion range")
+        return self
+
+
+class Constraint(StrictModel):
+    id: str = Field(pattern=r"^C[0-9A-Za-z_-]+$")
+    name: str = Field(min_length=1)
+    kind: ConstraintKind
+    metric: str = Field(min_length=1)
+    operator: ConstraintOperator
+    expected: Any
+    penalty: Decimal | None = Field(
+        default=None,
+        gt=Decimal("0"),
+        le=Decimal("1"),
+        description="Explicit score deduction for a failed soft constraint.",
+    )
+    responsibility: ResponsibilityRef
+
+    @model_validator(mode="after")
+    def validate_penalty(self) -> "Constraint":
+        if self.kind == ConstraintKind.SOFT and self.penalty is None:
+            raise ValueError("soft constraints require an explicit penalty")
+        if self.kind == ConstraintKind.HARD and self.penalty is not None:
+            raise ValueError("hard constraints must not define a penalty")
+        return self
+
+
+class Assumption(StrictModel):
+    id: str = Field(pattern=r"^A[0-9A-Za-z_-]+$")
+    statement: str = Field(min_length=1)
+    source: AssumptionSource
+    falsification_condition: str = Field(min_length=1)
+    critical: bool = True
+    dependencies: list[str] = Field(default_factory=list)
+    evidence_ids: list[str] = Field(default_factory=list)
+    responsibility: ResponsibilityRef | None = None
+
+
+class Alternative(StrictModel):
+    id: str = Field(pattern=r"^S[0-9A-Za-z_-]+$")
+    name: str = Field(min_length=1)
+    description: str | None = None
+    metrics: dict[str, Any] = Field(default_factory=dict)
+    required_assumptions: list[str] = Field(default_factory=list)
+    evidence_ids: list[str] = Field(default_factory=list)
+
+
+class DecisionRequest(StrictModel):
+    decision_id: str | None = Field(default=None, pattern=r"^DEC-[0-9A-Za-z_-]+$")
+    objective: str = Field(min_length=1)
+    decision_owner: ResponsibilityRef
+    time_horizon: str | None = None
+    evaluation_as_of: datetime | None = Field(
+        default=None,
+        description="Explicit replay time used for temporal evidence checks.",
+    )
+    evaluation_mode: EvaluationMode = EvaluationMode.CONSTRAINT_ONLY
+    criteria: list[Criterion] = Field(default_factory=list)
+    constraints: list[Constraint] = Field(default_factory=list)
+    assumptions: list[Assumption] = Field(default_factory=list)
+    alternatives: list[Alternative] = Field(min_length=1)
+    evidence: list[Evidence] = Field(default_factory=list)
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+    @model_validator(mode="after")
+    def validate_references(self) -> "DecisionRequest":
+        if self.evaluation_as_of is not None and self.evaluation_as_of.utcoffset() is None:
+            raise ValueError("evaluation_as_of must include a timezone offset")
+
+        collections = {
+            "criteria": [item.id for item in self.criteria],
+            "constraints": [item.id for item in self.constraints],
+            "assumptions": [item.id for item in self.assumptions],
+            "alternatives": [item.id for item in self.alternatives],
+            "evidence": [item.id for item in self.evidence],
+        }
+        for name, ids in collections.items():
+            if len(ids) != len(set(ids)):
+                raise ValueError(f"duplicate IDs in {name}")
+
+        assumption_ids = set(collections["assumptions"])
+        evidence_ids = set(collections["evidence"])
+
+        for assumption in self.assumptions:
+            unknown_dependencies = set(assumption.dependencies) - assumption_ids
+            if unknown_dependencies:
+                raise ValueError(
+                    f"assumption {assumption.id} references unknown dependencies: "
+                    f"{sorted(unknown_dependencies)}"
+                )
+            unknown_evidence = set(assumption.evidence_ids) - evidence_ids
+            if unknown_evidence:
+                raise ValueError(
+                    f"assumption {assumption.id} references unknown evidence: "
+                    f"{sorted(unknown_evidence)}"
+                )
+
+        for alternative in self.alternatives:
+            unknown_assumptions = set(alternative.required_assumptions) - assumption_ids
+            if unknown_assumptions:
+                raise ValueError(
+                    f"alternative {alternative.id} references unknown assumptions: "
+                    f"{sorted(unknown_assumptions)}"
+                )
+            unknown_evidence = set(alternative.evidence_ids) - evidence_ids
+            if unknown_evidence:
+                raise ValueError(
+                    f"alternative {alternative.id} references unknown evidence: "
+                    f"{sorted(unknown_evidence)}"
+                )
+
+        if self.evaluation_mode == EvaluationMode.WEIGHTED:
+            if not self.criteria:
+                raise ValueError("weighted evaluation requires at least one criterion")
+            total = sum((criterion.weight for criterion in self.criteria), Decimal("0"))
+            if abs(total - Decimal("1")) > Decimal("0.000001"):
+                raise ValueError(f"criterion weights must sum to 1; received {total}")
+        return self
+
+
+class AuditIssue(StrictModel):
+    code: str
+    severity: IssueSeverity
+    path: str
+    message: str
+    blocking: bool = False
+
+
+class ConstraintCheck(StrictModel):
+    constraint_id: str
+    passed: bool | None
+    actual: Any = None
+    expected: Any = None
+    reason: str
+
+
+class CriterionScore(StrictModel):
+    criterion_id: str
+    actual: Decimal
+    normalized_score: Decimal
+    weighted_score: Decimal
+
+
+class AlternativeEvaluation(StrictModel):
+    alternative_id: str
+    status: AlternativeStatus
+    hard_constraints_passed: bool
+    constraint_checks: list[ConstraintCheck]
+    criterion_scores: list[CriterionScore] = Field(default_factory=list)
+    base_score: Decimal | None = None
+    soft_constraint_penalty: Decimal = Decimal("0")
+    total_score: Decimal | None = None
+    missing_metrics: list[str] = Field(default_factory=list)
+    unavailable_evidence_ids: list[str] = Field(default_factory=list)
+
+
+class FailureBranch(StrictModel):
+    assumption_id: str
+    expression: str
+    invalidated_assumption_ids: list[str] = Field(default_factory=list)
+    affected_alternative_ids: list[str]
+    affected_leading_candidate_ids: list[str]
+    candidate_exposure_ratio: Decimal
+    structural_effect: str
+
+
+class ResponsibilityEntry(StrictModel):
+    element_type: str
+    element_id: str
+    owner: str | None
+    source: str | None
+    status: str
+
+
+class SensitivityCase(StrictModel):
+    criterion_id: str
+    direction: str
+    adjusted_weight: Decimal
+    adjusted_weights: dict[str, Decimal] = Field(default_factory=dict)
+    alternative_scores: dict[str, Decimal] = Field(default_factory=dict)
+    leading_candidate_ids: list[str]
+
+
+class RobustnessReport(StrictModel):
+    pareto_frontier_ids: list[str] = Field(default_factory=list)
+    sensitivity_cases: list[SensitivityCase] = Field(default_factory=list)
+    fragile_criterion_ids: list[str] = Field(default_factory=list)
+    stable_leader_ids: list[str] = Field(default_factory=list)
+    ranking_stability: Decimal | None = None
+
+
+class TraceEntry(StrictModel):
+    stage: str
+    rule_id: str
+    message: str
+    references: list[str] = Field(default_factory=list)
+
+
+class AlgorithmAuditEvent(StrictModel):
+    sequence: int = Field(ge=1)
+    stage: str = Field(min_length=1)
+    rule_id: str = Field(min_length=1)
+    operation: str = Field(min_length=1)
+    inputs: dict[str, Any] = Field(default_factory=dict)
+    output: Any = None
+    references: list[str] = Field(default_factory=list)
+    previous_event_hash: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
+    event_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+
+class CounterfactualResult(StrictModel):
+    trigger_assumption_id: str
+    status: CounterfactualStatus
+    invalidated_assumption_ids: list[str]
+    removed_alternative_ids: list[str]
+    remaining_eligible_alternative_ids: list[str]
+    baseline_leading_candidate_ids: list[str]
+    counterfactual_leading_candidate_ids: list[str]
+    counterfactual_pareto_frontier_ids: list[str]
+    decision_changed: bool
+
+
+class PolicySnapshot(StrictModel):
+    policy_id: str
+    version: str
+    require_all_alternatives_complete: bool
+    require_critical_evidence_quality: bool
+    critical_evidence_quality_threshold: Decimal
+    sensitivity_delta: Decimal
+
+
+class DecisionResult(StrictModel):
+    decision_id: str
+    status: DecisionStatus
+    objective: str
+    evaluation_mode: EvaluationMode
+    audit_passed: bool
+    issues: list[AuditIssue]
+    alternatives: list[AlternativeEvaluation]
+    eligible_alternative_ids: list[str]
+    leading_candidate_ids: list[str]
+    failure_branches: list[FailureBranch]
+    responsibility_map: list[ResponsibilityEntry]
+    unresolved_variables: list[str]
+    robustness: RobustnessReport = Field(default_factory=RobustnessReport)
+    counterfactuals: list[CounterfactualResult] = Field(default_factory=list)
+    trace: list[TraceEntry] = Field(default_factory=list)
+    algorithm_audit: list[AlgorithmAuditEvent] = Field(default_factory=list)
+    algorithm_audit_root_hash: str | None = Field(
+        default=None,
+        pattern=r"^[0-9a-f]{64}$",
+    )
+    policy: PolicySnapshot
+    engine_version: str
+    input_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+    evaluation_as_of: datetime
+    human_approval_required: bool = True
+    generated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class ApprovalRequest(StrictModel):
+    approved: bool
+    approver: str = Field(min_length=1)
+    authorization_ref: str = Field(min_length=1)
+    note: str | None = None
+
+
+class ApprovalRecord(StrictModel):
+    approved: bool
+    approver: str
+    authorization_ref: str
+    note: str | None = None
+    approved_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class DecisionRecord(StrictModel):
+    request: DecisionRequest
+    result: DecisionResult
+    approval: ApprovalRecord | None = None
+    revision: int = Field(default=1, ge=1)
+    parent_record_hash: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
+    record_hash: str = Field(default="", pattern=r"^$|^[0-9a-f]{64}$")
