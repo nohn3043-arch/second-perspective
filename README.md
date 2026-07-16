@@ -1,159 +1,126 @@
-# Second Perspective Super Decision-Hub
+<p align="center">
+  <em>All uncertainty, all disasters, and all suffering<br/>ultimately arise from our ignorance of causal chains.</em>
+</p>
 
-Branch: `intelligent-decision-engine`
+<p align="center">
+  <img src="https://img.shields.io/badge/IMDA_AI_Verify-95%2F100-D4AF37?style=flat-square" alt="IMDA">
+  <img src="https://img.shields.io/badge/model-deterministic-2C2C2C?style=flat-square" alt="deterministic">
+  <img src="https://img.shields.io/badge/runtime-offline-2C2C2C?style=flat-square" alt="offline">
+  <img src="https://img.shields.io/badge/python-3.8+-2C2C2C?style=flat-square" alt="python">
+</p>
 
-Hub version: `0.3.0`
+---
 
-Super Decision-Hub is an auditable orchestration layer built on the v0.2
-deterministic Decision Foundation. It combines structured evaluation,
-fine-grained algorithm audit, causal counterfactual reselection, declared
-scenario stress tests, structural cognitive challenges, information priorities,
-and human governance in one report.
+&nbsp;
 
-It does not invent missing facts, weights, thresholds, owners, evidence, or
-probabilities. It produces leading candidates under declared inputs and always
-keeps final authority outside the algorithm.
+## ✦ Global Cognitive Audit Engine (GCAE)
 
-## What v0.3 adds
+The world's first **neutral, offline, decision-agnostic** cognitive bias auditing engine. It provides independent third-party security and compliance auditing for AI systems and enterprise decisions — without modifying internal model code.
 
-- hash-chained audit events for every major deterministic operation
-- explicit operands and outputs for constraint and criterion calculations
-- true candidate reselection after transitive assumption invalidation
-- user-declared metric, evidence, and assumption-failure stress scenarios
-- a deterministic cognitive-risk challenge layer that does not infer mental state
-- a ranked information-acquisition and review queue
-- one `SuperDecisionHub` orchestrator and one sealed `HubReport`
-- full audit ledgers inside both baseline and scenario runs
-- `POST /v1/hub/analyze` while preserving every v0.2 endpoint
-- 0.3 package, CLI demonstration, generated OpenAPI, and CI coverage gates
+&nbsp;
 
-The detailed architecture and boundaries are documented in
-[`docs/SUPER_DECISION_HUB_V0_3.md`](docs/SUPER_DECISION_HUB_V0_3.md).
-The v0.2 foundation design remains available in
-[`docs/DECISION_FOUNDATION_V0_2.md`](docs/DECISION_FOUNDATION_V0_2.md).
+## ✦ The Constant Formula
 
-## Architecture
+<p align="center">
+  <em>p &nbsp;♾️&nbsp; Q</em>
+</p>
 
-```text
-HubAnalysisRequest
-  -> Decision Foundation
-       -> structural/evidence audit
-       -> hard + soft constraint evaluation
-       -> normalized scoring
-       -> causal invalidation
-       -> counterfactual reselection
-       -> Pareto + weight sensitivity
-       -> hash-chained algorithm audit
-  -> declared scenario stress runs
-  -> structural cognitive-risk challenges
-  -> information priority queue
-  -> append-only DecisionRecord
-  -> sealed HubReport
-  -> human approval/rejection
+> **p** = principle, rule, or constraint &emsp;·&emsp; **Q** = outcome, state, or consequence<br/>
+> **♾️** = an unbroken, continuous, non-bypassable causal linkage<br/>
+> If the continuity between **p** and **Q** is severed, the system no longer operates under governance — it operates under narrative.
+
+&nbsp;
+
+## ✦ Audit Pipeline
+
+```mermaid
+flowchart TD
+    D[("Decision<br/>Context")]:::input --> NS(("Narrative<br/>Stripping")):::process
+    NS --> IAP(("Implicit<br/>Assumption Detection")):::process
+    IAP --> LCA(("Logic<br/>Chain Audit")):::process
+    LCA --> SV(("Structural<br/>Verification")):::process
+    SV --> OUT{("Result")}:::output
+    SV --> |pass| OK[("True")]:::pass
+    SV --> |fail| NG[("False")]:::fail
+
+    classDef input fill:#FAFAFA,stroke:#D4AF37,stroke-width:1px,color:#2C2C2C
+    classDef process fill:#FAFAFA,stroke:#B8B8B8,stroke-width:1px,color:#2C2C2C
+    classDef output fill:#F5F0E6,stroke:#C9A96E,stroke-width:2px,color:#2C2C2C
+    classDef pass fill:#FAFAFA,stroke:#8B8B8B,stroke-width:1px,color:#2C2C2C
+    classDef fail fill:#FAFAFA,stroke:#8B8B8B,stroke-width:1px,color:#2C2C2C
 ```
 
-## Install and test
+&nbsp;
+
+## ✦ Core Features
+
+|  | Feature | Description |
+|--|---------|-------------|
+| 🛡️ | **Neutral Auditing** | 100% third-party position, zero LLM vendor affiliation |
+| 🔒 | **Fully Offline** | No internet or cloud data transmission required |
+| 🔐 | **Privacy First** | Zero user data collection, local closed-loop isolation |
+| 🔍 | **Bias Detection** | Hidden assumptions, uncertainties, cognitive blind spots |
+| 🔧 | **No Model Modification** | Compatible with all mainstream LLMs |
+| 📊 | **Structured Analysis** | Decision structure verification, no subjective conclusions |
+
+&nbsp;
+
+## ✦ Architecture
+
+```
+┌──────────────────────────────────────────────────┐
+│                  GCAE Runtime                     │
+│  ┌────────────┐  ┌──────────┐  ┌──────────────┐  │
+│  │  Narrative  │→│ Assumption│→│   Structural  │  │
+│  │  Stripping  │  │ Detector  │  │  Verification│  │
+│  └────────────┘  └──────────┘  └──────────────┘  │
+│  ┌──────────────────────────────────────────────┐ │
+│  │              Plugin System                    │ │
+│  └──────────────────────────────────────────────┘ │
+│  ┌──────────────────────────────────────────────┐ │
+│  │           LLM Adapters (optional)             │ │
+│  └──────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────┘
+```
+
+&nbsp;
+
+## ✦ Quick Start
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
-pip install -e ".[dev]"
-pytest
+pip install -r requirements.txt
+
+# Optional: OpenAI adapter
+pip install -r requirements-openai.txt
 ```
-
-## Run demonstrations
-
-Core Decision Foundation:
-
-```bash
-second-perspective-demo
-```
-
-Super Decision-Hub with two stress scenarios:
-
-```bash
-super-decision-hub-demo
-```
-
-## Python usage
 
 ```python
-from second_perspective import SuperDecisionHub
-from second_perspective.models import HubAnalysisRequest
+from Cognitive_Audit_Engine import CognitiveAuditEngine, ResponsibilityAccount
 
-request = HubAnalysisRequest.model_validate(
-    {
-        "decision": decision_payload,
-        "scenarios": [
-            {
-                "id": "SC1",
-                "name": "Critical assumption fails",
-                "failed_assumption_ids": ["A1"],
-            },
-            {
-                "id": "SC2",
-                "name": "Cost shock",
-                "metric_overrides": {"S2": {"capital_required": 6000000}},
-            },
-        ],
-    }
-)
-report = SuperDecisionHub().analyze(request)
+account = ResponsibilityAccount(name="auditor", role="third_party")
+engine = CognitiveAuditEngine(account=account)
+
+result = engine.audit({
+    "decision": "Approve project X",
+    "assumptions": ["Market will grow 20%", "Team capacity is sufficient"],
+    "context": {...}
+})
+print(result)  # → {True, False}
 ```
 
-The returned report contains the stored baseline decision record, scenario
-results, cognitive findings, information priorities, algorithm-ledger
-verification status, policy snapshot, and report hash.
+&nbsp;
 
-## Run the API
+## ✦ Application Scenarios
 
-Local development may run without a key:
+> Enterprise Strategy · Government Policy · Think Tank Research · Risk Control · AI System Auditing
 
-```bash
-export SP_ENV=development
-uvicorn second_perspective.api.main:app --reload
-```
+&nbsp;
 
-Production fails closed unless a key is configured:
+---
 
-```bash
-export SP_ENV=production
-export SP_API_KEY="replace-with-a-strong-secret"
-uvicorn second_perspective.api.main:app --host 0.0.0.0 --port 8000
-```
-
-Protected clients send `Authorization: Bearer <SP_API_KEY>`.
-
-Endpoints:
-
-- `POST /v1/hub/analyze`
-- `GET /v1/hub/reports/{hub_run_id}`
-- `POST /v1/decisions/evaluate`
-- `GET /v1/decisions/{decision_id}`
-- `GET /v1/decisions/{decision_id}/history`
-- `POST /v1/decisions/{decision_id}/approval`
-- `GET /health`
-
-## Regenerate the Action/OpenAPI schema
-
-```bash
-SP_PUBLIC_BASE_URL=https://decision.example.com \
-python scripts/export_openapi.py
-```
-
-## Compatibility
-
-All v0.2 decision requests and endpoints remain valid. Responses add
-`counterfactuals`, `algorithm_audit`, and `algorithm_audit_root_hash`. Clients
-that strictly deserialize response fields should update their models.
-
-## Production boundary
-
-v0.3 is a functioning Super Decision-Hub application core, not yet a complete
-multi-tenant enterprise control plane. The default repository is still
-process-local memory. Production requires durable event storage, OIDC and
-authorization enforcement, tenant isolation, KMS signatures, rate limiting,
-observability, backups, migrations, and domain control packs.
-
-The cognitive scanner challenges structural risks. It does not diagnose people,
-read motives, or replace legal, medical, financial, or safety professionals.
+<p align="center">
+  <a href="mailto:ai@nohnlins.com">ai@nohnlins.com</a>
+</p>
+<p align="center">
+  <sub>© 2026 Shanghai Linming Junhua &amp; NOHN AI Technology · All Rights Reserved</sub>
+</p>
