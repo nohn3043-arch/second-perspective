@@ -1,126 +1,45 @@
 <p align="center">
-  <em>All uncertainty, all disasters, and all suffering<br/>ultimately arise from our ignorance of causal chains.</em>
+  <img src="assets/banner.svg" alt="SECOND-PERSPECTIVE banner" style="width:100%">
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/IMDA_AI_Verify-95%2F100-D4AF37?style=flat-square" alt="IMDA">
-  <img src="https://img.shields.io/badge/model-deterministic-2C2C2C?style=flat-square" alt="deterministic">
-  <img src="https://img.shields.io/badge/runtime-offline-2C2C2C?style=flat-square" alt="offline">
-  <img src="https://img.shields.io/badge/python-3.8+-2C2C2C?style=flat-square" alt="python">
+  ![ai-audit](https://img.shields.io/badge/ai-audit-D4AF37?style=flat-square)  ![imda-score-95](https://img.shields.io/badge/imda-score-95-D4AF37?style=flat-square)  ![python](https://img.shields.io/badge/python-D4AF37?style=flat-square)
 </p>
 
----
+<blockquote align="center">
+  <em>Global Cognitive Audit Engine · GCAE</em>
+</blockquote>
 
-&nbsp;
+<div style="max-width:880px;margin:0 auto;padding:0 16px">
 
-## ✦ Global Cognitive Audit Engine (GCAE)
+## ✦ About
 
-The world's first **neutral, offline, decision-agnostic** cognitive bias auditing engine. It provides independent third-party security and compliance auditing for AI systems and enterprise decisions — without modifying internal model code.
-
-&nbsp;
-
-## ✦ The Constant Formula
+<p style="font-size:15px;line-height:1.8;color:#2C2C2C">SECOND-PERSPECTIVE 是全球认知审计引擎（GCAE），以第二人称视角对 AI 决策进行可追溯、可验证的认知审计。它在 IMDA AI Verify 评测中取得 95 分，提供从感知、推理到行动的全链路审计管线，让智能系统的每一步判断都可被解释与复核。</p>
 
 <p align="center">
-  <em>p &nbsp;♾️&nbsp; Q</em>
+  <img src="assets/overview.svg" alt="SECOND-PERSPECTIVE overview" style="width:100%">
 </p>
 
-> **p** = principle, rule, or constraint &emsp;·&emsp; **Q** = outcome, state, or consequence<br/>
-> **♾️** = an unbroken, continuous, non-bypassable causal linkage<br/>
-> If the continuity between **p** and **Q** is severed, the system no longer operates under governance — it operates under narrative.
+</div>
 
-&nbsp;
-
-## ✦ Audit Pipeline
-
-```mermaid
-flowchart TD
-    D[("Decision<br/>Context")]:::input --> NS(("Narrative<br/>Stripping")):::process
-    NS --> IAP(("Implicit<br/>Assumption Detection")):::process
-    IAP --> LCA(("Logic<br/>Chain Audit")):::process
-    LCA --> SV(("Structural<br/>Verification")):::process
-    SV --> OUT{("Result")}:::output
-    SV --> |pass| OK[("True")]:::pass
-    SV --> |fail| NG[("False")]:::fail
-
-    classDef input fill:#FAFAFA,stroke:#D4AF37,stroke-width:1px,color:#2C2C2C
-    classDef process fill:#FAFAFA,stroke:#B8B8B8,stroke-width:1px,color:#2C2C2C
-    classDef output fill:#F5F0E6,stroke:#C9A96E,stroke-width:2px,color:#2C2C2C
-    classDef pass fill:#FAFAFA,stroke:#8B8B8B,stroke-width:1px,color:#2C2C2C
-    classDef fail fill:#FAFAFA,stroke:#8B8B8B,stroke-width:1px,color:#2C2C2C
-```
-
-&nbsp;
-
-## ✦ Core Features
-
-|  | Feature | Description |
-|--|---------|-------------|
-| 🛡️ | **Neutral Auditing** | 100% third-party position, zero LLM vendor affiliation |
-| 🔒 | **Fully Offline** | No internet or cloud data transmission required |
-| 🔐 | **Privacy First** | Zero user data collection, local closed-loop isolation |
-| 🔍 | **Bias Detection** | Hidden assumptions, uncertainties, cognitive blind spots |
-| 🔧 | **No Model Modification** | Compatible with all mainstream LLMs |
-| 📊 | **Structured Analysis** | Decision structure verification, no subjective conclusions |
-
-&nbsp;
-
-## ✦ Architecture
-
-```
-┌──────────────────────────────────────────────────┐
-│                  GCAE Runtime                     │
-│  ┌────────────┐  ┌──────────┐  ┌──────────────┐  │
-│  │  Narrative  │→│ Assumption│→│   Structural  │  │
-│  │  Stripping  │  │ Detector  │  │  Verification│  │
-│  └────────────┘  └──────────┘  └──────────────┘  │
-│  ┌──────────────────────────────────────────────┐ │
-│  │              Plugin System                    │ │
-│  └──────────────────────────────────────────────┘ │
-│  ┌──────────────────────────────────────────────┐ │
-│  │           LLM Adapters (optional)             │ │
-│  └──────────────────────────────────────────────┘ │
-└──────────────────────────────────────────────────┘
-```
-
-&nbsp;
+<p align="center">— ✦ —</p>
 
 ## ✦ Quick Start
 
 ```bash
+git clone git@github.com:NOHN-AI/SECOND-PERSPECTIVE.git
+cd SECOND-PERSPECTIVE
 pip install -r requirements.txt
-
-# Optional: OpenAI adapter
-pip install -r requirements-openai.txt
+python demo.py
 ```
 
-```python
-from Cognitive_Audit_Engine import CognitiveAuditEngine, ResponsibilityAccount
-
-account = ResponsibilityAccount(name="auditor", role="third_party")
-engine = CognitiveAuditEngine(account=account)
-
-result = engine.audit({
-    "decision": "Approve project X",
-    "assumptions": ["Market will grow 20%", "Team capacity is sufficient"],
-    "context": {...}
-})
-print(result)  # → {True, False}
-```
-
-&nbsp;
-
-## ✦ Application Scenarios
-
-> Enterprise Strategy · Government Policy · Think Tank Research · Risk Control · AI System Auditing
-
-&nbsp;
-
----
+<p align="center">— ✦ —</p>
 
 <p align="center">
+  <a href="https://github.com/NOHN-AI">NOHN-AI</a>
+  &nbsp;·&nbsp;
+  <a href="https://www.nohnlins.com/">nohnlins.com</a>
+  &nbsp;·&nbsp;
   <a href="mailto:ai@nohnlins.com">ai@nohnlins.com</a>
 </p>
-<p align="center">
-  <sub>© 2026 Shanghai Linming Junhua &amp; NOHN AI Technology · All Rights Reserved</sub>
-</p>
+<p align="center"><sub>NOHN AI · SECOND-PERSPECTIVE</sub></p>
