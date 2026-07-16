@@ -1,5 +1,7 @@
 <p align="center">
-  ![python](https://img.shields.io/badge/python-D4AF37?style=flat-square)  ![hub-v0.3.0](https://img.shields.io/badge/hub-v0.3.0-D4AF37?style=flat-square)  ![imda-score-95](https://img.shields.io/badge/imda-score-95-D4AF37?style=flat-square)
+  <img src="https://img.shields.io/badge/python-D4AF37?style=flat-square" alt="python">
+  <img src="https://img.shields.io/badge/hub-v0.3.0-D4AF37?style=flat-square" alt="hub-v0.3.0">
+  <img src="https://img.shields.io/badge/imda-score-95-D4AF37?style=flat-square" alt="imda-score-95">
 </p>
 
 <blockquote align="center">
