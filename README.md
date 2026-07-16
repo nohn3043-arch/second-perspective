@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://img.shields.io/badge/python-D4AF37?style=flat-square" alt="python">
+  <img src="https://img.shields.io/badge/python--D4AF37?style=flat-square" alt="python">
   <img src="https://img.shields.io/badge/hub-v0.3.0-D4AF37?style=flat-square" alt="hub-v0.3.0">
   <img src="https://img.shields.io/badge/imda-score-95-D4AF37?style=flat-square" alt="imda-score-95">
 </p>
@@ -167,6 +167,46 @@ observability, backups, migrations, and domain control packs.
 
 The cognitive scanner challenges structural risks. It does not diagnose people,
 read motives, or replace legal, medical, financial, or safety professionals.
+
+## ✦ Project Structure
+
+```
+second-perspective/
+├── pyproject.toml              # package: second-perspective-decision-engine v0.3.0
+├── src/second_perspective/
+│   ├── cli.py / hub_cli.py     # demo entry points
+│   ├── service.py / repository.py / canonical.py / version.py
+│   ├── api/                    # FastAPI: main.py, security.py
+│   ├── audit/                  # auditor, execution, graph, ledger
+│   ├── decision/               # causal, counterfactual, engine, evaluator,
+│   │                           #   integrity, policy, robustness, selection
+│   ├── governance/             # approval
+│   ├── hub/                    # orchestrator, cognitive, information, integrity,
+│   │                           #   policy, repository, scenario
+│   └── models/                 # enums, hub, schemas
+├── docs/                       # DECISION_FOUNDATION_V0_2.md, SUPER_DECISION_HUB_V0_3.md
+├── examples/market_entry.json  # sample decision request
+├── scripts/export_openapi.py
+├── tests/                      # test_api / test_engine / test_foundation / test_hub
+├── Dockerfile · openapi-action.yaml · BRANCH_MANIFEST.md · .env.example
+└── requirements-engine.txt · requirements-engine-dev.txt
+```
+
+## ✦ Documentation
+
+- [`docs/DECISION_FOUNDATION_V0_2.md`](docs/DECISION_FOUNDATION_V0_2.md) — the deterministic decision foundation and its invariants.
+- [`docs/SUPER_DECISION_HUB_V0_3.md`](docs/SUPER_DECISION_HUB_V0_3.md) — from decision base to decision hub: architecture, algorithm audit, scenarios, governance.
+- Regenerate the OpenAPI schema with `python scripts/export_openapi.py` (set `SP_PUBLIC_BASE_URL`).
+
+## ✦ Status & Roadmap
+
+- **v0.3.0** — Super Decision-Hub application core: hash-chained audit, candidate reselection, scenario stress, cognitive-risk scanner, information queue, sealed `HubReport`.
+- Not yet a multi-tenant enterprise control plane (see *Production boundary* above).
+- Next: durable event storage, OIDC + authorization, tenant isolation, KMS signatures, rate limiting, observability.
+
+## ✦ License & Authorization
+
+This repository is **not open-source**. Dual-track model: free for individual non-commercial research; paid commercial authorization required for government / enterprise. See [LICENSE](./LICENSE) — licensor and governing law follow the user's location (within the PRC → Shanghai Linming Junhua Technology Co., Ltd.; outside the PRC → NOHN AI TECHNOLOGY PTE. LTD., Singapore law + SIAC arbitration).
 
 ---
 
