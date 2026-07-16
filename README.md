@@ -22,6 +22,20 @@ It does not invent missing facts, weights, thresholds, owners, evidence, or prob
 
 </div>
 
+## ✦ Built-in Universal Audit Engine
+
+<div style="max-width:880px;margin:0 auto;padding:0 16px">
+
+<p style="font-size:15px;line-height:1.8;color:#2C2C2C">
+The agent engine ships with a <strong>built-in universal audit engine</strong> — not a bolt-on patch. Audit tracing lives inside the deterministic core, so every decision, assumption, constraint, and causal step is recorded, hash-chained, and independently verifiable by design rather than grafted on afterward.
+</p>
+
+<p style="font-size:15px;line-height:1.8;color:#2C2C2C">
+In Singapore's <strong>IMDA AI Verify</strong> causal-audit assessment the engine scored <strong>95/100</strong>. The full compliance report is included in this repository as <code>IMDA_AI_Verify_Causal_Audit_Report.pdf</code>.
+</p>
+
+</div>
+
 <p align="center">— ✦ —</p>
 
 ## ✦ What v0.3 adds
