@@ -2,7 +2,7 @@
 
 from .decision.engine import IntelligentDecisionEngine
 from .decision.policy import DecisionPolicy
-from .hub import HubPolicy, SuperDecisionHub, verify_hub_report
+from .hub import HubPolicy, IntelligentDecisionHub, verify_hub_report
 from .models.hub import HubAnalysisRequest, HubReport
 from .models.schemas import DecisionRequest, DecisionResult
 from .version import VERSION
@@ -15,7 +15,7 @@ __all__ = [
     "HubPolicy",
     "HubReport",
     "IntelligentDecisionEngine",
-    "SuperDecisionHub",
+    "IntelligentDecisionHub",
     "verify_hub_report",
 ]
 __version__ = VERSION

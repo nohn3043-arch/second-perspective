@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "second-perspective-decision-engine"
 version = "0.3.0"
-description = "Super Decision-Hub with deterministic evaluation, algorithm audit, scenarios, and governance."
+description = "Intelligent Decision-Hub with deterministic evaluation, algorithm audit, scenarios, and governance."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "See repository LICENSE" }
@@ -28,7 +28,7 @@ dev = [
 
 [project.scripts]
 second-perspective-demo = "second_perspective.cli:main"
-super-decision-hub-demo = "second_perspective.hub_cli:main"
+intelligent-decision-hub-demo = "second_perspective.hub_cli:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

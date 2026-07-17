@@ -35,7 +35,7 @@ def test_evaluate_and_fetch():
     assert fetched.json()["result"]["decision_id"] == decision_id
 
 
-def test_super_decision_hub_endpoint():
+def test_intelligent_decision_hub_endpoint():
     payload = {
         "decision": load_example(),
         "scenarios": [

@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from .hub import SuperDecisionHub
+from .hub import IntelligentDecisionHub
 from .models.hub import HubAnalysisRequest
 
 
@@ -11,7 +11,7 @@ def main() -> None:
     example = Path(__file__).resolve().parents[2] / "examples" / "market_entry.json"
     if not example.exists():
         raise SystemExit(
-            "Example not found. Run from a source checkout or call SuperDecisionHub directly."
+            "Example not found. Run from a source checkout or call IntelligentDecisionHub directly."
         )
 
     decision = json.loads(example.read_text(encoding="utf-8"))
@@ -32,7 +32,7 @@ def main() -> None:
             ],
         }
     )
-    report = SuperDecisionHub().analyze(request)
+    report = IntelligentDecisionHub().analyze(request)
     print(report.model_dump_json(indent=2))
 
 

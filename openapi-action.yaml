@@ -1,6 +1,6 @@
 openapi: 3.1.0
 info:
-  title: Second Perspective Super Decision-Hub
+  title: Second Perspective Intelligent Decision-Hub
   description: Auditable decision orchestration with deterministic evaluation, causal counterfactuals,
     scenario stress tests, cognitive risk challenges, and governance.
   version: 0.3.0

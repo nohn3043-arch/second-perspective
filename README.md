@@ -5,7 +5,7 @@
 </p>
 
 <blockquote align="center">
-  <em>Super Decision-Hub · v0.3.0</em>
+  <em>Intelligent Decision-Hub · v0.3.0</em>
 </blockquote>
 
 <div style="max-width:880px;margin:0 auto;padding:0 16px">
@@ -13,7 +13,7 @@
 ## ✦ About
 
 <p style="font-size:15px;line-height:1.8;color:#2C2C2C">
-Super Decision-Hub is an auditable orchestration layer built on the v0.2 deterministic Decision Foundation. It scored <strong>95/100</strong> in Singapore's IMDA AI Verify compliance assessment. The engine combines structured evaluation, fine-grained algorithm audit, causal counterfactual reselection, declared scenario stress tests, structural cognitive challenges, information priorities, and human governance in one report.
+Intelligent Decision-Hub is an auditable orchestration layer built on the v0.2 deterministic Decision Foundation. It scored <strong>95/100</strong> in Singapore's IMDA AI Verify compliance assessment. The engine combines structured evaluation, fine-grained algorithm audit, causal counterfactual reselection, declared scenario stress tests, structural cognitive challenges, information priorities, and human governance in one report.
 </p>
 
 <p style="font-size:15px;line-height:1.8;color:#2C2C2C">
@@ -46,13 +46,13 @@ In Singapore's <strong>IMDA AI Verify</strong> causal-audit assessment the engin
 - user-declared metric, evidence, and assumption-failure stress scenarios
 - a deterministic cognitive-risk challenge layer that does not infer mental state
 - a ranked information-acquisition and review queue
-- one `SuperDecisionHub` orchestrator and one sealed `HubReport`
+- one `IntelligentDecisionHub` orchestrator and one sealed `HubReport`
 - full audit ledgers inside both baseline and scenario runs
 - `POST /v1/hub/analyze` while preserving every v0.2 endpoint
 - v0.3 package, CLI demonstration, generated OpenAPI, and CI coverage gates
 
 The detailed architecture and boundaries are documented in
-[`docs/SUPER_DECISION_HUB_V0_3.md`](docs/SUPER_DECISION_HUB_V0_3.md).
+[`docs/INTELLIGENT_DECISION_HUB_V0_3.md`](docs/INTELLIGENT_DECISION_HUB_V0_3.md).
 The v0.2 foundation design remains available in
 [`docs/DECISION_FOUNDATION_V0_2.md`](docs/DECISION_FOUNDATION_V0_2.md).
 
@@ -93,16 +93,16 @@ Core Decision Foundation:
 second-perspective-demo
 ```
 
-Super Decision-Hub with two stress scenarios:
+Intelligent Decision-Hub with two stress scenarios:
 
 ```bash
-super-decision-hub-demo
+intelligent-decision-hub-demo
 ```
 
 ## ✦ Python usage
 
 ```python
-from second_perspective import SuperDecisionHub
+from second_perspective import IntelligentDecisionHub
 from second_perspective.models import HubAnalysisRequest
 
 request = HubAnalysisRequest.model_validate(
@@ -122,7 +122,7 @@ request = HubAnalysisRequest.model_validate(
         ],
     }
 )
-report = SuperDecisionHub().analyze(request)
+report = IntelligentDecisionHub().analyze(request)
 ```
 
 The returned report contains the stored baseline decision record, scenario
@@ -173,7 +173,7 @@ that strictly deserialize response fields should update their models.
 
 ## ✦ Production boundary
 
-v0.3 is a functioning Super Decision-Hub application core, not yet a complete
+v0.3 is a functioning Intelligent Decision-Hub application core, not yet a complete
 multi-tenant enterprise control plane. The default repository is still
 process-local memory. Production requires durable event storage, OIDC and
 authorization enforcement, tenant isolation, KMS signatures, rate limiting,
@@ -198,7 +198,7 @@ second-perspective/
 │   ├── hub/                    # orchestrator, cognitive, information, integrity,
 │   │                           #   policy, repository, scenario
 │   └── models/                 # enums, hub, schemas
-├── docs/                       # DECISION_FOUNDATION_V0_2.md, SUPER_DECISION_HUB_V0_3.md
+├── docs/                       # DECISION_FOUNDATION_V0_2.md, INTELLIGENT_DECISION_HUB_V0_3.md
 ├── examples/market_entry.json  # sample decision request
 ├── scripts/export_openapi.py
 ├── tests/                      # test_api / test_engine / test_foundation / test_hub
@@ -209,12 +209,12 @@ second-perspective/
 ## ✦ Documentation
 
 - [`docs/DECISION_FOUNDATION_V0_2.md`](docs/DECISION_FOUNDATION_V0_2.md) — the deterministic decision foundation and its invariants.
-- [`docs/SUPER_DECISION_HUB_V0_3.md`](docs/SUPER_DECISION_HUB_V0_3.md) — from decision base to decision hub: architecture, algorithm audit, scenarios, governance.
+- [`docs/INTELLIGENT_DECISION_HUB_V0_3.md`](docs/INTELLIGENT_DECISION_HUB_V0_3.md) — from decision base to decision hub: architecture, algorithm audit, scenarios, governance.
 - Regenerate the OpenAPI schema with `python scripts/export_openapi.py` (set `SP_PUBLIC_BASE_URL`).
 
 ## ✦ Status & Roadmap
 
-- **v0.3.0** — Super Decision-Hub application core: hash-chained audit, candidate reselection, scenario stress, cognitive-risk scanner, information queue, sealed `HubReport`.
+- **v0.3.0** — Intelligent Decision-Hub application core: hash-chained audit, candidate reselection, scenario stress, cognitive-risk scanner, information queue, sealed `HubReport`.
 - Not yet a multi-tenant enterprise control plane (see *Production boundary* above).
 - Next: durable event storage, OIDC + authorization, tenant isolation, KMS signatures, rate limiting, observability.
 

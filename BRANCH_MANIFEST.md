@@ -2,7 +2,7 @@
 
 Target branch: `intelligent-decision-engine`
 
-Implemented release: Super Decision-Hub `0.3.0`
+Implemented release: Intelligent Decision-Hub `0.3.0`
 
 ## v0.2 foundation retained
 
@@ -28,7 +28,7 @@ Implemented release: Super Decision-Hub `0.3.0`
 - versioned `HubPolicy`
 - sealed, independently verifiable `HubReport`
 - immutable in-memory Hub report retrieval interface
-- `SuperDecisionHub` orchestration API and CLI
+- `IntelligentDecisionHub` orchestration API and CLI
 - `/v1/hub/analyze` OpenAPI contract
 - expanded Hub, API, integrity, scenario, and validation tests
 
@@ -49,7 +49,7 @@ Implemented release: Super Decision-Hub `0.3.0`
 - `src/second_perspective/hub_cli.py`
 - `src/second_perspective/models/hub.py`
 - `tests/test_hub.py`
-- `docs/SUPER_DECISION_HUB_V0_3.md`
+- `docs/INTELLIGENT_DECISION_HUB_V0_3.md`
 
 ## Explicitly deferred production and research components
 

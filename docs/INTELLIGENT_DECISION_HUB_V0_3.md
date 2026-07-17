@@ -1,4 +1,4 @@
-# Super Decision-Hub v0.3：从决策底座到决策中枢
+# Intelligent Decision-Hub v0.3：从决策底座到决策中枢
 
 ## 定位
 
@@ -6,15 +6,15 @@ v0.2 解决的是“如何让一次决策计算可验证、可追责、可回放
 中枢编排能力：一次请求同时完成基准决策、算法过程审计、假设反事实、用户声明的压力
 情景、结构化认知质询、信息补全排序和治理记录。
 
-因此，v0.3 可以正式称为 **Super Decision-Hub 应用核心**，但还不能冒充完整的企业级
+因此，v0.3 可以正式称为 **Intelligent Decision-Hub 应用核心**，但还不能冒充完整的企业级
 多租户控制平台。
 
 ## 与 v0.2 的关系
 
-v0.3 没有推翻 `IntelligentDecisionEngine`，而是在其上增加 `SuperDecisionHub`：
+v0.3 没有推翻 `IntelligentDecisionEngine`，而是在其上增加 `IntelligentDecisionHub`：
 
 ```text
-SuperDecisionHub
+IntelligentDecisionHub
 ├── DecisionService
 │   ├── IntelligentDecisionEngine
 │   ├── StructuralAuditor

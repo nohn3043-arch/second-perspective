@@ -3,7 +3,7 @@ from __future__ import annotations
 from fastapi import Depends, FastAPI, HTTPException, status
 
 from ..governance.approval import ApprovalError
-from ..hub import HubReportNotFoundError, SuperDecisionHub
+from ..hub import HubReportNotFoundError, IntelligentDecisionHub
 from ..models.hub import HubAnalysisRequest, HubReport
 from ..models.schemas import (
     ApprovalRequest,
@@ -15,7 +15,7 @@ from ..version import VERSION
 from .security import verify_api_key
 
 app = FastAPI(
-    title="Second Perspective Super Decision-Hub",
+    title="Second Perspective Intelligent Decision-Hub",
     version=VERSION,
     description=(
         "Auditable decision orchestration with deterministic evaluation, causal "
@@ -24,7 +24,7 @@ app = FastAPI(
 )
 
 service = DecisionService()
-hub = SuperDecisionHub(service=service)
+hub = IntelligentDecisionHub(service=service)
 
 
 @app.get("/health", operation_id="healthCheck")

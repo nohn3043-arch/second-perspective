@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from second_perspective import IntelligentDecisionEngine, SuperDecisionHub, verify_hub_report
+from second_perspective import IntelligentDecisionEngine, IntelligentDecisionHub, verify_hub_report
 from second_perspective.audit import verify_algorithm_audit
 from second_perspective.canonical import canonical_json
 from second_perspective.models import (
@@ -84,8 +84,8 @@ def test_counterfactual_reselection_replaces_assumption_dependent_leader():
     assert counterfactual.status == "leader_changed"
 
 
-def test_super_hub_runs_scenarios_cognitive_challenges_and_information_queue():
-    hub = SuperDecisionHub()
+def test_intelligent_hub_runs_scenarios_cognitive_challenges_and_information_queue():
+    hub = IntelligentDecisionHub()
     report = hub.analyze(hub_request())
 
     assert report.hub_version == "0.3.0"
@@ -132,7 +132,7 @@ def test_super_hub_runs_scenarios_cognitive_challenges_and_information_queue():
 def test_hub_can_disable_optional_cognitive_challenge_layer():
     request = hub_request().model_copy(update={"run_cognitive_audit": False})
 
-    report = SuperDecisionHub().analyze(request)
+    report = IntelligentDecisionHub().analyze(request)
 
     assert report.cognitive_audit is None
     assert report.algorithm_audit_verified is True
@@ -152,7 +152,7 @@ def test_evidence_failure_scenario_is_blocked_and_prioritized():
         }
     )
 
-    report = SuperDecisionHub().analyze(request)
+    report = IntelligentDecisionHub().analyze(request)
 
     assert report.scenarios[0].outcome_status == ScenarioOutcomeStatus.BLOCKED
     assert any(issue.blocking for issue in report.scenarios[0].issues)

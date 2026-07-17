@@ -18,7 +18,7 @@ class HubReportNotFoundError(LookupError):
     pass
 
 
-class SuperDecisionHub:
+class IntelligentDecisionHub:
     """Orchestrates evaluation, audit, challenge, scenarios, and governance records."""
 
     def __init__(

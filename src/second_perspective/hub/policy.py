@@ -9,7 +9,7 @@ from ..version import VERSION
 
 @dataclass(frozen=True, slots=True)
 class HubPolicy:
-    policy_id: str = "SUPER-DECISION-HUB-BASELINE"
+    policy_id: str = "INTELLIGENT-DECISION-HUB-BASELINE"
     version: str = VERSION
     weight_concentration_threshold: Decimal = Decimal("0.650000")
     authority_concentration_threshold: Decimal = Decimal("0.750000")
