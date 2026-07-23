@@ -2,7 +2,7 @@
 
 Target branch: `intelligent-decision-engine`
 
-Implemented release: Intelligent Decision-Hub `0.3.0`
+Implemented release: NOMOS `0.3.0`
 
 ## v0.2 foundation retained
 

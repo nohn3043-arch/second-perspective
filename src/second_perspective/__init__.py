@@ -1,4 +1,4 @@
-"""Second Perspective Intelligent Decision Engine."""
+"""NOMOS deterministic decision engine."""
 
 from .decision.engine import IntelligentDecisionEngine
 from .decision.policy import DecisionPolicy

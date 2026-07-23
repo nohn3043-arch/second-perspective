@@ -15,7 +15,7 @@ from ..version import VERSION
 from .security import verify_api_key
 
 app = FastAPI(
-    title="Second Perspective Intelligent Decision-Hub",
+    title="NOMOS Intelligent Decision-Hub",
     version=VERSION,
     description=(
         "Auditable decision orchestration with deterministic evaluation, causal "

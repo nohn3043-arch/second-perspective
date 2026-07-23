@@ -3,9 +3,9 @@ requires = ["setuptools>=69", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "second-perspective-decision-engine"
+name = "nomos-decision-engine"
 version = "0.3.0"
-description = "Intelligent Decision-Hub with deterministic evaluation, algorithm audit, scenarios, and governance."
+description = "NOMOS deterministic decision-hub with structured evaluation, algorithm audit, scenario stress tests, and human governance."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "See repository LICENSE" }
@@ -27,8 +27,8 @@ dev = [
 ]
 
 [project.scripts]
-second-perspective-demo = "second_perspective.cli:main"
-intelligent-decision-hub-demo = "second_perspective.hub_cli:main"
+nomos-demo = "second_perspective.cli:main"
+nomos-hub-demo = "second_perspective.hub_cli:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

@@ -5,7 +5,7 @@
 </p>
 
 <blockquote align="center">
-  <em>Intelligent Decision-Hub · v0.3.0</em>
+  <em>NOMOS · v0.3.0</em>
 </blockquote>
 
 <div style="max-width:880px;margin:0 auto;padding:0 16px">
@@ -13,7 +13,7 @@
 ## ✦ About
 
 <p style="font-size:15px;line-height:1.8;color:#2C2C2C">
-Intelligent Decision-Hub is an auditable orchestration layer built on the v0.2 deterministic Decision Foundation. It scored <strong>95/100</strong> in Singapore's IMDA AI Verify compliance assessment. The engine combines structured evaluation, fine-grained algorithm audit, causal counterfactual reselection, declared scenario stress tests, structural cognitive challenges, information priorities, and human governance in one report.
+NOMOS is an auditable orchestration layer built on the v0.2 deterministic Decision Foundation. It scored <strong>95/100</strong> in Singapore's IMDA AI Verify compliance assessment. The engine combines structured evaluation, fine-grained algorithm audit, causal counterfactual reselection, declared scenario stress tests, structural cognitive challenges, information priorities, and human governance in one report.
 </p>
 
 <p style="font-size:15px;line-height:1.8;color:#2C2C2C">
@@ -93,7 +93,7 @@ Core Decision Foundation:
 second-perspective-demo
 ```
 
-Intelligent Decision-Hub with two stress scenarios:
+NOMOS with two stress scenarios:
 
 ```bash
 intelligent-decision-hub-demo
@@ -173,7 +173,7 @@ that strictly deserialize response fields should update their models.
 
 ## ✦ Production boundary
 
-v0.3 is a functioning Intelligent Decision-Hub application core, not yet a complete
+v0.3 is a functioning NOMOS application core, not yet a complete
 multi-tenant enterprise control plane. The default repository is still
 process-local memory. Production requires durable event storage, OIDC and
 authorization enforcement, tenant isolation, KMS signatures, rate limiting,
@@ -186,7 +186,7 @@ read motives, or replace legal, medical, financial, or safety professionals.
 
 ```
 second-perspective/
-├── pyproject.toml              # package: second-perspective-decision-engine v0.3.0
+├── pyproject.toml              # package: nomos-decision-engine v0.3.0
 ├── src/second_perspective/
 │   ├── cli.py / hub_cli.py     # demo entry points
 │   ├── service.py / repository.py / canonical.py / version.py
