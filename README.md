@@ -225,5 +225,5 @@ This repository is **not open-source**. Dual-track model: free for individual no
 ---
 
 <p align="center">
-  <a href="https://github.com/NOHN-AI">GitHub</a> · <a href="https://www.nohnlins.com">Website</a> · <a href="mailto:ai@nohnlins.com">Contact</a>
+  <a href="https://github.com/NOHN-AI">GitHub</a> · <a href="https://www.nohnlins.com">Website</a> · <a href="mailto:lin@secondai.top">lin@secondai.top</a>
 </p>
