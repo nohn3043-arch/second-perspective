@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPL Cognitive Audit Engine</title>
+<style>
+:root{--bg:#0d1117;--surface:#161b22;--border:#30363d;--text:#e6edf3;--text-dim:#8b949e;--accent:#58a6ff;--green:#3fb950;--yellow:#d29922;--red:#f85149;--purple:#a371f7;--radius:12px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;line-height:1.6;min-height:100vh}
+.container{max-width:1280px;margin:0 auto;padding:24px}
+header{text-align:center;padding:24px 0 20px;border-bottom:1px solid var(--border);margin-bottom:24px}
+header h1{font-size:26px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+header p{color:var(--text-dim);font-size:13px;margin-top:6px}
+.badges{display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap}
+.badge{padding:3px 10px;border:1px solid var(--border);border-radius:20px;font-size:11px;color:var(--text-dim)}
+.layout{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
+.panel h2{font-size:15px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;color:var(--text-dim);margin-bottom:4px;font-weight:500}
+.field input,.field textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 11px;color:var(--text);font-size:13px;font-family:inherit;resize:vertical}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(88,166,255,.15)}
+.field textarea{min-height:72px}
+.assumption-row{display:flex;gap:6px;margin-bottom:5px}
+.assumption-row input{flex:1}
+.btn-remove{background:var(--border);border:none;color:var(--text-dim);border-radius:6px;padding:0 9px;cursor:pointer;font-size:15px;transition:all .15s}
+.btn-remove:hover{background:var(--red);color:#fff}
+.btn-add{background:transparent;border:1px dashed var(--border);color:var(--text-dim);border-radius:8px;padding:7px;width:100%;cursor:pointer;font-size:12px;margin-top:4px;transition:all .15s}
+.btn-add:hover{border-color:var(--accent);color:var(--accent)}
+.btn-run{background:linear-gradient(135deg,var(--accent),var(--purple));border:none;color:#fff;border-radius:8px;padding:11px 22px;font-size:14px;font-weight:600;cursor:pointer;width:100%;margin-top:6px;transition:transform .1s,opacity .2s}
+.btn-run:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(88,166,255,.3)}
+.btn-run:active{transform:translateY(0)}
+.btn-run:disabled{opacity:.5;cursor:not-allowed}
+.verdict-banner{padding:14px 18px;border-radius:var(--radius);text-align:center;font-size:17px;font-weight:700;margin-bottom:14px}
+.verdict-PASS{background:rgba(63,185,80,.12);border:1px solid var(--green);color:var(--green)}
+.verdict-WARN{background:rgba(210,153,34,.12);border:1px solid var(--yellow);color:var(--yellow)}
+.verdict-HALT{background:rgba(248,81,73,.12);border:1px solid var(--red);color:var(--red)}
+.op-card{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px}
+.op-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.op-card-title{font-size:13px;font-weight:700;letter-spacing:.3px}
+.op-tag{font-size:11px;padding:2px 8px;border-radius:12px;font-weight:600}
+.tag-PASS{background:rgba(63,185,80,.2);color:var(--green)}
+.tag-WARN{background:rgba(210,153,34,.2);color:var(--yellow)}
+.tag-HALT{background:rgba(248,81,73,.2);color:var(--red)}
+.tag-SKIP{background:rgba(139,148,158,.2);color:var(--text-dim)}
+.op-detail{font-size:12px;color:var(--text-dim);line-height:1.7}
+.op-detail code{background:var(--surface);padding:1px 6px;border-radius:4px;font-size:11px;color:var(--accent)}
+.violation-list{list-style:none;font-size:12px;margin-top:6px}
+.violation-list li{padding:4px 0;border-bottom:1px solid var(--border);color:var(--text-dim)}
+.violation-list li:last-child{border:none}
+.violation-list .sev-HALT{color:var(--red)}
+.violation-list .sev-WARN{color:var(--yellow)}
+.cert-box{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;font-family:'SF Mono',Consolas,monospace;font-size:11px;word-break:break-all;margin-top:10px;line-height:1.5}
+.pipeline-vis{display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:16px;flex-wrap:wrap}
+.pipe-node{padding:4px 10px;border:1px solid var(--border);border-radius:20px;font-size:11px;font-weight:600}
+.pipe-node.done-PASS{border-color:var(--green);color:var(--green)}
+.pipe-node.done-WARN{border-color:var(--yellow);color:var(--yellow)}
+.pipe-node.done-HALT{border-color:var(--red);color:var(--red)}
+.pipe-arrow{color:var(--text-dim);font-size:11px}
+.empty{text-align:center;color:var(--text-dim);padding:36px 0;font-size:13px}
+.summary-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:14px}
+.summary-item{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px;text-align:center}
+.summary-item .num{font-size:18px;font-weight:700}
+.summary-item .lbl{font-size:10px;color:var(--text-dim);margin-top:2px}
+.collapse-btn{background:none;border:none;color:var(--accent);font-size:11px;cursor:pointer;padding:0;margin-top:6px}
+.collapse-btn:hover{text-decoration:underline}
+.hidden{display:none}
+.dd-bar{height:6px;background:var(--border);border-radius:3px;margin-top:4px;overflow:hidden}
+.dd-bar-fill{height:100%;border-radius:3px;transition:width .3s}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>SPL Cognitive Audit Engine</h1>
+<p>第二视角因果审计引擎 · 五算子确定性管线 · 浏览器端运行 · 零数据上传</p>
+<div class="badges">
+<span class="badge">NS → IAP → LCH → CCS → STATE</span>
+<span class="badge">Deterministic</span>
+<span class="badge">Zero LLM</span>
+<span class="badge">v1.0.0</span>
+</div>
+</header>
+
+<div class="layout">
+<!-- Input Panel -->
+<div class="panel">
+<h2>📝 审计输入</h2>
+<div class="field">
+<label>待审计文本 (LLM 输出 / 决策描述)</label>
+<textarea id="text" placeholder="粘贴需要审计的文本...">毫无疑问，项目X应该立即批准上线。显然，用户需求已经充分验证，专家认为技术方案完全可行。令人振奋的是，市场前景非常广阔，竞争对手大概不会跟进。我们一直以来都是行业领先者，必须承认这个决定是正确的。</textarea>
+</div>
+<div class="field">
+<label>决策 (Decision / P)</label>
+<input id="decision" type="text" value="批准项目X上线">
+</div>
+<div class="field">
+<label>前提假设 (Assumptions / A)</label>
+<div id="assumptions-container">
+<div class="assumption-row"><input type="text" class="assumption-input" value="用户需求大概稳定"><button class="btn-remove" onclick="removeRow(this)">×</button></div>
+<div class="assumption-row"><input type="text" class="assumption-input" value="技术方案可能可行"><button class="btn-remove" onclick="removeRow(this)">×</button></div>
+<div class="assumption-row"><input type="text" class="assumption-input" value="竞争对手不会快速跟进"><button class="btn-remove" onclick="removeRow(this)">×</button></div>
+</div>
+<button class="btn-add" onclick="addAssumption()">+ 添加前提</button>
+</div>
+<div class="field">
+<label>预期结果 (Outcome / Q)</label>
+<input id="outcome" type="text" value="项目X按时上线">
+</div>
+<div class="field">
+<label>分支响应 (Branches / ΔD) — 每个前提失效时的应对</label>
+<div id="branches-container">
+<div class="assumption-row"><input type="text" class="branch-input" placeholder="若 A1 失效 → ΔD = ?"></div>
+</div>
+<button class="btn-add" onclick="addBranch()">+ 添加分支</button>
+</div>
+<div class="field">
+<label>责任主体 (Responsible Party)</label>
+<input id="responsible" type="text" value="项目评审委员会">
+</div>
+<button class="btn-run" id="runBtn" onclick="runAudit()">▶ 运行审计</button>
+</div>
+
+<!-- Output Panel -->
+<div class="panel">
+<h2>🔍 审计报告</h2>
+<div id="results">
+<div class="empty">点击「运行审计」查看结果</div>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+// ============================================================================
+// SPL Core Audit Engine — JavaScript Port (v1.0.0)
+// Deterministic · Zero random · Zero LLM · Pure function
+// Pipeline: NS → IAP → LCH → CCS → STATE
+// ============================================================================
+
+// ─────────────────────────────────────────────────────────────────────
+// OP1: NS — Narrative Strip (叙事剥离)
+// 剥离一切修辞、情感、道德及立场粉饰，提取逻辑核心
+// ─────────────────────────────────────────────────────────────────────
+const RHETORICAL_MARKERS = [
+  "毫无疑问","显而易见","众所周知","不言而喻","毋庸置疑",
+  "令人震惊","令人担忧","令人振奋","令人失望","令人兴奋",
+  "遗憾的是","幸运的是","不幸的是","可悲的是","可怕的是",
+  "当然","显然","确实","毕竟","说白了","事实上","实际上",
+  "必须承认","应该看到","值得注意","需要强调","不可否认",
+  "不容忽视","不可忽视","不容置疑","值得一提的是",
+  "amazing","incredible","obviously","clearly","undoubtedly",
+  "unfortunately","fortunately","tragically","sadly","shockingly",
+  "surprisingly","inevitably","certainly","importantly",
+  "it is important to note","it should be noted","it is worth noting",
+  "needless to say","it goes without saying",
+  "大量","许多","相当多","不少","大部分","绝大多数","很多","若干",
+  "可能","也许","大概","或许","似乎","看起来","估计","预计",
+  "many","several","a lot of","numerous","considerable",
+  "perhaps","possibly","likely","arguably","presumably",
+  "专家认为","研究表明","数据显示","据报道","消息称",
+  "experts say","studies show","research indicates","reports suggest"
+];
+const VAGUE_PATTERNS = [
+  /[一二两三四五六七八九十百千万亿]+\s*[百分比成]/gi,
+  /\d+\s*[%％]\s*(?:左右|大概|大约|差不多|近|约)?/gi,
+  /(?:超过|接近|将近|大约|大概|差不多|约)\s*\d+/gi,
+  /(?:成百上千|数以万计|数以千计|数以百计|成千上万)/gi
+];
+
+function runNS(text) {
+  if (!text) return {
+    plugin: "NS", name: "叙事剥离",
+    pass: true, violation_count: 0, violations: [],
+    logical_core: "", narrative_segments: [], narrative_stripped: true,
+    note: "无输入文本"
+  };
+  let segments = [];
+  RHETORICAL_MARKERS.forEach(m => {
+    const re = new RegExp(m.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+    let match;
+    while ((match = re.exec(text))) {
+      segments.push({
+        type: m.length > 6 ? "rhetorical_marker" : "vague_quantifier",
+        marker: match[0], start: match.index, end: match.index + match[0].length
+      });
+    }
+  });
+  VAGUE_PATTERNS.forEach(pat => {
+    let match;
+    while ((match = pat.exec(text))) {
+      segments.push({
+        type: "vague_quantifier", marker: match[0],
+        start: match.index, end: match.index + match[0].length
+      });
+    }
+  });
+  // dedupe overlapping
+  let seen = new Set(), unique = [];
+  segments.forEach(s => {
+    let k = s.start + ":" + s.end;
+    if (!seen.has(k)) { seen.add(k); unique.push(s); }
+  });
+  unique.sort((a, b) => a.start - b.start);
+  // strip narrative to get logical core
+  let core = text;
+  [...unique].reverse().forEach(s => {
+    core = core.slice(0, s.start) + core.slice(s.end);
+  });
+  core = core.replace(/\s{2,}/g, ' ').trim();
+  let violations = unique.map(s => ({
+    rule_id: "NS-" + s.type,
+    description: `叙事标记 '${s.marker}' 检出`,
+    severity: "WARN",
+    position: [s.start, s.end]
+  }));
+  return {
+    plugin: "NS", name: "叙事剥离",
+    narrative_stripped: violations.length === 0,
+    narrative_segments: unique,
+    logical_core: core,
+    violations, violation_count: violations.length,
+    pass: violations.length === 0
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// OP2: IAP — Implicit Assumption Perspective (内隐假设透视)
+// 挖掘并显式标记所有未声明的预设前提
+// ─────────────────────────────────────────────────────────────────────
+const SELF_REF_PATTERNS = [
+  /本(?:机构|组织|公司|部门|人|团队)\s*(?:认为|确信|保证|承诺)/gi,
+  /我们\s*(?:一直以来|始终|一贯|向来)/gi,
+  /上述\s*(?:结论|判断|决定|分析)\s*(?:即|就是|意味着)/gi,
+  /this\s+(?:organization|company|team)\s+(?:believes|confirms|guarantees)/gi,
+  /we\s+have\s+always/gi
+];
+const PRIV_BYPASS_PATTERNS = [
+  /(?:无需|不必|不需要|不用)\s*(?:审批|审核|批准|备案|许可|评审)/gi,
+  /(?:直接|自行|擅自)\s*(?:执行|实施|处理|决定|上线)/gi,
+  /(?:特批|特事特办|绿色通道|紧急通道)/gi,
+  /(?:豁免|免除|免去)\s*(?:审查|审核|检查|评估)/gi,
+  /no\s+(?:review|approval|audit)\s+required/gi,
+  /bypass\s+(?:review|approval|audit)/gi,
+  /exempt\s+from\s+(?:review|audit)/gi
+];
+const UNILATERAL_PATTERNS = [
+  /(?:假设|假定|前提)\s*[:：]?\s*(?:.{0,20})\s*(?:成立|为真|有效)/gi,
+  /(?:在其他条件不变的情况下|其他条件相同|ceteris paribus)/gi,
+  /(?:如果|若|假如)\s+(?:.{0,30})\s*(?:则|那么|就)/gi,
+  /assuming\s+that/gi, /if\s+.{1,40}\s+then/gi
+];
+
+function runIAP(ctx) {
+  let text = ctx.text || ctx.decision || "";
+  let assumptions = ctx.assumptions || [];
+  let flags = [];
+
+  // 自指假设 (self-referential)
+  SELF_REF_PATTERNS.forEach(p => {
+    let m;
+    while ((m = p.exec(text))) {
+      flags.push({
+        flag_type: "self_referential", flag_id: "IAP-self_referential",
+        match: m[0], position: [m.index, m.index + m[0].length],
+        severity: "WARN",
+        description: `内隐假设: self_referential — '${m[0]}'，结论中隐含自我参照`
+      });
+    }
+  });
+
+  // 特权绕过 (privilege bypass) — HALT级
+  PRIV_BYPASS_PATTERNS.forEach(p => {
+    let m;
+    while ((m = p.exec(text))) {
+      flags.push({
+        flag_type: "privilege_bypass", flag_id: "IAP-privilege_bypass",
+        match: m[0], position: [m.index, m.index + m[0].length],
+        severity: "HALT",
+        description: `内隐假设: privilege_bypass — '${m[0]}'，隐含特权/绕过审查`
+      });
+    }
+  });
+
+  // 单边前提 (unilateral premise)
+  UNILATERAL_PATTERNS.forEach(p => {
+    let m;
+    while ((m = p.exec(text))) {
+      flags.push({
+        flag_type: "unilateral_premise", flag_id: "IAP-unilateral_premise",
+        match: m[0], position: [m.index, m.index + m[0].length],
+        severity: "WARN",
+        description: `内隐假设: unilateral_premise — '${m[0]}'，前提未经验证`
+      });
+    }
+  });
+
+  // 循环论证 (circular justification) — HALT级
+  let p = (ctx.decision || "").trim();
+  let q = (ctx.outcome || "").trim();
+  if (p && q && p === q) {
+    flags.push({
+      flag_type: "circular_justification", flag_id: "IAP-circular",
+      match: `P==Q: '${p.slice(0, 60)}'`, severity: "HALT",
+      description: "循环论证: 决策(P)与结果(Q)完全相同，因果链闭合为环"
+    });
+  }
+
+  // 缺失前提 (missing assumptions)
+  if (p && assumptions.length === 0) {
+    flags.push({
+      flag_type: "missing_assumptions", flag_id: "IAP-missing",
+      match: "decision present, assumptions absent", severity: "WARN",
+      description: "决策已声明但未列出任何前提 — 单边前提风险，需补齐假设"
+    });
+  }
+
+  // 空前提检测 (empty assumption content)
+  let emptyA = assumptions.filter(a => !a.trim()).length;
+  if (emptyA > 0) {
+    flags.push({
+      flag_type: "empty_assumptions", flag_id: "IAP-empty",
+      match: `${emptyA} empty assumption(s)`, severity: "WARN",
+      description: `检测到 ${emptyA} 个空前提，影响因果链完整性`
+    });
+  }
+
+  let haltCount = flags.filter(f => f.severity === "HALT").length;
+  return {
+    plugin: "IAP", name: "内隐假设透视",
+    implicit_assumptions_found: flags.length > 0,
+    flags, flag_count: flags.length, halt_count: haltCount,
+    pass: haltCount === 0
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// OP3: LCH — Fragility Latch (脆弱性对冲)
+// 定位逻辑链中最脆弱的隐性变量A，计算ΔD崩塌概率
+// ─────────────────────────────────────────────────────────────────────
+const VAGUE_WORDS = ["可能","大概","也许","或许","通常","一般","应该","估计","预计","好像","似乎",
+  "maybe","probably","usually","generally","should","might","possibly","presumably"];
+const NON_FALSIFIABLE = ["总是","永远","从不","必然","绝对","一定","必定","全部","所有","完全",
+  "always","never","inevitably","absolutely","definitely","all","every","completely"];
+
+function runLCH(ctx) {
+  let assumptions = (ctx.assumptions || []).filter(a => a.trim());
+  let branches = ctx.branches || [];
+  let deps = ctx.dependencies || {};
+
+  if (assumptions.length === 0) return {
+    plugin: "LCH", name: "脆弱性对冲",
+    assumptions_audited: 0, fragility_report: [],
+    weakest_variable: null, system_delta_d: 0,
+    has_branch_coverage: true, pass: true,
+    note: "无前提可审计"
+  };
+
+  let report = assumptions.map((a, i) => {
+    let dd = 0.30; // baseline fragility
+    let factors = [];
+
+    // Factor 1: 分支覆盖 (branch coverage)
+    let branchKeys = branches.map(b => b.assumption || b.premise || b.target || b.text || "");
+    let hasBranch = branchKeys.some(bv =>
+      bv === a || bv === "A" + (i + 1) || a.includes(bv) || (bv && a.includes(bv.slice(0, 5)))
+    );
+    if (!hasBranch) { dd += 0.30; factors.push("无分支应对 +0.30"); }
+    else { dd = Math.max(0.05, dd - 0.10); factors.push("有分支应对 -0.10"); }
+
+    // Factor 2: 依赖深度 (dependency depth)
+    let depCount = 0;
+    Object.entries(deps).forEach(([k, v]) => {
+      if (Array.isArray(v) && (v.includes(a) || v.includes("A" + (i + 1)))) depCount++;
+    });
+    if (depCount > 0) {
+      dd += 0.15 * depCount;
+      factors.push(`依赖深度(${depCount}) +${(0.15 * depCount).toFixed(2)}`);
+    }
+
+    // Factor 3: 模糊词汇 (vagueness)
+    let lower = a.toLowerCase();
+    let vagueCount = VAGUE_WORDS.filter(m => lower.includes(m)).length;
+    if (vagueCount > 0) {
+      dd += 0.10 * vagueCount;
+      factors.push(`模糊词×${vagueCount} +${(0.10 * vagueCount).toFixed(2)}`);
+    }
+
+    // Factor 4: 不可证伪 (non-falsifiability)
+    let isNonFalsifiable = NON_FALSIFIABLE.some(m => lower.includes(m));
+    if (isNonFalsifiable) { dd += 0.20; factors.push("不可证伪 +0.20"); }
+
+    // Clamp
+    dd = Math.min(1.0, Math.max(0.05, dd));
+
+    return {
+      assumption: a, index: i, label: "A" + (i + 1),
+      delta_d: Math.round(dd * 100) / 100,
+      has_branch: hasBranch,
+      vague_markers: vagueCount,
+      falsifiable: !isNonFalsifiable,
+      dependency_count: depCount,
+      factors
+    };
+  });
+
+  // Sort by fragility descending
+  report.sort((a, b) => b.delta_d - a.delta_d);
+  let weakest = report[0] || null;
+  let systemDD = report.reduce((sum, r) => sum + r.delta_d, 0) / report.length;
+  let fullCoverage = report.every(r => r.has_branch);
+
+  return {
+    plugin: "LCH", name: "脆弱性对冲",
+    assumptions_audited: report.length,
+    fragility_report: report,
+    weakest_variable: weakest ? { label: weakest.label, assumption: weakest.assumption, delta_d: weakest.delta_d } : null,
+    system_delta_d: Math.round(systemDD * 100) / 100,
+    has_branch_coverage: fullCoverage,
+    pass: systemDD < 0.50 && fullCoverage
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// OP4: CCS — Causal Chain Sync (反事实校验 / 因果链同步)
+// 逆反校验 + 反事实校验 + 因果链完整性 + 信息黑洞检测
+// ─────────────────────────────────────────────────────────────────────
+const COUNTERFACTUAL_MARKERS = ["非","若不","若非","如果不","假设不","即使不","万一",
+  "not","if not","unless","without","counterfactual","otherwise"];
+const BLACKHOLE_KEYWORDS = ["未知","不明","不详","待确认","待验证","不清楚","不知道","无法确定",
+  "unknown","unclear","to be determined","tbd","n/a","待定"];
+
+function runCCS(ctx) {
+  let decision = (ctx.decision || "").trim();
+  let outcome = (ctx.outcome || "").trim();
+  let assumptions = (ctx.assumptions || []).filter(a => a.trim());
+  let branches = ctx.branches || [];
+  let priorResults = ctx._prior_audit_results || {};
+  let issues = [];
+
+  // Check 1: 逆反校验 (Inverse Check) — 非P → 系统状态
+  // 规则：若存在反事实分支标记 → 收敛；否则 → 崩塌风险
+  if (decision && outcome) {
+    let hasInverse = branches.some(b => {
+      let txt = (b.assumption || b.premise || b.text || b.response || "").toLowerCase();
+      return COUNTERFACTUAL_MARKERS.some(m => txt.includes(m.toLowerCase()));
+    });
+    // Also check assumptions for negation markers
+    let negInAssumptions = assumptions.some(a =>
+      COUNTERFACTUAL_MARKERS.some(m => a.toLowerCase().includes(m.toLowerCase()))
+    );
+    if (!hasInverse && !negInAssumptions && assumptions.length > 0) {
+      issues.push({
+        check: "inverse_check", result: "WARN",
+        description: "逆反校验: 未检测到明确的反事实分支(P失效路径)，系统回退收敛性未知"
+      });
+    } else if (hasInverse || negInAssumptions) {
+      issues.push({
+        check: "inverse_check", result: "PASS",
+        description: "逆反校验: 检测到反事实标记，系统具备回退路径设计"
+      });
+    }
+  }
+
+  // Check 2: 反事实校验 (Counterfactual Check) — 每假设失效的后果
+  let missingCounter = 0;
+  assumptions.forEach((a, i) => {
+    let label = "A" + (i + 1);
+    let hasBranch = branches.some(b => {
+      let bv = b.assumption || b.premise || b.target || b.text || "";
+      return bv === a || bv === label || bv.includes(label) ||
+        (bv && a.includes(bv.slice(0, Math.min(5, bv.length))));
+    });
+    if (!hasBranch) missingCounter++;
+  });
+  if (missingCounter > 0 && assumptions.length > 0) {
+    let ratio = missingCounter / assumptions.length;
+    issues.push({
+      check: "counterfactual_check", result: ratio > 0.5 ? "HALT" : "WARN",
+      description: `反事实校验: ${missingCounter}/${assumptions.length} 个前提缺少失效应对方案 (覆盖率 ${Math.round((1 - ratio) * 100)}%)`
+    });
+  } else if (assumptions.length > 0) {
+    issues.push({
+      check: "counterfactual_check", result: "PASS",
+      description: `反事实校验: 全部 ${assumptions.length} 个前提均有对应失效分支`
+    });
+  }
+
+  // Check 3: 因果链完整性 (Chain Integrity) — P → A → Q
+  if (decision && outcome && assumptions.length > 0) {
+    // 启发式：决策与结果的文本相关性
+    let pWords = new Set(decision.split(/[，。、\s]+/).filter(w => w.length > 1));
+    let qWords = new Set(outcome.split(/[，。、\s]+/).filter(w => w.length > 1));
+    let aWords = new Set();
+    assumptions.forEach(a => a.split(/[，。、\s]+/).filter(w => w.length > 1).forEach(w => aWords.add(w)));
+
+    let pToA = [...pWords].filter(w => aWords.has(w)).length;
+    let aToQ = [...aWords].filter(w => qWords.has(w)).length;
+
+    if (pToA === 0 && aToQ === 0 && decision !== outcome) {
+      issues.push({
+        check: "chain_integrity", result: "WARN",
+        description: "因果链完整性: 决策(P)、前提(A)、结果(Q)之间关键词重叠度低，链路可能断裂"
+      });
+    } else {
+      issues.push({
+        check: "chain_integrity", result: "PASS",
+        description: `因果链完整性: P→A 链接 ${pToA} 个，A→Q 链接 ${aToQ} 个`
+      });
+    }
+  }
+
+  // Check 4: 信息黑洞检测 (Black Hole Detection)
+  let allText = decision + " " + outcome + " " + assumptions.join(" ");
+  let blackholeHits = BLACKHOLE_KEYWORDS.filter(kw =>
+    allText.toLowerCase().includes(kw.toLowerCase())
+  );
+  if (blackholeHits.length > 0) {
+    issues.push({
+      check: "blackhole_detection", result: "HALT",
+      description: `信息黑洞: 检测到关键信息真空标记 [${blackholeHits.join(", ")}]，因果链可能因信息缺失而断裂`,
+      blackhole_vars: blackholeHits
+    });
+  } else {
+    issues.push({
+      check: "blackhole_detection", result: "PASS",
+      description: "信息黑洞: 未检测到信息真空标记"
+    });
+  }
+
+  // Aggregate
+  let haltCount = issues.filter(i => i.result === "HALT").length;
+  let warnCount = issues.filter(i => i.result === "WARN").length;
+  let passCount = issues.filter(i => i.result === "PASS").length;
+
+  return {
+    plugin: "CCS", name: "因果链同步",
+    checks: issues,
+    pass_count: passCount, warn_count: warnCount, halt_count: haltCount,
+    pass: haltCount === 0,
+    inverse_converges: issues.find(i => i.check === "inverse_check")?.result === "PASS",
+    blackhole_detected: blackholeHits.length > 0
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// OP5: STATE — State Anchor (责任闭环锚定)
+// 穿透集体模糊，锚定最小决策单元 + 生成审计证书
+// ─────────────────────────────────────────────────────────────────────
+const VAGUE_ORG_PATTERNS = [
+  /(?:有关|相关|负责|主管|对应)\s*(?:部门|单位|机构|方面|人员)/gi,
+  /(?:项目|评审|决策|领导|管理)\s*(?:委员会|小组|团队|组|层|方)/gi,
+  /(?:各方|相关方|利益相关方|有关方面)/gi,
+  /relevant\s+(?:department|party|authorities)/gi,
+  /responsible\s+(?:team|department|party)/gi,
+  /stakeholders/gi
+];
+
+function sha256(text) {
+  // Simple SHA-256 implementation (pure JS, no crypto dependency needed for Cloudflare Pages)
+  // Using Web Crypto API when available, fallback to custom
+  return crypto.subtle.digest("SHA-256", new TextEncoder().encode(text))
+    .then(buf => Array.from(new Uint8Array(buf))
+      .map(b => b.toString(16).padStart(2, "0")).join(""));
+}
+
+function sha256SyncFallback(text) {
+  // FNV-1a based fingerprint as deterministic fallback (not crypto-secure but consistent)
+  let h1 = 0x811c9dc5, h2 = 0xdeadbeef;
+  for (let i = 0; i < text.length; i++) {
+    h1 ^= text.charCodeAt(i); h1 = Math.imul(h1, 0x01000193);
+    h2 ^= text.charCodeAt(i) * (i + 1); h2 = Math.imul(h2, 0x01000193);
+  }
+  return (h1 >>> 0).toString(16).padStart(8, "0") +
+    (h2 >>> 0).toString(16).padStart(8, "0") +
+    "0000000000000000";
+}
+
+async function runSTATE(ctx) {
+  let prior = ctx._prior_audit_results || {};
+  let responsible = (ctx.responsible_party || ctx.responsible || "").trim();
+  let flags = [];
+
+  // 模糊组织检测
+  let vagueOrgs = [];
+  VAGUE_ORG_PATTERNS.forEach(p => {
+    let m;
+    while ((m = p.exec(responsible))) {
+      vagueOrgs.push(m[0]);
+    }
+  });
+  if (vagueOrgs.length > 0) {
+    flags.push({
+      type: "vague_organization", severity: "WARN",
+      description: `责任主体模糊: '${vagueOrgs.join("', '")}' — 集体责任 = 无人负责`,
+      detected: vagueOrgs
+    });
+  }
+  if (!responsible) {
+    flags.push({
+      type: "missing_responsible", severity: "HALT",
+      description: "责任主体缺失: 未声明任何责任方，责任链断裂"
+    });
+  }
+
+  // 汇总裁决
+  let allResults = [];
+  if (prior.NS) allResults.push(prior.NS);
+  if (prior.IAP) allResults.push(prior.IAP);
+  if (prior.LCH) allResults.push(prior.LCH);
+  if (prior.CCS) allResults.push(prior.CCS);
+
+  let halts = allResults.filter(r => {
+    if (r.halt_count !== undefined) return r.halt_count > 0;
+    return r.pass === false && (r.violations?.some(v => v.severity === "HALT") ||
+      r.flags?.some(f => f.severity === "HALT") ||
+      r.checks?.some(c => c.result === "HALT"));
+  }).length;
+
+  let warns = allResults.reduce((sum, r) => {
+    if (r.violation_count !== undefined) return sum + r.violation_count;
+    if (r.flag_count !== undefined) return sum + r.flag_count;
+    if (r.warn_count !== undefined) return sum + r.warn_count;
+    return sum;
+  }, 0);
+
+  let finalVerdict;
+  if (halts > 0) finalVerdict = "AUDIT_HALT";
+  else if (warns > 0) finalVerdict = "AUDIT_WARN";
+  else finalVerdict = "AUDIT_PASS";
+
+  // 生成证书
+  let certData = {
+    engine: "SPL-Cognitive-Audit-Engine/v1.0.0",
+    timestamp: new Date().toISOString(),
+    decision: ctx.decision || "",
+    outcome: ctx.outcome || "",
+    assumptions_count: (ctx.assumptions || []).length,
+    responsible_party: responsible,
+    final_verdict: finalVerdict,
+    halt_count: halts,
+    warn_count: warns,
+    operator_results: {
+      NS: prior.NS?.pass ?? null,
+      IAP: prior.IAP?.pass ?? null,
+      LCH: prior.LCH?.pass ?? null,
+      CCS: prior.CCS?.pass ?? null
+    }
+  };
+  let certString = JSON.stringify(certData, null, 2);
+
+  let certHash;
+  try {
+    certHash = await sha256(certString);
+  } catch (e) {
+    certHash = sha256SyncFallback(certString);
+  }
+
+  return {
+    plugin: "STATE", name: "责任闭环锚定",
+    responsibility_anchored: responsible && vagueOrgs.length === 0,
+    responsible_party: responsible || "(未声明)",
+    vague_organizations: vagueOrgs,
+    flags,
+    final_verdict: finalVerdict,
+    halt_total: halts,
+    warn_total: warns,
+    audit_certificate: certString,
+    certificate_hash: certHash,
+    pass: finalVerdict === "AUDIT_PASS"
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Pipeline Orchestration
+// ─────────────────────────────────────────────────────────────────────
+async function runAuditPipeline(ctx) {
+  let results = {};
+  let pipelineCtx = { ...ctx, _prior_audit_results: results };
+
+  results.NS = runNS(ctx.text || "");
+  pipelineCtx._prior_audit_results = { ...results };
+
+  results.IAP = runIAP(pipelineCtx);
+  pipelineCtx._prior_audit_results = { ...results };
+
+  results.LCH = runLCH(pipelineCtx);
+  pipelineCtx._prior_audit_results = { ...results };
+
+  results.CCS = runCCS(pipelineCtx);
+  pipelineCtx._prior_audit_results = { ...results };
+
+  results.STATE = await runSTATE(pipelineCtx);
+
+  return results;
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// UI Interaction
+// ─────────────────────────────────────────────────────────────────────
+function addAssumption() {
+  let container = document.getElementById("assumptions-container");
+  let row = document.createElement("div");
+  row.className = "assumption-row";
+  row.innerHTML = '<input type="text" class="assumption-input" placeholder="前提假设..."><button class="btn-remove" onclick="removeRow(this)">×</button>';
+  container.appendChild(row);
+}
+function addBranch() {
+  let container = document.getElementById("branches-container");
+  let row = document.createElement("div");
+  row.className = "assumption-row";
+  row.innerHTML = '<input type="text" class="branch-input" placeholder="若 An 失效 → 应对方案 / ΔD"><button class="btn-remove" onclick="removeRow(this)">×</button>';
+  container.appendChild(row);
+}
+function removeRow(btn) {
+  btn.parentElement.remove();
+}
+
+function getVerdictTag(result) {
+  if (result.pass === true) return "PASS";
+  if (result.halt_count !== undefined && result.halt_count > 0) return "HALT";
+  if (result.checks?.some(c => c.result === "HALT")) return "HALT";
+  if (result.final_verdict === "AUDIT_HALT") return "HALT";
+  if (result.final_verdict === "AUDIT_PASS") return "PASS";
+  return "WARN";
+}
+
+function renderResults(results) {
+  let container = document.getElementById("results");
+  let state = results.STATE;
+  let verdict = state?.final_verdict || "AUDIT_PASS";
+  let verdictLabel = verdict.replace("AUDIT_", "");
+  let verdictText = {
+    "PASS": "✅ 审计通过 — AUDIT_PASS",
+    "WARN": "⚠️ 审计警告 — AUDIT_WARN",
+    "HALT": "🛑 审计阻断 — AUDIT_HALT"
+  }[verdictLabel] || verdict;
+
+  let totalViolations = 0, totalHalts = 0, totalWarns = 0;
+  ["NS", "IAP", "LCH", "CCS"].forEach(op => {
+    let r = results[op];
+    if (!r) return;
+    if (r.violation_count) totalViolations += r.violation_count;
+    if (r.flag_count) totalWarns += r.flag_count;
+    if (r.halt_count) totalHalts += r.halt_count;
+    if (r.warn_count) totalWarns += r.warn_count;
+  });
+
+  // Pipeline visualization
+  let pipeHTML = '<div class="pipeline-vis">';
+  ["NS", "IAP", "LCH", "CCS", "STATE"].forEach((op, i) => {
+    let r = results[op];
+    let tag = r ? getVerdictTag(r) : "SKIP";
+    pipeHTML += `<span class="pipe-node done-${tag}">${op}</span>`;
+    if (i < 4) pipeHTML += '<span class="pipe-arrow">→</span>';
+  });
+  pipeHTML += '</div>';
+
+  let html = `
+    <div class="verdict-banner verdict-${verdictLabel}">${verdictText}</div>
+    ${pipeHTML}
+    <div class="summary-grid">
+      <div class="summary-item"><div class="num" style="color:var(--accent)">5</div><div class="lbl">算子执行</div></div>
+      <div class="summary-item"><div class="num" style="color:var(--red)">${totalHalts || 0}</div><div class="lbl">阻断项</div></div>
+      <div class="summary-item"><div class="num" style="color:var(--yellow)">${totalWarns || totalViolations || 0}</div><div class="lbl">警告项</div></div>
+      <div class="summary-item"><div class="num" style="color:var(--green)">${5 - (totalHalts > 0 ? 1 : 0) - (totalWarns > 0 ? 1 : 0)}</div><div class="lbl">通过项</div></div>
+      <div class="summary-item"><div class="num" style="color:var(--purple)">${(results.LCH?.system_delta_d * 100).toFixed(0)}%</div><div class="lbl">系统ΔD</div></div>
+    </div>
+  `;
+
+  // NS Card
+  let ns = results.NS;
+  let nsTag = getVerdictTag(ns);
+  html += `<div class="op-card">
+    <div class="op-card-header">
+      <span class="op-card-title">① NS · 叙事剥离</span>
+      <span class="op-tag tag-${nsTag}">${nsTag}</span>
+    </div>
+    <div class="op-detail">
+      检出 <code>${ns.violation_count}</code> 个叙事标记 · 逻辑核心长度 <code>${ns.logical_core.length}</code> 字符
+      ${ns.violation_count > 0 ? `<button class="collapse-btn" onclick="toggleDetail('ns-detail')">▼ 查看详情</button>` : ""}
+    </div>
+    ${ns.violation_count > 0 ? `<div id="ns-detail" class="hidden">
+      <ul class="violation-list">
+        ${ns.violations.map(v => `<li class="sev-${v.severity}">• [${v.severity}] ${v.description}</li>`).join("")}
+      </ul>
+      <div style="margin-top:8px"><strong style="font-size:12px">逻辑核心:</strong>
+        <div style="font-size:12px;color:var(--text);margin-top:4px;padding:8px;background:var(--surface);border-radius:6px">${escapeHtml(ns.logical_core)}</div>
+      </div>
+    </div>` : ""}
+  </div>`;
+
+  // IAP Card
+  let iap = results.IAP;
+  let iapTag = getVerdictTag(iap);
+  html += `<div class="op-card">
+    <div class="op-card-header">
+      <span class="op-card-title">② IAP · 内隐假设透视</span>
+      <span class="op-tag tag-${iapTag}">${iapTag}</span>
+    </div>
+    <div class="op-detail">
+      发现 <code>${iap.flag_count}</code> 个内隐假设 · 其中 HALT 级 <code>${iap.halt_count || 0}</code> 个
+      ${iap.flag_count > 0 ? `<button class="collapse-btn" onclick="toggleDetail('iap-detail')">▼ 查看详情</button>` : ""}
+    </div>
+    ${iap.flag_count > 0 ? `<div id="iap-detail" class="hidden">
+      <ul class="violation-list">
+        ${iap.flags.map(f => `<li class="sev-${f.severity}">• [${f.severity}] ${f.description}</li>`).join("")}
+      </ul>
+    </div>` : ""}
+  </div>`;
+
+  // LCH Card
+  let lch = results.LCH;
+  let lchTag = getVerdictTag(lch);
+  html += `<div class="op-card">
+    <div class="op-card-header">
+      <span class="op-card-title">③ LCH · 脆弱性对冲</span>
+      <span class="op-tag tag-${lchTag}">${lchTag}</span>
+    </div>
+    <div class="op-detail">
+      审计 <code>${lch.assumptions_audited}</code> 个前提 · 系统ΔD <code>${(lch.system_delta_d * 100).toFixed(0)}%</code> · 最弱变量 <code>${lch.weakest_variable?.label || "—"}</code>
+      ${lch.assumptions_audited > 0 ? `<button class="collapse-btn" onclick="toggleDetail('lch-detail')">▼ 查看详情</button>` : ""}
+    </div>
+    ${lch.assumptions_audited > 0 ? `<div id="lch-detail" class="hidden">
+      <ul class="violation-list">
+        ${lch.fragility_report.map(r => `
+          <li>
+            <strong>${r.label}</strong>: ${escapeHtml(r.assumption.slice(0, 40))}${r.assumption.length > 40 ? "..." : ""}
+            <div style="display:flex;align-items:center;gap:8px;margin-top:2px">
+              <span style="color:${r.delta_d > 0.6 ? 'var(--red)' : r.delta_d > 0.4 ? 'var(--yellow)' : 'var(--green)'};font-weight:600">ΔD ${(r.delta_d * 100).toFixed(0)}%</span>
+              <div class="dd-bar" style="flex:1"><div class="dd-bar-fill" style="width:${r.delta_d * 100}%;background:${r.delta_d > 0.6 ? 'var(--red)' : r.delta_d > 0.4 ? 'var(--yellow)' : 'var(--green)'}"></div></div>
+            </div>
+            <div style="font-size:11px;color:var(--text-dim);margin-top:2px">${r.factors.join(" · ")}</div>
+          </li>
+        `).join("")}
+      </ul>
+      <div style="margin-top:8px;font-size:12px">
+        <strong>最弱变量:</strong> ${lch.weakest_variable ? `${lch.weakest_variable.label} (ΔD ${(lch.weakest_variable.delta_d * 100).toFixed(0)}%)` : "—"}
+      </div>
+    </div>` : ""}
+  </div>`;
+
+  // CCS Card
+  let ccs = results.CCS;
+  let ccsTag = getVerdictTag(ccs);
+  html += `<div class="op-card">
+    <div class="op-card-header">
+      <span class="op-card-title">④ CCS · 因果链同步</span>
+      <span class="op-tag tag-${ccsTag}">${ccsTag}</span>
+    </div>
+    <div class="op-detail">
+      通过 <code>${ccs.pass_count}</code> · 警告 <code>${ccs.warn_count}</code> · 阻断 <code>${ccs.halt_count}</code>
+      <button class="collapse-btn" onclick="toggleDetail('ccs-detail')">▼ 查看详情</button>
+    </div>
+    <div id="ccs-detail" class="hidden">
+      <ul class="violation-list">
+        ${ccs.checks.map(c => `<li class="sev-${c.result}">• [${c.result}] ${c.description}</li>`).join("")}
+      </ul>
+    </div>
+  </div>`;
+
+  // STATE Card
+  let st = results.STATE;
+  let stTag = verdictLabel;
+  html += `<div class="op-card">
+    <div class="op-card-header">
+      <span class="op-card-title">⑤ STATE · 责任闭环锚定</span>
+      <span class="op-tag tag-${stTag}">${stTag}</span>
+    </div>
+    <div class="op-detail">
+      责任主体: <code>${escapeHtml(st.responsible_party)}</code>
+      ${st.vague_organizations.length > 0 ? ` · <span style="color:var(--yellow)">检测到模糊组织</span>` : ""}
+      <button class="collapse-btn" onclick="toggleDetail('state-detail')">▼ 查看证书</button>
+    </div>
+    <div id="state-detail" class="hidden">
+      ${st.flags.length > 0 ? `<ul class="violation-list">
+        ${st.flags.map(f => `<li class="sev-${f.severity}">• [${f.severity}] ${f.description}</li>`).join("")}
+      </ul>` : ""}
+      <div style="margin-top:8px"><strong style="font-size:12px">审计证书 (SHA-256):</strong>
+        <div class="cert-box" id="cert-hash">${st.certificate_hash}</div>
+      </div>
+      <button class="collapse-btn" onclick="toggleDetail('cert-full')">▼ 展开完整证书</button>
+      <div id="cert-full" class="hidden">
+        <pre class="cert-box" style="white-space:pre-wrap;margin-top:4px">${escapeHtml(st.audit_certificate)}</pre>
+      </div>
+    </div>
+  </div>`;
+
+  container.innerHTML = html;
+}
+
+function toggleDetail(id) {
+  let el = document.getElementById(id);
+  if (el) el.classList.toggle("hidden");
+}
+
+function escapeHtml(s) {
+  let d = document.createElement("div");
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Main Entry
+// ─────────────────────────────────────────────────────────────────────
+async function runAudit() {
+  let btn = document.getElementById("runBtn");
+  btn.disabled = true;
+  btn.textContent = "⏳ 审计中...";
+
+  try {
+    // Collect inputs
+    let text = document.getElementById("text").value;
+    let decision = document.getElementById("decision").value;
+    let outcome = document.getElementById("outcome").value;
+    let responsible = document.getElementById("responsible").value;
+    let assumptions = [...document.querySelectorAll(".assumption-input")]
+      .map(i => i.value).filter(v => v.trim());
+    let branches = [...document.querySelectorAll(".branch-input")]
+      .map(i => i.value).filter(v => v.trim())
+      .map(b => ({ text: b, assumption: b.match(/A\d+/)?.[0] || "" }));
+
+    let ctx = {
+      text, decision, outcome,
+      assumptions, branches,
+      responsible_party: responsible,
+      dependencies: {}
+    };
+
+    let results = await runAuditPipeline(ctx);
+    renderResults(results);
+  } catch (e) {
+    document.getElementById("results").innerHTML =
+      `<div style="color:var(--red);text-align:center;padding:20px">审计执行错误: ${e.message}</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "▶ 运行审计";
+  }
+}
+
+// Auto-run on page load
+window.addEventListener("DOMContentLoaded", () => {
+  runAudit();
+});
+</script>
+</body>
+</html>
