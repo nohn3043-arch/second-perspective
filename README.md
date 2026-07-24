@@ -14,6 +14,22 @@ This engine delivers neutral, traceable structural support for high-stakes ratio
 
 ✅ **Passed IMDA AI Verify assessment with an overall score of 95**
 
+### 🔗 Try It Online
+
+Experience the full five-operator causal audit pipeline directly in your browser — zero installation, zero data upload, fully deterministic.
+
+🌐 **Live Demo**: [https://nohnlins.com/audit/](https://nohnlins.com/audit/)
+
+| Operator | Code | Description |
+|----------|------|-------------|
+| Narrative Strip | NS | Strips rhetoric, emotion, and vague quantifiers to extract logical core |
+| Implicit Assumption Perspective | IAP | Uncovers hidden assumptions, privilege bypass, circular justification |
+| Fragility Latch | LCH | Computes ΔD collapse probability per assumption, finds weakest variable |
+| Causal Chain Sync | CCS | Inverse check + counterfactual verification + black hole detection |
+| State Anchor | STATE | Responsibility anchoring + SHA-256 audit certificate |
+
+> Runs entirely client-side. Your decision data never leaves your browser.
+
 ---
 
 ## The First Constant Formula
