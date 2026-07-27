@@ -6,7 +6,7 @@ The **Global Cognitive Audit Engine (GCAE)** is the world's first neutral, offli
 
 ### Core Mission
 
-> All uncertainty, all disasters, and all suffering ultimately arise from our ignorance of causal chains.
+## All uncertainty, all disasters, and all suffering ultimately arise from our ignorance of causal chains.
 
 This engine delivers neutral, traceable structural support for high-stakes rational decision-making through systematic identification of implicit assumptions, objective uncertainties, and human cognitive biases.
 
