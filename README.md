@@ -1,12 +1,10 @@
-# Global Cognitive Audit Engine (GCAE)
-
 ## Project Overview
 
 The **Global Cognitive Audit Engine (GCAE)** is the world's first neutral, offline, and decision-agnostic cognitive bias auditing engine. It provides independent third-party security and compliance auditing for AI systems and enterprise decisions without modifying internal model codes.
 
 ### Core Mission
 
-## All uncertainty, all disasters, and all suffering ultimately arise from our ignorance of causal chains.
+# All uncertainty, all disasters, and all suffering ultimately arise from our ignorance of causal chains.
 
 This engine delivers neutral, traceable structural support for high-stakes rational decision-making through systematic identification of implicit assumptions, objective uncertainties, and human cognitive biases.
 
