@@ -1,4 +1,4 @@
-# 所有的不确定性，灾难，痛苦，都源于我们对因果链的未知
+<h1 style="color: blue; font-style: italic;">所有的不确定性，灾难，痛苦，都源于我们对因果链的未知</h1>
 ## Project Overview
 
 The **Global Cognitive Audit Engine (GCAE)** is the world's first neutral, offline, and decision-agnostic cognitive bias auditing engine. It provides independent third-party security and compliance auditing for AI systems and enterprise decisions without modifying internal model codes.
