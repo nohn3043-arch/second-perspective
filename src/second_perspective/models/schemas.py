@@ -380,3 +380,76 @@ class DecisionRecord(StrictModel):
     revision: int = Field(default=1, ge=1)
     parent_record_hash: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
     record_hash: str = Field(default="", pattern=r"^$|^[0-9a-f]{64}$")
+
+
+# ── Causal Reconstruction Models ──────────────────────────────────────
+
+
+class DeviationSignal(StrictModel):
+    """经营变量偏差信号，由感知层推送至决策层。
+
+    代表一个可观测的指标偏离，携带来源管道标识符以便审计追溯。
+    """
+
+    metric: str = Field(min_length=1, description="偏离指标名，对应 Criterion.metric 或 Alternative.metrics 的 key")
+    observed: Any = Field(description="观测值")
+    baseline: Any = Field(description="基线/预期值，用于判定偏离方向")
+    direction: str = Field(pattern=r"^(above|below|anomaly)$", description="偏离方向")
+    observed_at: datetime = Field(description="观测时间点，必须带时区")
+    source: str = Field(min_length=1, description="感知管道标识符，用于审计追溯")
+
+    @model_validator(mode="after")
+    def validate_timezone(self) -> "DeviationSignal":
+        if self.observed_at.utcoffset() is None:
+            raise ValueError("observed_at must include a timezone offset")
+        return self
+
+
+class RootCauseHypothesis(StrictModel):
+    """候选根因假设。
+
+    每条假设声明一个可能的根因假设节点，附带追溯出的因果链、
+    可解释的偏差信号、缺失信息以及推荐验证动作。
+    引擎不判定哪条假设"正确"——这是人类审批者的权力。
+    """
+
+    id: str = Field(pattern=r"^RH-[0-9A-Za-z_-]+$")
+    root_assumption_id: str = Field(description="候选根因——依赖图中最上游的失效假设 ID")
+    causal_chain: list[str] = Field(
+        description="从根因到观测信号的节点序列 root -> ... -> observed-effect"
+    )
+    explained_signals: list[str] = Field(
+        description="该假设可解释的偏差信号的 metric 名"
+    )
+    missing_evidence_ids: list[str] = Field(
+        default_factory=list,
+        description="确认或排除该假设所需的、当前缺失的证据 ID",
+    )
+    verification_action: str = Field(
+        min_length=1, description="推荐的人类验证动作"
+    )
+    dependency_depth: int = Field(ge=0, description="依赖链深度（根因到最远观测的距离）")
+    severity: IssueSeverity = Field(description="根因影响严重度")
+
+
+class CausalReconstructionReport(StrictModel):
+    """因果重构推演报告。
+
+    包含一组候选根因假设和追溯过程的审计信息。
+    报告本身不声称确定性结论——它是一份结构化的诊断输入，
+    供决策者验证后使用。
+    """
+
+    reconstruction_id: str = Field(pattern=r"^REC-[0-9A-Za-z_-]+$")
+    hypotheses: list[RootCauseHypothesis] = Field(default_factory=list)
+    signal_count: int = Field(ge=0, description="输入的偏差信号总数")
+    root_candidate_count: int = Field(ge=0, description="去重后的根因候选数")
+    unresolved_branches: list[str] = Field(
+        default_factory=list,
+        description="因信息真空无法继续追溯的假设 ID",
+    )
+    algorithm_audit: list[AlgorithmAuditEvent] = Field(default_factory=list)
+    algorithm_audit_root_hash: str | None = Field(
+        default=None, pattern=r"^[0-9a-f]{64}$"
+    )
+    generated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

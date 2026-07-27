@@ -16,8 +16,10 @@ from .enums import (
 from .schemas import (
     AlgorithmAuditEvent,
     AuditIssue,
+    CausalReconstructionReport,
     DecisionRecord,
     DecisionRequest,
+    DeviationSignal,
     StrictModel,
 )
 
@@ -35,6 +37,8 @@ class HubAnalysisRequest(StrictModel):
     decision: DecisionRequest
     scenarios: list[ScenarioDefinition] = Field(default_factory=list)
     run_cognitive_audit: bool = True
+    run_causal_reconstruction: bool = False
+    deviation_signals: list[DeviationSignal] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def validate_scenarios(self) -> "HubAnalysisRequest":
@@ -135,6 +139,7 @@ class HubReport(StrictModel):
     decision_record: DecisionRecord
     scenarios: list[ScenarioResult] = Field(default_factory=list)
     cognitive_audit: CognitiveAuditReport | None = None
+    causal_reconstruction: CausalReconstructionReport | None = None
     information_priorities: list[InformationPriority] = Field(default_factory=list)
     hub_policy: HubPolicySnapshot
     algorithm_audit_verified: bool

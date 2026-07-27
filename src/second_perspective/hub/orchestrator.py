@@ -10,6 +10,7 @@ from .cognitive import CognitiveRiskScanner
 from .information import build_information_priorities
 from .integrity import seal_hub_report
 from .policy import HubPolicy
+from .reconstruction import run_causal_reconstruction
 from .repository import HubReportRepository, InMemoryHubReportRepository
 from .scenario import analyze_scenarios
 
@@ -41,6 +42,11 @@ class IntelligentDecisionHub:
             baseline=result,
             scenarios=request.scenarios,
         )
+        reconstruction = (
+            run_causal_reconstruction(record.request, request.deviation_signals)
+            if request.run_causal_reconstruction
+            else None
+        )
         cognitive_report = (
             self.cognitive_scanner.scan(record.request, result)
             if request.run_cognitive_audit
@@ -52,6 +58,7 @@ class IntelligentDecisionHub:
             decision_record=record,
             scenarios=scenario_results,
             cognitive_audit=cognitive_report,
+            causal_reconstruction=reconstruction,
             information_priorities=build_information_priorities(record.request, result),
             hub_policy=self.policy.snapshot(),
             algorithm_audit_verified=verify_algorithm_audit(
