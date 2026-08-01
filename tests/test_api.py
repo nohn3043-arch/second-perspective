@@ -103,7 +103,7 @@ def test_production_authentication_fails_closed(monkeypatch):
     response = client.post("/v1/decisions/evaluate", json=load_example())
 
     assert response.status_code == 503
-    assert response.json()["detail"] == "SP_API_KEY must be configured in production."
+    assert response.json()["detail"] == "SP_API_KEY or SP_OIDC_ISSUER must be configured in production."
 
 
 def test_configured_api_key_is_required(monkeypatch):

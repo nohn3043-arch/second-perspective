@@ -1,15 +1,19 @@
 from __future__ import annotations
 
-from fastapi import Depends, FastAPI, HTTPException, status
+import os
+
+from fastapi import Depends, FastAPI, Header, HTTPException, status
 
 from ..governance.approval import ApprovalError
 from ..hub import HubReportNotFoundError, IntelligentDecisionHub
+from ..hub.repository import InMemoryHubReportRepository
 from ..models.hub import HubAnalysisRequest, HubReport
 from ..models.schemas import (
     ApprovalRequest,
     DecisionRecord,
     DecisionRequest,
 )
+from ..repository import InMemoryDecisionRepository
 from ..service import DecisionNotFoundError, DecisionService
 from ..version import VERSION
 from .security import verify_api_key
@@ -23,13 +27,85 @@ app = FastAPI(
     ),
 )
 
-service = DecisionService()
-hub = IntelligentDecisionHub(service=service)
+
+def _build_service() -> DecisionService:
+    dsn = os.getenv("SP_DATABASE_DSN", "").strip()
+    if dsn:
+        from ..persistence.postgres import (
+            PostgresDecisionRepository,
+            PostgresHubReportRepository,
+        )
+
+        return DecisionService(
+            repository=PostgresDecisionRepository(dsn)
+        )
+
+    return DecisionService(repository=InMemoryDecisionRepository())
+
+
+def _build_hub(service: DecisionService) -> IntelligentDecisionHub:
+    dsn = os.getenv("SP_DATABASE_DSN", "").strip()
+    if dsn:
+        from ..persistence.postgres import PostgresHubReportRepository
+
+        return IntelligentDecisionHub(
+            service=service,
+            repository=PostgresHubReportRepository(dsn),
+        )
+
+    return IntelligentDecisionHub(
+        service=service,
+        repository=InMemoryHubReportRepository(),
+    )
+
+
+service = _build_service()
+hub = _build_hub(service)
+
+
+def _build_identity_response(authorization: str | None = None) -> dict:
+    """Build a lightweight identity snapshot for the /auth/me endpoint."""
+    if not authorization:
+        return {"mode": "none", "subject": "anonymous"}
+    scheme, _, supplied = authorization.partition(" ")
+    if scheme.casefold() != "bearer" or not supplied:
+        return {"mode": "none", "subject": "anonymous"}
+    oidc_issuer = os.getenv("SP_OIDC_ISSUER", "").strip()
+    if oidc_issuer:
+        try:
+            claims = _decode_oidc_token(supplied)
+            return {
+                "mode": "oidc",
+                "issuer": oidc_issuer,
+                "subject": claims.get("sub", ""),
+                "name": claims.get("preferred_username", claims.get("name", "")),
+                "email": claims.get("email", ""),
+                "groups": claims.get("groups", []),
+            }
+        except Exception:
+            pass
+    return {"mode": "api_key", "subject": "bearer-authenticated"}
+
+
+def _decode_oidc_token(token: str) -> dict:
+    """Attempt to decode an OIDC JWT without verifying the signature
+    (full verification is done by the auth middleware)."""
+    try:
+        from jose import jwt
+
+        return jwt.get_unverified_claims(token)
+    except Exception:
+        return {}
 
 
 @app.get("/health", operation_id="healthCheck")
 def health_check() -> dict[str, str]:
     return {"status": "ok", "version": VERSION}
+
+
+@app.get("/v1/auth/me", operation_id="authWhoAmI")
+def auth_me(authorization: str | None = Header(default=None)) -> dict:
+    return _build_identity_response(authorization)
 
 
 @app.post(
