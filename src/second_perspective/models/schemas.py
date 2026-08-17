@@ -9,14 +9,18 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from .enums import (
     AlternativeStatus,
     AssumptionSource,
+    AssumptionState,
     ConstraintKind,
     ConstraintOperator,
+    ConvergenceKind,
     CounterfactualStatus,
     DecisionStatus,
     EvaluationMode,
     EvidenceStatus,
     IssueSeverity,
+    ReconstructionKind,
     ScoringRule,
+    SessionStatus,
 )
 
 
@@ -453,3 +457,76 @@ class CausalReconstructionReport(StrictModel):
         default=None, pattern=r"^[0-9a-f]{64}$"
     )
     generated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+# ── Three-Layer Reconstruction Session Models ──────────────────────────
+
+
+class DeltaVar(StrictModel):
+    """A declared correction variable injected into delta reconstruction.
+
+    `path` targets an element of the decision structure (e.g. an assumption
+    falsification, a criterion weight, an alternative metric). The engine
+    applies it verbatim — it never invents corrections itself.
+    """
+
+    path: str = Field(min_length=1, description="修正路径，如 'A2'、'criteria.K1.weight'、'alternatives.S1.metrics.cost'")
+    value: Any = Field(description="修正后的值")
+    reason: str = Field(min_length=1, description="修正理由（由人类声明，引擎不推断）")
+    responsibility: ResponsibilityRef | None = None
+
+
+class ConvergenceReport(StrictModel):
+    """Third-layer result: what changes when declared delta_vars are applied."""
+
+    kind: ConvergenceKind = Field(description="收敛类型：fixed_point / no_gain / budget")
+    reconstruction_id: str = Field(pattern=r"^REC-[0-9A-Za-z_-]+$")
+    delta_vars: list[DeltaVar] = Field(default_factory=list)
+    before_leading_candidate_ids: list[str] = Field(default_factory=list)
+    after_leading_candidate_ids: list[str] = Field(default_factory=list)
+    candidate_set_changed: bool = Field(description="应用 delta 后领先候选集合是否变化")
+    invalidated_assumption_ids: list[str] = Field(default_factory=list)
+    is_converged: bool = Field(description="是否已到达收敛点")
+    reason: str = Field(min_length=1, description="人类可读的收敛/停止说明")
+    algorithm_audit: list[AlgorithmAuditEvent] = Field(default_factory=list)
+    algorithm_audit_root_hash: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
+
+
+class SessionRound(StrictModel):
+    """One iteration of a reconstruction session (all three layers executed)."""
+
+    round_index: int = Field(ge=0)
+    kind: ReconstructionKind = Field(description="本轮主导的重构层")
+    invalidated_assumption_ids: list[str] = Field(default_factory=list)
+    hypotheses: list[RootCauseHypothesis] = Field(default_factory=list)
+    unresolved_branches: list[str] = Field(default_factory=list)
+    convergence: ConvergenceReport | None = None
+    applied_delta_vars: list[DeltaVar] = Field(default_factory=list)
+    assumption_states: dict[str, AssumptionState] = Field(default_factory=dict)
+    round_root_hash: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
+    previous_round_hash: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
+    requires_human_decision: bool = True
+
+
+class ReconstructionSession(StrictModel):
+    """A bounded, hash-chained, human-gated reconstruction session.
+
+    Replaces single-shot reconstruction with an iterative process: each round
+    runs forward propagation → backward tracing → delta reconstruction, records
+    all events into a session-level hash chain, and pauses for a human decision.
+    The session converges when no new information is produced, or stops when an
+    explicit budget is exhausted.
+    """
+
+    session_id: str = Field(pattern=r"^SESS-[0-9A-Za-z_-]+$")
+    request: DecisionRequest
+    deviation_signals: list[DeviationSignal] = Field(default_factory=list)
+    rounds: list[SessionRound] = Field(default_factory=list)
+    assumption_states: dict[str, AssumptionState] = Field(default_factory=dict)
+    status: SessionStatus = SessionStatus.ACTIVE
+    convergence_kind: ConvergenceKind | None = None
+    max_iterations: int = Field(default=5, ge=1, description="最大推演轮次预算")
+    max_evidence_requests: int = Field(default=20, ge=1, description="最大证据请求预算")
+    session_root_hash: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    sealed_at: datetime | None = None

@@ -80,3 +80,50 @@ class InformationPriorityTier(StrEnum):
     LEADER_EXPOSED = "leader_exposed"
     STRUCTURAL = "structural"
     REVIEW = "review"
+
+
+class AssumptionState(StrEnum):
+    """Per-round assumption state inside a reconstruction session.
+
+    Transitions are monotone: once VERIFIED or FALSIFIED an assumption never
+    returns to ASSUMED. UNFALSIFIABLE is a terminal human-declared state.
+    """
+
+    ASSUMED = "assumed"
+    VERIFIED = "verified"
+    FALSIFIED = "falsified"
+    UNFALSIFIABLE = "unfalsifiable"
+
+
+class ReconstructionKind(StrEnum):
+    """The three layers of causal reconstruction.
+
+    1. FORWARD_PROPAGATION  — invalidation_closure: A1 fails → what else breaks.
+    2. BACKWARD_TRACING     — CausalReconstructor: deviation → candidate root cause.
+    3. DELTA_RECONSTRUCTION — apply declared delta_vars, re-evaluate, check convergence.
+    """
+
+    FORWARD_PROPAGATION = "forward_propagation"
+    BACKWARD_TRACING = "backward_tracing"
+    DELTA_RECONSTRUCTION = "delta_reconstruction"
+
+
+class SessionStatus(StrEnum):
+    ACTIVE = "active"
+    AWAITING_HUMAN = "awaiting_human"
+    CONVERGED = "converged"
+    SEALED = "sealed"
+    BUDGET_EXCEEDED = "budget_exceeded"
+
+
+class ConvergenceKind(StrEnum):
+    """Why a reconstruction session stopped.
+
+    - FIXED_POINT: re-evaluation changed neither candidates nor hypothesis set.
+    - NO_GAIN:     no unresolved branches remain and every open hypothesis is answered.
+    - BUDGET:      iteration or evidence budget exhausted.
+    """
+
+    FIXED_POINT = "fixed_point"
+    NO_GAIN = "no_gain"
+    BUDGET = "budget"
