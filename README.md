@@ -179,8 +179,6 @@ second-perspective/
 │   ├── ccs.py                     #   Causal Chain Sync
 │   └── state.py                   #   State Anchor
 ├── llm_adapters/openai_adapter.py # optional OpenAI narrative adapter
-├── web/                           # client-side audit demo
-├── docs/                          # documentation / index.html
 ├── language Standard/             # Language Standard 2026
 ├── 全新决策结构语言/              # decision-structure language specification
 ├── IMDA_AI_Verify_Causal_Audit_Report.pdf
