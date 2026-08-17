@@ -1,62 +1,92 @@
-# Global Cognitive Audit Engine (GCAE)
+<p align="center">
+  <img src="https://img.shields.io/badge/causal-audit-D4AF37?style=flat-square" alt="causal-audit">
+  <img src="https://img.shields.io/badge/offline-D4AF37?style=flat-square" alt="offline">
+  <img src="https://img.shields.io/badge/imda-score-95-D4AF37?style=flat-square" alt="imda-score-95">
+  <img src="https://img.shields.io/badge/second-perspective-language-D4AF37?style=flat-square" alt="second-perspective-language">
+</p>
 
-## Project Overview
+<blockquote align="center">
+  <em>Global Cognitive Audit Engine (GCAE) · Second-Perspective Language</em>
+</blockquote>
 
-The **Global Cognitive Audit Engine (GCAE)** is the world's first neutral, offline, and decision-agnostic cognitive bias auditing engine. It provides independent third-party security and compliance auditing for AI systems and enterprise decisions without modifying internal model codes.
+<div style="max-width:880px;margin:0 auto;padding:0 16px">
 
-### Core Mission
+## ✦ About
 
-> All uncertainty, all disasters, and all suffering ultimately arise from our ignorance of causal chains.
+<p style="font-size:15px;line-height:1.8;color:#2C2C2C">
+The <strong>Global Cognitive Audit Engine (GCAE)</strong> is the world's first neutral, offline, and decision-agnostic cognitive bias auditing engine. It provides independent third-party security and compliance auditing for AI systems and enterprise decisions without modifying internal model codes.
+</p>
 
-This engine delivers neutral, traceable structural support for high-stakes rational decision-making through systematic identification of implicit assumptions, objective uncertainties, and human cognitive biases.
+<p style="font-size:15px;line-height:1.8;color:#2C2C2C">
+<strong>Core mission</strong> — all uncertainty, all disasters, and all suffering ultimately arise from our ignorance of causal chains. The engine delivers neutral, traceable structural support for high-stakes rational decision-making through systematic identification of implicit assumptions, objective uncertainties, and human cognitive biases.
+</p>
 
-### Key Achievement
+<p style="font-size:15px;line-height:1.8;color:#2C2C2C">
+✅ <strong>Passed the IMDA AI Verify assessment with an overall score of 95</strong> — full report in <code>IMDA_AI_Verify_Causal_Audit_Report.pdf</code>.
+</p>
 
-✅ **Passed IMDA AI Verify assessment with an overall score of 95**
+</div>
 
-### 🔗 Try It Online
+<p align="center">— ✦ —</p>
 
-Experience the full five-operator causal audit pipeline directly in your browser — zero installation, zero data upload, fully deterministic.
+## ✦ Try It Online
+
+<div style="max-width:880px;margin:0 auto;padding:0 16px">
+
+Experience the full five-operator causal audit pipeline directly in your browser — zero installation, zero data upload, fully deterministic:
 
 🌐 **Live Demo**: [https://nohnlins.com/audit/](https://nohnlins.com/audit/)
 
-| Operator | Code | Description |
-|----------|------|-------------|
-| Narrative Strip | NS | Strips rhetoric, emotion, and vague quantifiers to extract logical core |
-| Implicit Assumption Perspective | IAP | Uncovers hidden assumptions, privilege bypass, circular justification |
-| Fragility Latch | LCH | Computes ΔD collapse probability per assumption, finds weakest variable |
-| Causal Chain Sync | CCS | Inverse check + counterfactual verification + black hole detection |
-| State Anchor | STATE | Responsibility anchoring + SHA-256 audit certificate |
-
 > Runs entirely client-side. Your decision data never leaves your browser.
 
----
+</div>
 
-## The First Constant Formula
+<p align="center">— ✦ —</p>
 
-$$p♾️Q$$
+## ✦ The Five Operators
 
-Where **p** represents principle, rule, or constraint, and **Q** represents outcome, state, or consequence. The symbol **♾️** denotes an unbroken, continuous, and non-bypassable causal linkage.
+<div style="max-width:880px;margin:0 auto;padding:0 16px">
 
-If the continuity between **p** and **Q** is severed, obscured, or silently altered, the system no longer operates under governance, but under narrative.
+Each operator ships as a plugin in `plugins/`:
 
----
+| Operator | Plugin | Description |
+|---|---|---|
+| Narrative Strip (NS) | `plugins/ns.py` | Strips rhetoric, emotion, and vague quantifiers to extract the logical core |
+| Implicit Assumption Perspective (IAP) | `plugins/iap.py` | Uncovers hidden assumptions, privilege bypass, circular justification |
+| Fragility Latch (LCH) | `plugins/lch.py` | Computes ΔD collapse probability per assumption, finds the weakest variable |
+| Causal Chain Sync (CCS) | `plugins/ccs.py` | Inverse check + counterfactual verification + black hole detection |
+| State Anchor (STATE) | `plugins/state.py` | Responsibility anchoring + SHA-256 audit certificate |
 
-## The Constant Formula
+</div>
 
-$$\Phi\{f_s, x, y\} \rightarrow \{True, False\}$$
+<p align="center">— ✦ —</p>
 
-- **Φ** refers to a structural audit predicate
-- Verifies whether a given decision structure meets minimum requirements for rational consistency
-- Based on system function $f_s$ and input conditions $x, y$
-- Generates no recommendations or optimizations — only returns audit results
+## ✦ The Constant Formula
 
----
+<div style="max-width:880px;margin:0 auto;padding:0 16px">
 
-## Core Features
+<p style="font-size:15px;line-height:1.8;color:#2C2C2C">
+<strong>p → Q</strong> — where <strong>p</strong> represents principle, rule, or constraint, and <strong>Q</strong> represents outcome, state, or consequence. The arrow denotes an unbroken, continuous, and non-bypassable causal linkage.
+</p>
+
+<p style="font-size:15px;line-height:1.8;color:#2C2C2C">
+If the continuity between p and Q is severed, obscured, or silently altered, the system no longer operates under governance, but under narrative.
+</p>
+
+<p style="font-size:15px;line-height:1.8;color:#2C2C2C">
+<strong>Structural audit predicate</strong> — Φ{f_s, x, y} → {True, False}: verifies whether a given decision structure meets minimum requirements for rational consistency, based on system function f_s and input conditions x, y. It generates no recommendations or optimizations — only audit results.
+</p>
+
+<p style="font-size:15px;line-height:1.8;color:#2C2C2C">
+<strong>Second-perspective decision form</strong> — a valid decision is a three-part structure: Decision (D) · Hypothesis Premise (A) · Branch Response (ΔD), expressed as <strong>¬A ⇒ ΔD</strong> (when a core assumption fails, the branch response fires).
+</p>
+
+</div>
+
+## ✦ Core Features
 
 | Feature | Description |
-|---------|-------------|
+|---|---|
 | 🛡️ **Neutral Auditing** | Maintains 100% neutral third-party position, no affiliation with any LLM vendor |
 | 🔒 **Fully Offline** | No internet connection or cloud data transmission required |
 | 🔐 **Privacy First** | Zero user data collection with local closed-loop data isolation |
@@ -64,165 +94,122 @@ $$\Phi\{f_s, x, y\} \rightarrow \{True, False\}$$
 | 🔧 **No Model Modification** | Compatible with all mainstream LLMs without altering source code |
 | 📊 **Structured Analysis** | Provides decision structure verification without subjective conclusions |
 
----
+<p align="center">— ✦ —</p>
 
-## Architecture
-
-### Main Components
-
-#### Cognitive Audit Engine (`Cognitive Audit Engine.py`)
-
-```python
-@dataclass
-class ResponsibilityAccount       # Responsibility tracking
-
-class AuditConfigLoader:          # Configuration management
-    - load_from_dict(config)      # Load from dictionary
-    - load_from_json(path)        # Load from JSON file
-
-class AuditPlugin:                # Plugin system for extensibility
-    - analyze_func                # Custom analysis function
-
-class CognitiveAuditEngine:       # Core auditing engine
-    - register_plugin()           # Register analysis plugins
-    - audit()                     # Execute audit on decision context
-```
-
-#### LLM Adapters (`llm_adapters/openai_adapter.py`)
-
-```python
-class OpenAIAdapter:              # OpenAI API integration
-    - generate_narrative()        # Generate audit reports
-```
-
----
-
-## Second-Person Perspective Language
-
-### Definition
-
-A structured language dedicated to decision verification and risk decomposition. It makes no value judgments, provides no optimization suggestions, and draws no final conclusions.
-
-### Core Structure
-
-A complete and valid decision consists of three fixed components:
-
-- **Decision (D)**: Executable, clearly defined judgments with clear accountability
-- **Hypothesis Premise (A)**: Falsifiable preconditions that underpin decision validity
-- **Branch Response (ΔD)**: Adjustment plans when core assumptions fail
-
-### Formal Expression
-
-$$\neg A \Rightarrow \Delta D$$
-
-### Standard Expression Mode
-
-```
-Decision: D
-Core Assumptions: A1, A2, A3
-
-Risk Branch Logic:
-¬A1 ⇒ ΔD
-¬A2 ⇒ ΔD
-¬A3 ⇒ ΔD
-```
-
----
-
-## Installation
-
-### Requirements
-
-- Python 3.8+
-- See `requirements.txt` for core dependencies
-- See `requirements-openai.txt` for OpenAI adapter dependencies
-
-### Setup
+## ✦ Quick Start
 
 ```bash
-# Install core dependencies
-pip install -r requirements.txt
+# Primary: GitHub
+git clone https://github.com/nohn3043-arch/second-perspective.git
+# Mirror: Gitee
+# git clone https://gitee.com/nohn-ecosystem/second-perspective.git
+cd second-perspective
+pip install -r requirements.txt          # core dependencies
+# optional: pip install -r requirements-openai.txt   # OpenAI narrative adapter
 
-# Install OpenAI adapter (optional)
-pip install -r requirements-openai.txt
+# Run the five-operator end-to-end demo
+python demo_audit.py
 ```
 
----
+<p align="center">— ✦ —</p>
 
-## Usage
+## ✦ Usage
 
-### Basic Audit Example
+<div style="max-width:880px;margin:0 auto;padding:0 16px">
+
+The engine file uses spaces in its name by design — load it with `importlib`:
 
 ```python
-from "Cognitive Audit Engine" import (
-    CognitiveAuditEngine,
-    ResponsibilityAccount,
-    AuditConfigLoader
+import importlib.util
+
+spec = importlib.util.spec_from_file_location("ca", "cognitive audit engine.py")
+ca = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(ca)
+
+account = ca.ResponsibilityAccount(
+    organization="audit_team",
+    role="third_party_auditor",
+    stage="review",
 )
 
-# Initialize responsibility account
-account = ResponsibilityAccount(
-    name="audit_team",
-    role="third_party_auditor"
-)
+config = ca.AuditConfigLoader.load_from_dict({
+    "allowed_stages": ["pre_decision", "in_decision", "post_decision", "review"],
+    "disclaimer": "Structural audit only — does not replace human judgment.",
+    "custom_fields": {"standard_version": "2026"},
+})
 
-# Load configuration
-config = AuditConfigLoader.load_from_json("config.json")
+engine = ca.CognitiveAuditEngine(account=account, config=config)
+engine.load_core_plugins()               # registers NS / IAP / LCH / CCS / STATE
 
-# Create audit engine
-engine = CognitiveAuditEngine(account=account, config=config)
+report = engine.audit(decision_context)  # static diagnosis
 
-# Register custom plugins (optional)
-def my_analysisPlugin(data):
-    # Custom analysis logic
-    return {"result": "analysis_complete"}
-
-plugin = AuditPlugin(name="custom_analysis", analyze_func=my_analysisPlugin)
-engine.register_plugin(plugin)
-
-# Perform audit
-decision_context = {
-    "decision": "Approve project X",
-    "assumptions": ["A1", "A2", "A3"],
-    "context": {...}
-}
-
-result = engine.audit(decision_context)
-print(result)  # Returns: {True, False}
+# Causal reconstruction: inject correction variables and test convergence
+result = engine.reconstruct(decision_context, delta_vars={"assumption_x": False})
 ```
 
-### Using OpenAI Adapter
+The five operators are also importable as plugins directly:
 
 ```python
-from llm_adapters.openai_adapter import OpenAIAdapter
-
-# Initialize adapter
-adapter = OpenAIAdapter(
-    api_key="your-api-key",
-    model="gpt-3.5-turbo",
-    temperature=0.0
+from plugins import (
+    NarrativeStripPlugin,
+    ImplicitAssumptionPlugin,
+    FragilityLatchPlugin,
+    CausalChainSyncPlugin,
+    StateAnchorPlugin,
 )
-
-# Generate audit narrative
-report = {...}  # Audit results
-narrative = adapter.generate_narrative(report)
 ```
 
----
+An optional narrative-generation adapter is available via
+[`llm_adapters/openai_adapter.py`](llm_adapters/openai_adapter.py).
 
-## Application Scenarios
+</div>
 
-- 🏢 **Enterprise Strategy** - Major investment and strategic decisions
-- 🏛️ **Government Policy** - Public policy research and impact assessment
-- 🧠 **Think Tank Studies** - Research and analysis support
-- ⚠️ **Risk Control** - Institutional risk management
-- 🤖 **AI System Auditing** - LLM output verification and bias detection
+<p align="center">— ✦ —</p>
 
----
+## ✦ Project Structure
 
-## License & Authorization
+```
+second-perspective/
+├── cognitive audit engine.py      # core engine (spaces in name by design)
+├── demo_audit.py                  # five-operator end-to-end demo
+├── plugins/                       # the five operators as plugins
+│   ├── ns.py                      #   Narrative Strip
+│   ├── iap.py                     #   Implicit Assumption Perspective
+│   ├── lch.py                     #   Fragility Latch
+│   ├── ccs.py                     #   Causal Chain Sync
+│   └── state.py                   #   State Anchor
+├── llm_adapters/openai_adapter.py # optional OpenAI narrative adapter
+├── web/                           # client-side audit demo
+├── docs/                          # documentation / index.html
+├── language Standard/             # Language Standard 2026
+├── 全新决策结构语言/              # decision-structure language specification
+├── IMDA_AI_Verify_Causal_Audit_Report.pdf
+├── requirements.txt · requirements-openai.txt
+└── LICENSE
+```
 
-This repository is a technical showcase for the **Global Cognitive Audit Engine (GCAE)**. Copyright © 2026 Shanghai Linming Junhua Technology Co., Ltd. and NOHN AI TECHNOLOGY PTE. LTD. All rights reserved.
+<p align="center">— ✦ —</p>
+
+## ✦ Ecosystem
+
+GCAE is one member of the NOHN AI ecosystem — a family of projects built around second-perspective causal audit and deterministic execution:
+
+| Project | Repository | What it is |
+|---|---|---|
+| **Second-Perspective (GCAE)** | [nohn3043-arch/second-perspective](https://github.com/nohn3043-arch/second-perspective) | Global cognitive audit engine — the five-operator causal audit core (IMDA 95/100) |
+| **NOMOS** | [nohn3043-arch/second-perspective](https://github.com/nohn3043-arch/second-perspective) (`Intelligent-Decision-Hub--Nomos` branch) | Auditable deterministic decision hub (IMDA 95/100) |
+| **SPL-G1** | [nohn3043-arch/SPL-G1-General-purpose-processor](https://github.com/nohn3043-arch/SPL-G1-General-purpose-processor) | Hardware causal-audit Trusted Compute Unit (TCU) |
+| **SPL-Virtual-World-Base** | [nohn3043-arch/Second-Reality](https://github.com/nohn3043-arch/Second-Reality) | Virtual-world & metaverse infrastructure (Constitution / Law / Bridge) |
+| **Story-Engine** | [nohn3043-arch/story-engine](https://github.com/nohn3043-arch/story-engine) | Long-form narrative consistency engine |
+| **Antares** | [nohn3043-arch/Antares](https://github.com/nohn3043-arch/Antares) | GFSIP v1.0 — federated stable interoperability protocol with causal audit |
+| **Anthropomorphic-Agent-Engine** | [nohn3043-arch/Anthropomorphic-Agent-Engine](https://github.com/nohn3043-arch/Anthropomorphic-Agent-Engine) | Deterministic anthropomorphic psychology engine (SPL Pure Core V8.0) |
+| **PAGES** | [nohn3043-arch/pages](https://github.com/nohn3043-arch/pages) | Official NOHN AI ecosystem landing page |
+
+<p align="center">— ✦ —</p>
+
+## ✦ License & Authorization
+
+This repository is a technical showcase for the **Global Cognitive Audit Engine (GCAE)**. This repository is **not open-source**. Dual-track model: free for individual non-commercial research; paid commercial authorization required for government / enterprise. See [LICENSE](./LICENSE).
 
 | User | Purpose | License Requirement |
 |---|---|---|
@@ -233,40 +220,21 @@ This repository is a technical showcase for the **Global Cognitive Audit Engine 
 - **Government / enterprise users** may not copy, deploy, run, integrate, or distribute the Work before signing a Commercial Authorization Agreement and paying the agreed fee.
 - **Apply for authorization**:
   - International / Global: [ai@nohnlins.com](mailto:ai@nohnlins.com)
-  - China: [ai@tx.nohnlins.com](mailto:ai@tx.nohnlins.com)
+  - China: [lin@secondai.top](mailto:lin@secondai.top)
 
 The licensor, governing law, and dispute resolution are determined by the user's location as set out in [LICENSE](./LICENSE): users within the PRC → Shanghai Linming Junhua Technology Co., Ltd. (laws of the PRC); users outside the PRC → NOHN AI TECHNOLOGY PTE. LTD. (laws of Singapore, SIAC arbitration).
 
----
-
-## Important Notices
-
-### LEGAL NOTICE
-
-> GOVERNMENTS, ENTERPRISES, AND PUBLIC INSTITUTIONS ARE PROHIBITED FROM USING, COPYING, DEPLOYING, OR DERIVING THIS PROJECT WITHOUT EXPLICIT WRITTEN AUTHORIZATION.
-
-This document contains original copyrighted works, theoretical systems, structured paradigms, and mathematical expression models. All content is fully protected by copyright law.
-
-### Clean-Room Implementation
+### Clean-Room Notice
 
 Any party who independently develops products with substantially similar core functions, architectures, or decision models shall be presumed to have committed substantive derivative infringement unless they can provide complete, continuous, and traceable evidence proving independent development.
 
----
-
-## Contact
-
-For institutional authorization, customized integration, and business inquiries:
-
-- 📧 Email (International): ai@nohnlins.com
-- 📧 Email (China): ai@tx.nohnlins.com
-
----
-
-## References
-
-- [IMDA AI Verify Assessment Report](./IMDA_AI_Verify_Causal_Audit_Report.pdf)
-- [Language Standard 2026](./language%20Standard/2026)
-
----
-
 **Disclaimer**: This language system is only applied to structural review and decomposition during the decision-making process. It does not participate in decision formulation, nor interfere with final decisions. The author assumes no legal liability or operational responsibility for any subsequent execution results.
+
+<p align="center">
+  <a href="https://github.com/nohn3043-arch">GitHub</a>
+  &nbsp;·&nbsp;
+  <a href="https://www.nohnlins.com/">nohnlins.com</a>
+  &nbsp;·&nbsp;
+  <a href="mailto:ai@nohnlins.com">ai@nohnlins.com</a>
+</p>
+<p align="center"><sub>NOHN AI · SECOND-PERSPECTIVE</sub></p>
