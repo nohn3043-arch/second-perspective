@@ -62,9 +62,19 @@ def _build_hub(service: DecisionService) -> IntelligentDecisionHub:
 service = _build_service()
 hub = _build_hub(service)
 
+# Fail fast if production is started without any authentication configured.
+from .security import assert_auth_configured
+
+assert_auth_configured()
+
 
 def _build_identity_response(authorization: str | None = None) -> dict:
-    """Build a lightweight identity snapshot for the /auth/me endpoint."""
+    """Build a lightweight identity snapshot for the /auth/me endpoint.
+
+    When OIDC is configured, the token is fully verified (signature, expiry,
+    audience, issuer) before any claim is returned. Unverified claims are never
+    exposed, so a forged JWT cannot impersonate an identity via this endpoint.
+    """
     if not authorization:
         return {"mode": "none", "subject": "anonymous"}
     scheme, _, supplied = authorization.partition(" ")
@@ -73,23 +83,31 @@ def _build_identity_response(authorization: str | None = None) -> dict:
     oidc_issuer = os.getenv("SP_OIDC_ISSUER", "").strip()
     if oidc_issuer:
         try:
-            claims = _decode_oidc_token(supplied)
-            return {
-                "mode": "oidc",
-                "issuer": oidc_issuer,
-                "subject": claims.get("sub", ""),
-                "name": claims.get("preferred_username", claims.get("name", "")),
-                "email": claims.get("email", ""),
-                "groups": claims.get("groups", []),
-            }
+            from .security import _get_oidc_config, _verify_oidc_token
+
+            config = _get_oidc_config()
+            if config is not None:
+                claims = _verify_oidc_token(supplied, config)
+                if claims is not None:
+                    return {
+                        "mode": "oidc",
+                        "issuer": oidc_issuer,
+                        "subject": claims.get("sub", ""),
+                        "name": claims.get("preferred_username", claims.get("name", "")),
+                        "email": claims.get("email", ""),
+                        "groups": claims.get("groups", []),
+                    }
         except Exception:
             pass
     return {"mode": "api_key", "subject": "bearer-authenticated"}
 
 
-def _decode_oidc_token(token: str) -> dict:
-    """Attempt to decode an OIDC JWT without verifying the signature
-    (full verification is done by the auth middleware)."""
+def _decode_oidc_token(token: str) -> dict:  # pragma: no cover - retained for compatibility
+    """Deprecated: previously returned unverified claims.
+
+    Kept only for backwards import compatibility. Identity endpoints must use
+    verified claims via security._verify_oidc_token instead.
+    """
     try:
         from jose import jwt
 
