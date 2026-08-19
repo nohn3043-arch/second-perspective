@@ -9,7 +9,7 @@
 </p>
 
 <blockquote align="center">
-  <em>NOMOS · v0.3.0 — The Auditable Decision Hub</em>
+  <em>NOMOS · v0.3.0 — The Intelligent Decision Hub</em>
 </blockquote>
 
 <div style="max-width:880px;margin:0 auto;padding:0 16px">
@@ -17,7 +17,7 @@
 ## ✦ About
 
 <p style="font-size:15px;line-height:1.8;color:#2C2C2C">
-NOMOS is an auditable orchestration layer built on top of a deterministic decision core. It scored <strong>95/100</strong> in Singapore's <strong>IMDA AI Verify</strong> compliance assessment. The engine unifies structured evaluation, fine-grained algorithmic auditing, causal counterfactual re-selection, declared-scenario stress testing, structured cognitive challenge, information prioritization, and human governance into a single report.
+NOMOS is an intelligent decision hub with a built-in auditable deterministic core. It scored <strong>95/100</strong> in Singapore's <strong>IMDA AI Verify</strong> compliance assessment. The engine unifies structured evaluation, fine-grained algorithmic auditing, causal counterfactual re-selection, declared-scenario stress testing, structured cognitive challenge, information prioritization, and human governance into a single report.
 </p>
 
 <p style="font-size:15px;line-height:1.8;color:#2C2C2C">
