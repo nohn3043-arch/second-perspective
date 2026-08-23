@@ -4,6 +4,12 @@ from uuid import uuid4
 
 from ..audit.ledger import verify_algorithm_audit
 from ..models.hub import HubAnalysisRequest, HubReport
+from ..models.schemas import (
+    DeltaVar,
+    DeviationSignal,
+    DecisionRequest,
+    ReconstructionSession,
+)
 from ..service import DecisionService
 from ..version import VERSION
 from .cognitive import CognitiveRiskScanner
@@ -11,26 +17,40 @@ from .information import build_information_priorities
 from .integrity import seal_hub_report
 from .policy import HubPolicy
 from .reconstruction import run_causal_reconstruction
-from .repository import HubReportRepository, InMemoryHubReportRepository
+from .repository import (
+    HubReportRepository,
+    InMemoryHubReportRepository,
+    InMemorySessionRepository,
+    SessionRepository,
+)
 from .scenario import analyze_scenarios
+from .session import ReconstructionSessionEngine
 
 
 class HubReportNotFoundError(LookupError):
     pass
 
 
+class SessionNotFoundError(LookupError):
+    pass
+
+
 class IntelligentDecisionHub:
-    """Orchestrates evaluation, audit, challenge, scenarios, and governance records."""
+    """Orchestrates evaluation, audit, challenge, scenarios, governance records, and sessions."""
 
     def __init__(
         self,
         service: DecisionService | None = None,
         policy: HubPolicy | None = None,
         repository: HubReportRepository | None = None,
+        session_repository: SessionRepository | None = None,
+        session_engine: ReconstructionSessionEngine | None = None,
     ) -> None:
         self.service = service or DecisionService()
         self.policy = policy or HubPolicy()
         self.repository = repository or InMemoryHubReportRepository()
+        self.session_repository = session_repository or InMemorySessionRepository()
+        self.session_engine = session_engine or ReconstructionSessionEngine()
         self.cognitive_scanner = CognitiveRiskScanner(self.policy)
 
     def analyze(self, request: HubAnalysisRequest) -> HubReport:
@@ -76,3 +96,60 @@ class IntelligentDecisionHub:
         if report is None:
             raise HubReportNotFoundError(hub_run_id)
         return report
+
+    def start_session(
+        self,
+        request: DecisionRequest,
+        signals: list[DeviationSignal] | None = None,
+        *,
+        max_iterations: int = 5,
+        max_evidence_requests: int = 20,
+    ) -> ReconstructionSession:
+        """Start a new three-layer reconstruction session."""
+        session = self.session_engine.start(
+            request,
+            signals or [],
+            max_iterations=max_iterations,
+            max_evidence_requests=max_evidence_requests,
+        )
+        self.session_repository.put(session)
+        return session
+
+    def advance_session(
+        self,
+        session_id: str,
+        delta_vars: list[DeltaVar] | None = None,
+    ) -> ReconstructionSession:
+        """Advance a session by one round."""
+        session = self._get_session(session_id)
+        updated = self.session_engine.advance(session, delta_vars)
+        self.session_repository.update(updated)
+        return updated
+
+    def human_session_decision(
+        self,
+        session_id: str,
+        *,
+        approved: bool = False,
+        evidence_status: dict[str, str] | None = None,
+    ) -> ReconstructionSession:
+        """Record a human decision on a session."""
+        session = self._get_session(session_id)
+        from ..models.enums import AssumptionState
+        mapped = {
+            k: AssumptionState(v) for k, v in (evidence_status or {}).items()
+        } if evidence_status else None
+        updated = self.session_engine.human_decision(
+            session, approved=approved, evidence_status=mapped,
+        )
+        self.session_repository.update(updated)
+        return updated
+
+    def get_session(self, session_id: str) -> ReconstructionSession:
+        return self._get_session(session_id)
+
+    def _get_session(self, session_id: str) -> ReconstructionSession:
+        session = self.session_repository.get(session_id)
+        if session is None:
+            raise SessionNotFoundError(session_id)
+        return session

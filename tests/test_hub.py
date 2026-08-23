@@ -13,6 +13,7 @@ from second_perspective.models import (
     HubAnalysisRequest,
     InformationPriorityTier,
     ScenarioOutcomeStatus,
+    SessionStatus,
 )
 
 
@@ -172,3 +173,144 @@ def test_hub_request_rejects_unknown_scenario_references():
 
     with pytest.raises(ValidationError, match="unknown metrics"):
         HubAnalysisRequest.model_validate(data)
+
+
+# ── Hub session integration tests ──
+
+
+def test_hub_start_session_initializes_state():
+    hub = IntelligentDecisionHub()
+    request = DecisionRequest.model_validate(load_example())
+    session = hub.start_session(request)
+    assert session.session_id.startswith("SESS-")
+    assert session.status == SessionStatus.ACTIVE
+    assert len(session.rounds) == 0
+    assert all(
+        state == "assumed" for state in session.assumption_states.values()
+    )
+
+
+def test_hub_start_session_with_signals():
+    hub = IntelligentDecisionHub()
+    request = DecisionRequest.model_validate(load_example())
+    from second_perspective.models.schemas import DeviationSignal
+    from datetime import datetime, timezone
+
+    signal = DeviationSignal(
+        metric="capital_required",
+        observed=5000000,
+        baseline=3000000,
+        direction="above",
+        observed_at=datetime(2026, 7, 1, tzinfo=timezone.utc),
+        source="test-scanner",
+    )
+    session = hub.start_session(request, signals=[signal])
+    assert session.deviation_signals == [signal]
+
+
+def test_hub_start_session_respects_budget():
+    hub = IntelligentDecisionHub()
+    request = DecisionRequest.model_validate(load_example())
+    session = hub.start_session(request, max_iterations=3, max_evidence_requests=10)
+    assert session.max_iterations == 3
+    assert session.max_evidence_requests == 10
+
+
+def test_hub_advance_session_without_delta():
+    hub = IntelligentDecisionHub()
+    request = DecisionRequest.model_validate(load_example())
+    session = hub.start_session(request)
+    session = hub.advance_session(session.session_id)
+    assert len(session.rounds) == 1
+    assert session.status == SessionStatus.AWAITING_HUMAN
+    assert session.rounds[0].round_root_hash is not None
+
+
+def test_hub_advance_session_with_delta():
+    hub = IntelligentDecisionHub()
+    request = DecisionRequest.model_validate(load_example())
+    from second_perspective.models import DeltaVar
+
+    session = hub.start_session(request)
+    delta = DeltaVar(
+        path="A1",
+        value=False,
+        reason="Falsify partner availability.",
+    )
+    session = hub.advance_session(session.session_id, delta_vars=[delta])
+    assert len(session.rounds) == 1
+    assert session.rounds[0].convergence is not None
+    assert session.rounds[0].convergence.candidate_set_changed is True
+
+
+def test_hub_advance_session_twice_links_hashes():
+    hub = IntelligentDecisionHub()
+    request = DecisionRequest.model_validate(load_example())
+    session = hub.start_session(request)
+    session = hub.advance_session(session.session_id)
+    session = hub.advance_session(session.session_id)
+    assert len(session.rounds) == 2
+    assert session.rounds[1].previous_round_hash == session.rounds[0].round_root_hash
+
+
+def test_hub_human_decision_approval_seals():
+    hub = IntelligentDecisionHub()
+    request = DecisionRequest.model_validate(load_example())
+    session = hub.start_session(request)
+    session = hub.advance_session(session.session_id)
+    session = hub.human_session_decision(session.session_id, approved=True)
+    assert session.status == SessionStatus.SEALED
+    assert session.sealed_at is not None
+
+
+def test_hub_human_decision_with_evidence_status():
+    hub = IntelligentDecisionHub()
+    request = DecisionRequest.model_validate(load_example())
+    session = hub.start_session(request)
+    session = hub.human_session_decision(
+        session.session_id,
+        evidence_status={"A1": "verified"},
+    )
+    assert session.assumption_states["A1"] == "verified"
+    assert session.status == SessionStatus.ACTIVE
+
+
+def test_hub_get_session_returns_stored_session():
+    hub = IntelligentDecisionHub()
+    request = DecisionRequest.model_validate(load_example())
+    session = hub.start_session(request)
+    fetched = hub.get_session(session.session_id)
+    assert fetched.session_id == session.session_id
+    assert fetched.status == session.status
+
+
+def test_hub_get_session_raises_for_missing():
+    from second_perspective.hub import SessionNotFoundError
+
+    hub = IntelligentDecisionHub()
+    with pytest.raises(SessionNotFoundError):
+        hub.get_session("NONEXISTENT")
+
+
+def test_hub_session_advance_nonexistent_raises():
+    from second_perspective.hub import SessionNotFoundError
+
+    hub = IntelligentDecisionHub()
+    with pytest.raises(SessionNotFoundError):
+        hub.advance_session("NONEXISTENT")
+
+
+def test_hub_session_immutable_after_advance():
+    hub = IntelligentDecisionHub()
+    request = DecisionRequest.model_validate(load_example())
+    session = hub.start_session(request)
+    original_id = session.session_id
+    original_round_count = len(session.rounds)
+
+    session = hub.advance_session(session.session_id)
+    assert session.session_id == original_id
+    assert len(session.rounds) == original_round_count + 1
+
+    # The stored session should also be updated
+    stored = hub.get_session(session.session_id)
+    assert len(stored.rounds) == original_round_count + 1
