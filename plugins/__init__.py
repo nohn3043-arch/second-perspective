@@ -25,6 +25,7 @@ from .iap  import ImplicitAssumptionPlugin
 from .lch  import FragilityLatchPlugin
 from .ccs  import CausalChainSyncPlugin
 from .state import StateAnchorPlugin
+from .report import ReportRenderer
 
 CORE_PLUGINS = [
     NarrativeStripPlugin,
@@ -41,4 +42,5 @@ __all__ = [
     "FragilityLatchPlugin",
     "CausalChainSyncPlugin",
     "StateAnchorPlugin",
+    "ReportRenderer",
 ]

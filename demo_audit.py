@@ -26,6 +26,7 @@ from plugins import (
     FragilityLatchPlugin,
     CausalChainSyncPlugin,
     StateAnchorPlugin,
+    ReportRenderer,
 )
 
 
@@ -162,6 +163,22 @@ def main():
     else:
         print("⚠️  验证异常 — 请检查输出")
     print("=" * 70)
+
+    # ── 双语外壳渲染演示（可选：ReportRenderer 独立于五算子管线）──
+    print("\n" + "=" * 70)
+    print("双语外壳渲染演示（外壳双语 / 证据正文保原文）")
+    print("=" * 70)
+    renderer = ReportRenderer()
+    zh_view = renderer.render(report, lang="zh")
+    en_view = renderer.render(report, lang="en")
+    print(f"[zh] 标题: {zh_view['title']}")
+    print(f"[en] 标题: {en_view['title']}")
+    print("\n--- 英文外壳 (en) 前 10 行 ---")
+    for line in renderer.render_text(report, lang="en").splitlines()[:10]:
+        print(line)
+    # 证明证据正文未被翻译（保留原文）
+    ns_core = zh_view["审计算子"]["NS"]["result"].get("logical_core", "")
+    print(f"\n[证据正文-原文] NS logical_core: {ns_core[:60]}...")
 
 
 if __name__ == "__main__":
