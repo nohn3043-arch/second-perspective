@@ -1,4 +1,4 @@
-﻿"""
+"""
 第二视角认知审计引擎 (Cognitive Audit Engine)
 
 设计定位：在「第二视角因果与剧情推演」框架下，对决策进行静态诊断与因果重构推演。
@@ -10,6 +10,8 @@
 本模块不含任何主观/概率化推测，仅做决定论因果处理。
 """
 
+import os
+import time
 import uuid
 import json
 import copy
@@ -154,14 +156,22 @@ class CognitiveAuditEngine:
         # 注册一个审计插件，供后续 audit / reconstruct 调用
         self.plugins.append(plugin)
 
-    def audit(self, decision_context: Dict[str, Any]) -> Dict[str, Any]:
+    def audit(
+        self,
+        decision_context: Dict[str, Any],
+        save_log: bool = False,
+        log_dir: str = "logs",
+    ) -> Dict[str, Any]:
         """
         静态诊断阶段：提取上下文、遍历注册插件并生成偏见/脆弱性评估报告。
 
         Args:
             decision_context: 决策上下文（待审计的输入数据）。
+            save_log:        是否将本次报告落盘为本地审计日志，默认 False（不落盘）。
+            log_dir:          日志目录，默认 "logs"（相对当前工作目录）。
         Returns:
             报告字典：含免责声明、责任账户、各插件分析结果、自定义字段。
+            若 save_log=True，报告将额外包含 log_path 字段（日志文件绝对路径）。
         """
         report = {
             "disclaimer": self.config.get("disclaimer", ""),          # 免责声明（来自配置）
@@ -169,17 +179,57 @@ class CognitiveAuditEngine:
             "analysis": {},                                            # 各插件分析结果容器
             "custom_fields": self.config.get("custom_fields", {})      # 配置中的自定义字段透传
         }
-        # 遍历所有已注册插件，逐一分析并写入报告
-        for plugin in self.plugins:
-            report["analysis"][plugin.name] = plugin.analyze(decision_context)
+        # 隔离调用方上下文：内部键（责任账户、前序结果）注入浅拷贝，防止污染原始输入
+        ctx = dict(decision_context)
+        ctx["_responsibility_account"] = self.account.__dict__
+        prior: Dict[str, Any] = {}
+        ctx["_prior_audit_results"] = prior
 
-        # LLM 增强语义分析（若已注入 provider）
+        # STATE 负责汇总前四级结果，无论注册顺序都强制最后执行
+        ordered = [p for p in self.plugins if p.name != "STATE"] + \
+                  [p for p in self.plugins if p.name == "STATE"]
+        # 按序运行插件，结果同时写入报告与前序聚合（供 STATE 最终裁定）
+        for plugin in ordered:
+            result = plugin.analyze(ctx)
+            report["analysis"][plugin.name] = result
+            prior[plugin.name] = result
+
+        # LLM 增强语义分析（若已注入 provider；不参与 STATE 聚合）
         if self.llm_provider is not None:
             llm_analysis = self._llm_enhanced_audit(decision_context)
             if llm_analysis:
                 report["analysis"]["llm_enhanced"] = llm_analysis
 
+        # 本地审计日志落盘（默认关闭，显式 save_log=True 才写入）
+        if save_log:
+            report["log_path"] = self._write_log(report, log_dir)
+
         return report
+
+    def _write_log(self, report: Dict[str, Any], log_dir: str) -> str:
+        """
+        将审计报告写入本地日志目录（决定论 IO 操作，无随机性）。
+
+        Args:
+            report:  audit() 产出的完整报告字典。
+            log_dir: 日志目录路径。
+        Returns:
+            日志文件的绝对路径。
+        """
+        # 提取唯一审计 ID：优先取 STATE 插件证书中的 audit_id，兜底用 nonce+时间戳
+        audit_id = None
+        state_result = report.get("analysis", {}).get("STATE", {})
+        if isinstance(state_result, dict):
+            audit_id = state_result.get("certificate", {}).get("audit_id")
+        if not audit_id:
+            nonce = self.account.nonce or uuid.uuid4().hex[:8]
+            audit_id = f"SPL-{nonce}-{int(time.time())}"
+
+        os.makedirs(log_dir, exist_ok=True)
+        path = os.path.join(log_dir, f"{audit_id}.json")
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(report, f, ensure_ascii=False, indent=2)
+        return os.path.abspath(path)
 
     def _llm_enhanced_audit(self, decision_context: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """使用 LLM 对决策上下文进行语义级偏见/风险分析，返回结构化审计结果。"""

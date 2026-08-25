@@ -44,7 +44,15 @@ def main():
     )
 
     engine = CognitiveAuditEngine(account=account, config=config)
-    engine.load_core_plugins()
+    # 注册官方五算子插件（引擎无 load_core_plugins，改为显式注册）
+    for cls in (
+        NarrativeStripPlugin,
+        ImplicitAssumptionPlugin,
+        FragilityLatchPlugin,
+        CausalChainSyncPlugin,
+        StateAnchorPlugin,
+    ):
+        engine.register_plugin(cls())
 
     # ── 测试用例 1: 带叙事粉饰 + 隐假设 + 缺分支响应 ──
     print("=" * 70)
@@ -70,14 +78,18 @@ def main():
 
     report = engine.audit(decision_context)
 
+    # 最终裁定与证书位于 STATE 插件输出（analysis 层），非报告顶层
+    state = report["analysis"]["STATE"]
+    verdict = state["verdict"]
+    cert = state["certificate"]
+
     print(f"\n--- 最终裁定 ---")
-    print(f"Level: {report['verdict']['level']}")
-    print(f"Summary: {report['verdict']['summary']}")
-    print(f"HALT items: {report['verdict']['halt_count']}")
-    print(f"WARN items: {report['verdict']['warn_count']}")
+    print(f"Level: {verdict['level']}")
+    print(f"Summary: {verdict['summary']}")
+    print(f"HALT items: {verdict['halt_count']}")
+    print(f"WARN items: {verdict['warn_count']}")
 
     print(f"\n--- 审计证书 ---")
-    cert = report.get("certificate", {})
     print(f"Audit ID: {cert.get('audit_id', 'N/A')}")
     print(f"Signature: {cert.get('signature', 'N/A')[:32]}...")
 
@@ -140,11 +152,12 @@ def main():
     }
 
     report2 = engine.audit(clean_context)
-    print(f"\nVerdict: {report2['verdict']['level']}")
-    print(f"Summary: {report2['verdict']['summary']}")
+    verdict2 = report2["analysis"]["STATE"]["verdict"]
+    print(f"\nVerdict: {verdict2['level']}")
+    print(f"Summary: {verdict2['summary']}")
 
     print("\n" + "=" * 70)
-    if report['verdict']['level'] == 'AUDIT_HALT' and report2['verdict']['level'] in ('AUDIT_PASS', 'AUDIT_WARN'):
+    if verdict['level'] == 'AUDIT_HALT' and verdict2['level'] in ('AUDIT_PASS', 'AUDIT_WARN'):
         print("✅ 五算子管线验证通过：脏数据被 HALT，干净数据 PASS/WARN（无致命违规）")
     else:
         print("⚠️  验证异常 — 请检查输出")
