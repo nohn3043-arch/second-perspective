@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from datetime import datetime, timezone
 from decimal import Decimal
 from uuid import uuid4
@@ -27,6 +28,8 @@ from .robustness import analyze_robustness
 from .selection import select_leading_candidates
 
 ENGINE_VERSION = VERSION
+
+logger = logging.getLogger(__name__)
 
 
 class IntelligentDecisionEngine:
@@ -128,6 +131,16 @@ class IntelligentDecisionEngine:
             status = DecisionStatus.HUMAN_APPROVAL_REQUIRED
 
         audit_passed = status == DecisionStatus.HUMAN_APPROVAL_REQUIRED
+        logger.info(
+            "evaluate done decision_id=%s status=%s audit_passed=%s issues=%d alternatives=%d leading=%d unresolved=%d",
+            decision_id,
+            status.value,
+            audit_passed,
+            len(issues),
+            len(evaluations),
+            len(leading_ids),
+            len(unresolved),
+        )
         trace = [
             {
                 "stage": "audit",
