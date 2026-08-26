@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import logging
 import os
 
-from fastapi import Depends, FastAPI, Header, HTTPException, status
+from fastapi import Depends, FastAPI, Header, HTTPException, Request, status
 from pydantic import BaseModel
 
 from ..governance.approval import ApprovalError
@@ -22,6 +23,8 @@ from ..service import DecisionNotFoundError, DecisionService
 from ..version import VERSION
 from .security import verify_api_key
 
+logger = logging.getLogger(__name__)
+
 app = FastAPI(
     title="NOMOS Intelligent Decision-Hub",
     version=VERSION,
@@ -30,6 +33,19 @@ app = FastAPI(
         "counterfactuals, scenario stress tests, cognitive risk challenges, and governance."
     ),
 )
+
+
+@app.middleware("http")
+async def log_request_lifecycle(request: Request, call_next):
+    logger.info("request start method=%s path=%s", request.method, request.url.path)
+    response = await call_next(request)
+    logger.info(
+        "request done method=%s path=%s status=%d",
+        request.method,
+        request.url.path,
+        response.status_code,
+    )
+    return response
 
 
 def _build_service() -> DecisionService:

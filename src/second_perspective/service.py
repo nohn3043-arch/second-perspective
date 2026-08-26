@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import logging
+
 from .decision.engine import IntelligentDecisionEngine
 from .decision.integrity import seal_record
 from .governance.approval import apply_approval
@@ -9,6 +11,8 @@ from .models.schemas import (
     DecisionRequest,
 )
 from .repository import DecisionRepository, InMemoryDecisionRepository
+
+logger = logging.getLogger(__name__)
 
 
 class DecisionNotFoundError(LookupError):
@@ -41,6 +45,13 @@ class DecisionService:
         )
         record = seal_record(record)
         self.repository.put(record)
+        logger.info(
+            "decision sealed decision_id=%s revision=%d record_hash=%s status=%s",
+            record.result.decision_id,
+            record.revision,
+            record.record_hash,
+            record.result.status.value,
+        )
         return record
 
     def get(self, decision_id: str) -> DecisionRecord:
@@ -61,6 +72,14 @@ class DecisionService:
         )
         updated = seal_record(updated)
         self.repository.put(updated)
+        logger.info(
+            "decision approved decision_id=%s revision=%d record_hash=%s approved=%s approver=%s",
+            decision_id,
+            updated.revision,
+            updated.record_hash,
+            updated.approval.approved,
+            updated.approval.approver,
+        )
         return updated
 
     def history(self, decision_id: str) -> list[DecisionRecord]:

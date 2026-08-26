@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from uuid import uuid4
 
 from ..audit.ledger import verify_algorithm_audit
@@ -25,6 +26,8 @@ from .repository import (
 )
 from .scenario import analyze_scenarios
 from .session import ReconstructionSessionEngine
+
+logger = logging.getLogger(__name__)
 
 
 class HubReportNotFoundError(LookupError):
@@ -89,6 +92,14 @@ class IntelligentDecisionHub:
         )
         report = seal_hub_report(report)
         self.repository.put(report)
+        logger.info(
+            "hub report sealed hub_run_id=%s decision_id=%s algorithm_audit_verified=%s scenarios=%d findings=%d",
+            report.hub_run_id,
+            record.result.decision_id,
+            report.algorithm_audit_verified,
+            len(report.scenarios),
+            len(report.cognitive_audit.findings) if report.cognitive_audit else 0,
+        )
         return report
 
     def get_report(self, hub_run_id: str) -> HubReport:
