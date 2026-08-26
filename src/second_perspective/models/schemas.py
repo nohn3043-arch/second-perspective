@@ -508,6 +508,43 @@ class SessionRound(StrictModel):
     requires_human_decision: bool = True
 
 
+# ── Cognitive Audit Models ────────────────────────────────────────────
+
+
+class CognitiveRiskFinding(StrictModel):
+    """A single structural cognitive risk finding."""
+
+    code: str = Field(min_length=1, description="风险代码，如 ANCHORING、CONFIRMATION_BIAS")
+    severity: IssueSeverity
+    description: str = Field(min_length=1, description="风险描述")
+    affected_elements: list[str] = Field(default_factory=list, description="受影响的结构元素路径")
+    recommendation: str = Field(default="", description="推荐缓解措施")
+
+
+class CognitiveAuditReport(StrictModel):
+    """Structured cognitive audit report."""
+
+    findings: list[CognitiveRiskFinding] = Field(default_factory=list)
+    total_findings: int = Field(ge=0)
+    scanner_version: str = Field(min_length=1)
+
+
+# ── Scenario Models ────────────────────────────────────────────────────
+
+
+class ScenarioDefinition(StrictModel):
+    """A declared stress scenario for re-running the evaluation."""
+
+    id: str = Field(min_length=1, description="场景标识符")
+    name: str = Field(min_length=1, description="场景名称")
+    description: str | None = None
+    failed_assumption_ids: list[str] = Field(default_factory=list)
+    metric_overrides: dict[str, dict[str, object]] = Field(
+        default_factory=dict,
+        description="{alternative_id: {metric_name: value}}",
+    )
+
+
 class ReconstructionSession(StrictModel):
     """A bounded, hash-chained, human-gated reconstruction session.
 
