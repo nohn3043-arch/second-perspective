@@ -265,6 +265,12 @@ This repository is **not open source**. Dual-track: free for personal non-commer
 
 - **Request a license**: International / Global — [ai@nohnlins.com](mailto:ai@nohnlins.com) · China — [lin@secondai.top](mailto:lin@secondai.top)
 
+Compliance documents:
+
+- [Shanghai compliance note](./docs/COMPLIANCE_SHANGHAI.md)
+- [Privacy policy (CN)](./docs/PRIVACY_POLICY_CN.md)
+- [Data processing agreement (CN)](./docs/DATA_PROCESSING_AGREEMENT_CN.md)
+
 <p align="center">
   <a href="https://github.com/nohn3043-arch">GitHub</a> · <a href="https://www.nohnlins.com">Website</a> · <a href="mailto:ai@nohnlins.com">ai@nohnlins.com</a>
 </p>
