@@ -16,14 +16,18 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from uuid import uuid4
 
-from ..models.enums import IssueSeverity
+from ..models.enums import ConvergenceKind, IssueSeverity
 from ..models.schemas import (
     AlgorithmAuditEvent,
     CausalReconstructionReport,
+    ConvergenceReport,
     DecisionRequest,
+    DeltaVar,
     DeviationSignal,
     RootCauseHypothesis,
 )
+from .causal import invalidation_closure
+from .engine import IntelligentDecisionEngine
 
 
 # ── Graph helpers ────────────────────────────────────────────────────
@@ -421,3 +425,226 @@ class CausalReconstructor:
             algorithm_audit=audit_events,
             algorithm_audit_root_hash=audit_root,
         )
+
+    def reconstruct_with_delta(
+        self,
+        request: DecisionRequest,
+        signals: list[DeviationSignal],
+        delta_vars: list[DeltaVar],
+        engine: IntelligentDecisionEngine | None = None,
+    ) -> ConvergenceReport:
+        """Third layer — delta reconstruction.
+
+        Applies declared correction variables (delta_vars) to a deep copy of the
+        decision request, re-runs the deterministic evaluator, and reports whether
+        the leading candidate set changed and whether the session has converged.
+
+        The engine never invents corrections: every mutation mirrors a declared
+        DeltaVar, and the whole re-run is recorded as hash-chained audit events.
+        """
+        from ..version import VERSION
+
+        engine = engine or IntelligentDecisionEngine()
+        reconstruction_id = f"REC-{uuid4().hex[:12].upper()}"
+        audit_events: list[AlgorithmAuditEvent] = []
+        prev_hash: str | None = None
+        seq = 0
+
+        # Deterministic replay identity: pin decision_id and evaluation_as_of so
+        # the before/after evaluations are comparable and reproducible.
+        replay_time = request.evaluation_as_of or datetime.now(timezone.utc)
+        decision_id = request.decision_id or f"DEC-DELTA-{uuid4().hex[:12].upper()}"
+        baseline = request.model_copy(
+            update={"decision_id": decision_id, "evaluation_as_of": replay_time}
+        )
+
+        seq += 1
+        ev = _build_audit_event(
+            seq, "reconstruction", "DELTA-BASELINE",
+            "pin_replay_identity",
+            {"decision_id": decision_id, "delta_var_count": len(delta_vars)},
+            {"evaluation_as_of": replay_time.isoformat()},
+            prev_hash,
+        )
+        audit_events.append(ev)
+        prev_hash = ev.event_hash
+
+        # ── Phase 1: baseline evaluation ──
+        before = engine.evaluate(baseline)
+        before_candidates = before.leading_candidate_ids
+
+        seq += 1
+        ev = _build_audit_event(
+            seq, "reconstruction", "DELTA-BEFORE",
+            "baseline_evaluation",
+            {"decision_id": decision_id},
+            {"leading_candidate_ids": before_candidates},
+            prev_hash,
+        )
+        audit_events.append(ev)
+        prev_hash = ev.event_hash
+
+        # ── Phase 2: apply delta_vars ──
+        patched = apply_delta_vars(baseline, delta_vars)
+        invalidated = _collect_delta_invalidated(baseline, delta_vars)
+
+        seq += 1
+        ev = _build_audit_event(
+            seq, "reconstruction", "DELTA-APPLY",
+            "apply_delta_vars",
+            {"delta_vars": [dv.path for dv in delta_vars]},
+            {"invalidated_assumption_ids": invalidated},
+            prev_hash,
+        )
+        audit_events.append(ev)
+        prev_hash = ev.event_hash
+
+        # ── Phase 3: re-evaluate ──
+        after = engine.evaluate(patched)
+        after_candidates = after.leading_candidate_ids
+        candidate_set_changed = set(before_candidates) != set(after_candidates)
+
+        seq += 1
+        ev = _build_audit_event(
+            seq, "reconstruction", "DELTA-AFTER",
+            "delta_evaluation",
+            {"candidate_set_changed": candidate_set_changed},
+            {"leading_candidate_ids": after_candidates},
+            prev_hash,
+        )
+        audit_events.append(ev)
+        prev_hash = ev.event_hash
+
+        # ── Phase 4: convergence judgement ──
+        kind = ConvergenceKind.FIXED_POINT if not candidate_set_changed else ConvergenceKind.NO_GAIN
+        is_converged = not candidate_set_changed
+        reason = (
+            "Fixed-point reached: re-evaluation after applying declared delta_vars "
+            "produced the same leading candidate set, so further iteration adds nothing."
+            if is_converged
+            else "No fixed point yet: candidate set changed under the declared delta_vars; "
+            "a human decision is required before the next round."
+        )
+
+        seq += 1
+        ev = _build_audit_event(
+            seq, "reconstruction", "DELTA-CONVERGE",
+            "convergence_judgement",
+            {"before": before_candidates, "after": after_candidates},
+            {"kind": kind.value, "is_converged": is_converged},
+            prev_hash,
+        )
+        audit_events.append(ev)
+        prev_hash = ev.event_hash
+
+        # ── Phase 5: root hash ──
+        import hashlib
+
+        from ..canonical import canonical_json
+
+        final_payload = {
+            "last_event_hash": audit_events[-1].event_hash,
+            "reconstruction_id": reconstruction_id,
+            "kind": kind.value,
+        }
+        audit_root = hashlib.sha256(canonical_json(final_payload)).hexdigest()
+
+        return ConvergenceReport(
+            kind=kind,
+            reconstruction_id=reconstruction_id,
+            delta_vars=delta_vars,
+            before_leading_candidate_ids=before_candidates,
+            after_leading_candidate_ids=after_candidates,
+            candidate_set_changed=candidate_set_changed,
+            invalidated_assumption_ids=invalidated,
+            is_converged=is_converged,
+            reason=reason,
+            algorithm_audit=audit_events,
+            algorithm_audit_root_hash=audit_root,
+        )
+
+
+def apply_delta_vars(
+    request: DecisionRequest,
+    delta_vars: list[DeltaVar],
+) -> DecisionRequest:
+    """Return a deep copy of the request with declared delta_vars applied verbatim.
+
+    Supported path forms:
+      - ``"A2"`` — falsify assumption A2 (propagated through the dependency graph);
+                   dependent alternatives lose that assumption's support.
+      - ``"criteria.K1.weight"`` — rewrite one criterion weight.
+      - ``"alternatives.S1.metrics.cost"`` — rewrite one alternative metric.
+
+    Every mutation is a direct mirror of a declared DeltaVar — the engine never
+    invents corrections. Unsupported paths raise ValueError (fail closed).
+    """
+    patched = request.model_copy(deep=True)
+    assumption_index = {a.id: a for a in patched.assumptions}
+
+    for dv in delta_vars:
+        parts = dv.path.split(".")
+        if len(parts) == 1:
+            # Assumption falsification path: "A2"
+            if parts[0] not in assumption_index:
+                raise ValueError(f"delta path '{dv.path}' does not name a declared assumption")
+            invalidated, _ = invalidation_closure(patched, parts[0])
+            invalidated_set = {parts[0], *invalidated}
+            # Drop alternatives whose declared assumption support is now falsified.
+            patched = patched.model_copy(
+                update={
+                    "alternatives": [
+                        alt
+                        for alt in patched.alternatives
+                        if not (set(alt.required_assumptions) & invalidated_set)
+                    ]
+                }
+            )
+        elif len(parts) == 3 and parts[0] == "criteria":
+            criterion_id, field = parts[1], parts[2]
+            if field != "weight":
+                raise ValueError(f"unsupported criterion delta field: '{field}'")
+            found = any(c.id == criterion_id for c in patched.criteria)
+            if not found:
+                raise ValueError(f"delta path '{dv.path}' does not name a declared criterion")
+            patched = patched.model_copy(
+                update={
+                    "criteria": [
+                        c.model_copy(update={"weight": dv.value}) if c.id == criterion_id else c
+                        for c in patched.criteria
+                    ]
+                }
+            )
+        elif len(parts) == 4 and parts[0] == "alternatives" and parts[2] == "metrics":
+            alternative_id, _, metric = parts[1], parts[2], parts[3]
+            found = any(a.id == alternative_id for a in patched.alternatives)
+            if not found:
+                raise ValueError(f"delta path '{dv.path}' does not name a declared alternative")
+            new_alternatives = []
+            for alt in patched.alternatives:
+                if alt.id == alternative_id:
+                    metrics = dict(alt.metrics)
+                    metrics[metric] = dv.value
+                    new_alternatives.append(alt.model_copy(update={"metrics": metrics}))
+                else:
+                    new_alternatives.append(alt)
+            patched = patched.model_copy(update={"alternatives": new_alternatives})
+        else:
+            raise ValueError(f"unsupported delta path: '{dv.path}'")
+
+    return patched
+
+
+def _collect_delta_invalidated(
+    request: DecisionRequest,
+    delta_vars: list[DeltaVar],
+) -> list[str]:
+    """Collect assumption IDs invalidated by the declared delta_vars."""
+    assumption_index = {a.id for a in request.assumptions}
+    invalidated: set[str] = set()
+    for dv in delta_vars:
+        parts = dv.path.split(".")
+        if len(parts) == 1 and parts[0] in assumption_index:
+            closure, _ = invalidation_closure(request, parts[0])
+            invalidated.update({parts[0], *closure})
+    return sorted(invalidated)

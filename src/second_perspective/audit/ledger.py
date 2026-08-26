@@ -2,10 +2,13 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import logging
 from typing import Any
 
 from ..canonical import canonical_json
 from ..models.schemas import AlgorithmAuditEvent
+
+logger = logging.getLogger(__name__)
 
 
 class AlgorithmAuditLedger:
@@ -47,6 +50,14 @@ class AlgorithmAuditLedger:
         digest = hashlib.sha256(canonical_json(payload)).hexdigest()
         event = AlgorithmAuditEvent(**payload, event_hash=digest)
         self._events.append(event)
+        logger.info(
+            "audit event appended sequence=%d stage=%s rule_id=%s operation=%s event_hash=%s",
+            event.sequence,
+            event.stage,
+            event.rule_id,
+            event.operation,
+            event.event_hash,
+        )
         return event.model_copy(deep=True)
 
 

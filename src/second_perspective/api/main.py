@@ -1,22 +1,29 @@
 from __future__ import annotations
 
+import logging
 import os
 
-from fastapi import Depends, FastAPI, Header, HTTPException, status
+from fastapi import Depends, FastAPI, Header, HTTPException, Request, status
+from pydantic import BaseModel
 
 from ..governance.approval import ApprovalError
-from ..hub import HubReportNotFoundError, IntelligentDecisionHub
-from ..hub.repository import InMemoryHubReportRepository
+from ..hub import HubReportNotFoundError, IntelligentDecisionHub, SessionNotFoundError
+from ..hub.repository import InMemoryHubReportRepository, InMemorySessionRepository
 from ..models.hub import HubAnalysisRequest, HubReport
 from ..models.schemas import (
     ApprovalRequest,
     DecisionRecord,
     DecisionRequest,
+    DeltaVar,
+    DeviationSignal,
+    ReconstructionSession,
 )
 from ..repository import InMemoryDecisionRepository
 from ..service import DecisionNotFoundError, DecisionService
 from ..version import VERSION
 from .security import verify_api_key
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="NOMOS Intelligent Decision-Hub",
@@ -26,6 +33,19 @@ app = FastAPI(
         "counterfactuals, scenario stress tests, cognitive risk challenges, and governance."
     ),
 )
+
+
+@app.middleware("http")
+async def log_request_lifecycle(request: Request, call_next):
+    logger.info("request start method=%s path=%s", request.method, request.url.path)
+    response = await call_next(request)
+    logger.info(
+        "request done method=%s path=%s status=%d",
+        request.method,
+        request.url.path,
+        response.status_code,
+    )
+    return response
 
 
 def _build_service() -> DecisionService:
@@ -46,16 +66,18 @@ def _build_service() -> DecisionService:
 def _build_hub(service: DecisionService) -> IntelligentDecisionHub:
     dsn = os.getenv("SP_DATABASE_DSN", "").strip()
     if dsn:
-        from ..persistence.postgres import PostgresHubReportRepository
+        from ..persistence.postgres import PostgresHubReportRepository, PostgresSessionRepository
 
         return IntelligentDecisionHub(
             service=service,
             repository=PostgresHubReportRepository(dsn),
+            session_repository=PostgresSessionRepository(dsn),
         )
 
     return IntelligentDecisionHub(
         service=service,
         repository=InMemoryHubReportRepository(),
+        session_repository=InMemorySessionRepository(),
     )
 
 
@@ -215,4 +237,102 @@ def record_decision_approval(
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=str(exc),
+        ) from exc
+
+
+# ── Session endpoints ──
+
+
+class StartSessionRequest(BaseModel):
+    """Request body for starting a reconstruction session."""
+
+    decision: DecisionRequest
+    deviation_signals: list[DeviationSignal] = []
+    max_iterations: int = 5
+    max_evidence_requests: int = 20
+
+
+class AdvanceSessionRequest(BaseModel):
+    """Request body for advancing a session."""
+
+    delta_vars: list[DeltaVar] = []
+
+
+class HumanSessionDecisionRequest(BaseModel):
+    """Request body for recording a human decision on a session."""
+
+    approved: bool = False
+    evidence_status: dict[str, str] = {}
+
+
+@app.post(
+    "/v1/hub/sessions",
+    response_model=ReconstructionSession,
+    operation_id="startReconstructionSession",
+    dependencies=[Depends(verify_api_key)],
+)
+def start_reconstruction_session(body: StartSessionRequest) -> ReconstructionSession:
+    return hub.start_session(
+        body.decision,
+        body.deviation_signals,
+        max_iterations=body.max_iterations,
+        max_evidence_requests=body.max_evidence_requests,
+    )
+
+
+@app.post(
+    "/v1/hub/sessions/{session_id}/advance",
+    response_model=ReconstructionSession,
+    operation_id="advanceReconstructionSession",
+    dependencies=[Depends(verify_api_key)],
+)
+def advance_reconstruction_session(
+    session_id: str,
+    body: AdvanceSessionRequest,
+) -> ReconstructionSession:
+    try:
+        return hub.advance_session(session_id, body.delta_vars)
+    except SessionNotFoundError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Session not found.",
+        ) from exc
+
+
+@app.post(
+    "/v1/hub/sessions/{session_id}/human-decision",
+    response_model=ReconstructionSession,
+    operation_id="humanSessionDecision",
+    dependencies=[Depends(verify_api_key)],
+)
+def human_session_decision(
+    session_id: str,
+    body: HumanSessionDecisionRequest,
+) -> ReconstructionSession:
+    try:
+        return hub.human_session_decision(
+            session_id,
+            approved=body.approved,
+            evidence_status=body.evidence_status,
+        )
+    except SessionNotFoundError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Session not found.",
+        ) from exc
+
+
+@app.get(
+    "/v1/hub/sessions/{session_id}",
+    response_model=ReconstructionSession,
+    operation_id="getReconstructionSession",
+    dependencies=[Depends(verify_api_key)],
+)
+def get_reconstruction_session(session_id: str) -> ReconstructionSession:
+    try:
+        return hub.get_session(session_id)
+    except SessionNotFoundError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Session not found.",
         ) from exc
