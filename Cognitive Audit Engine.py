@@ -34,6 +34,11 @@ class OpenAIProvider:
         model:     模型名称，如 "gpt-4o"、"deepseek-chat"。
         base_url:  API 基础地址，默认 "https://api.openai.com/v1"。
         timeout:   请求超时（秒）。
+
+    数据出境合规提示：
+        - 默认 base_url 指向境外 "https://api.openai.com/v1"，调用即涉及数据出境。
+        - 境内部署应传入境内端点（如 DeepSeek、通义千问），并对输入做脱敏处理。
+        - 五算子因果审计本身不调用任何 LLM；仅「LLM 增强分析」可选启用时使用本类。
     """
 
     def __init__(

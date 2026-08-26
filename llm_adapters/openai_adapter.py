@@ -10,13 +10,21 @@ class OpenAIAdapter:
 
     Requires environment variable `OPENAI_API_KEY` to be set, or pass `api_key`
     when constructing.
+
+    数据出境合规警示：
+        默认请求境外 OpenAI 端点，调用即涉及数据出境。境内部署应通过 `api_base`
+        指向境内端点（如 DeepSeek、通义千问），并对输入做脱敏处理；若无需
+        LLM 摘要，请保持关闭以规避出境风险。
     """
 
-    def __init__(self, api_key: str = None, model: str = "gpt-3.5-turbo", temperature: float = 0.0):
+    def __init__(self, api_key: str = None, model: str = "gpt-3.5-turbo",
+                 temperature: float = 0.0, api_base: str = None):
         self.api_key = api_key or os.getenv("OPENAI_API_KEY")
         if not self.api_key:
             raise ValueError("OPENAI_API_KEY not set (or api_key not provided)")
         openai.api_key = self.api_key
+        if api_base:
+            openai.api_base = api_base
         self.model = model
         self.temperature = temperature
 
