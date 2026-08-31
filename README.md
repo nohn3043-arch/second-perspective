@@ -267,9 +267,23 @@ This repository is **not open source**. Dual-track: free for personal non-commer
 
 Compliance documents:
 
+China (PRC):
+
 - [Shanghai compliance note](./docs/COMPLIANCE_SHANGHAI.md)
 - [Privacy policy (CN)](./docs/PRIVACY_POLICY_CN.md)
 - [Data processing agreement (CN)](./docs/DATA_PROCESSING_AGREEMENT_CN.md)
+
+International / Global:
+
+- [EU AI Act compliance note](./docs/COMPLIANCE_EU_AI_ACT.md)
+- [Privacy policy (International · GDPR)](./docs/PRIVACY_POLICY_INTL.md)
+- [Data processing agreement (International · GDPR)](./docs/DATA_PROCESSING_AGREEMENT_INTL.md)
+- [Privacy policy (Singapore · PDPA)](./docs/PRIVACY_POLICY_SG_PDPA.md)
+
+Framework alignment (non-binding references):
+
+- [NIST AI RMF 1.0 mapping](./docs/COMPLIANCE_NIST_AI_RMF.md)
+- [ISO/IEC 42001:2023 alignment](./docs/COMPLIANCE_ISO_42001.md)
 
 <p align="center">
   <a href="https://github.com/nohn3043-arch">GitHub</a> · <a href="https://www.nohnlins.com">Website</a> · <a href="mailto:ai@nohnlins.com">ai@nohnlins.com</a>
