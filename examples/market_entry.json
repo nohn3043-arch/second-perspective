@@ -87,7 +87,7 @@
     }
   ],
   "assumptions": [
-    {
+{
       "id": "A1",
       "statement": "The local partner can provide the declared distribution coverage.",
       "source": "explicit",
@@ -96,6 +96,23 @@
       "dependencies": [],
       "evidence_ids": [
         "E1"
+      ],
+      "responsibility": {
+        "owner": "Head of Japan Expansion",
+        "role": "assumption acceptance owner",
+        "source": "Japan entry memo",
+        "authorization_ref": "JP-MEMO-01"
+      }
+    },
+    {
+      "id": "A2",
+      "statement": "A wholly-owned local sales team can reach 45 percent coverage within the first-year budget.",
+      "source": "explicit",
+      "falsification_condition": "Hiring plan shows headcount or cost overruns above the approved budget.",
+      "critical": false,
+      "dependencies": [],
+      "evidence_ids": [
+        "E2"
       ],
       "responsibility": {
         "owner": "Head of Japan Expansion",
@@ -115,8 +132,12 @@
         "distribution_coverage": 45,
         "requires_factory": false
       },
-      "required_assumptions": [],
-      "evidence_ids": []
+      "required_assumptions": [
+        "A2"
+      ],
+      "evidence_ids": [
+        "E2"
+      ]
     },
     {
       "id": "S2",
@@ -156,11 +177,38 @@
         },
         "method": "channel-list sampling and document review"
       },
-      "responsibility": {
+"responsibility": {
         "owner": "Head of Japan Expansion",
         "role": "evidence custodian",
         "source": "due-diligence assignment",
         "authorization_ref": "DD-2026-JP"
+      }
+    },
+    {
+      "id": "E2",
+      "statement": "Local staffing benchmark confirms a wholly-owned team can reach 45 percent coverage within the first-year budget.",
+      "source": "Internal feasibility study dated 2026-06-20",
+      "status": "supplied",
+      "observed_at": "2026-06-20T09:00:00Z",
+      "valid_until": "2027-06-20T09:00:00Z",
+      "quality": {
+        "reliability": "0.70",
+        "relevance": "0.90",
+        "independence": "0.80",
+        "freshness": "0.90",
+        "assessed_by": {
+          "owner": "Head of Japan Expansion",
+          "role": "evidence quality assessor",
+          "source": "feasibility study review",
+          "authorization_ref": "FS-2026-JP"
+        },
+        "method": "benchmark comparison and cost model review"
+      },
+      "responsibility": {
+        "owner": "Head of Japan Expansion",
+        "role": "evidence custodian",
+        "source": "feasibility study review",
+        "authorization_ref": "FS-2026-JP"
       }
     }
   ],

@@ -55,7 +55,9 @@ def _build_example_decision() -> DecisionRequest:
         role="decision_owner",
     )
 
-    legal_counsel = ResponsibilityRef(owner="Legal Counsel", source="External Legal Opinion")
+    legal_counsel = ResponsibilityRef(
+        owner="Legal Counsel", source="External Legal Opinion"
+    )
     infra_lead = ResponsibilityRef(owner="Infrastructure Lead", source="Cloud RFP")
     bd_lead = ResponsibilityRef(owner="BD Lead", source="PartnerCo MOU")
     growth_team = ResponsibilityRef(owner="Growth Team", source="Market Research v1")
@@ -70,6 +72,7 @@ def _build_example_decision() -> DecisionRequest:
             source=AssumptionSource.EXPLICIT,
             falsification_condition="Filing rejected or takes longer than 180 days; entry delayed or cancelled.",
             critical=True,
+            responsibility=legal_counsel,
         ),
         Assumption(
             id="A2",
@@ -78,6 +81,7 @@ def _build_example_decision() -> DecisionRequest:
             falsification_condition="Provider cannot deliver data-residency certification; infrastructure rebuild required.",
             critical=True,
             dependencies=["A1"],
+            responsibility=infra_lead,
         ),
         Assumption(
             id="A3",
@@ -86,6 +90,7 @@ def _build_example_decision() -> DecisionRequest:
             falsification_condition="CAC exceeds 150 USD for two consecutive quarters; channel mix must be restructured.",
             critical=False,
             dependencies=["A2"],
+            responsibility=growth_team,
         ),
         Assumption(
             id="A4",
@@ -93,6 +98,7 @@ def _build_example_decision() -> DecisionRequest:
             source=AssumptionSource.EXPLICIT,
             falsification_condition="No partner signed; launch proceeds via direct sales only with reduced revenue forecast.",
             critical=True,
+            responsibility=bd_lead,
         ),
     ]
 
@@ -213,8 +219,8 @@ def _build_example_decision() -> DecisionRequest:
     assumptions[1].evidence_ids = ["E2"]
     assumptions[2].evidence_ids = ["E4"]
     assumptions[3].evidence_ids = ["E3"]
-    alternatives[0].evidence_ids = ["E1", "E2", "E4"]
-    alternatives[1].evidence_ids = ["E1", "E2", "E3", "E4"]
+    alternatives[0].evidence_ids = ["E1", "E2"]
+    alternatives[1].evidence_ids = ["E1", "E2", "E3"]
 
     return DecisionRequest(
         decision_id="DEC-MKT-ENTRY-001",
@@ -265,22 +271,30 @@ def _run_hub_demo() -> None:
     print(f"Audit Verified:   {report.algorithm_audit_verified}")
     print(f"Leading Candidates: {report.decision_record.result.leading_candidate_ids}")
 
+    if report.decision_record.result.alternatives:
+        print("\n--- Candidate Scores ---")
+        for alt in report.decision_record.result.alternatives:
+            score = f"{alt.total_score}" if alt.total_score is not None else "n/a"
+            print(f"  {alt.alternative_id} [{alt.status.value}]  total={score}")
+
     if report.cognitive_audit:
-        print(f"\n--- GCAE Cognitive Audit ({report.cognitive_audit.scanner_version}) ---")
+        print(
+            f"\n--- GCAE Cognitive Audit ({report.cognitive_audit.scanner_version}) ---"
+        )
         print(f"Total findings:   {report.cognitive_audit.total_findings}")
         for f in report.cognitive_audit.findings:
             sev = f.severity.value.upper()
-            print(f"  [{sev}] {f.code}: {f.description[:120]}")
+            print(f"  [{sev}] {f.code}: {f.description}")
 
     print(f"\n--- Scenarios ({len(report.scenarios)}) ---")
     for s in report.scenarios:
         print(f"  {s.scenario.id} '{s.scenario.name}': {s.outcome_status.value}")
         for issue in s.issues:
-            print(f"    - {issue[:120]}")
+            print(f"    - {issue}")
 
     print(f"\n--- Information Priorities ({len(report.information_priorities)}) ---")
-    for ip in report.information_priorities[:10]:
-        print(f"  [{ip.tier}] {ip.item[:120]}")
+    for ip in report.information_priorities:
+        print(f"  [{ip.tier}] {ip.item}")
 
     print(f"\nReport hash: {report.report_hash[:16]}...")
     print("=" * 70)

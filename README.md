@@ -137,6 +137,14 @@ Core decision core:
 nomos-demo
 ```
 
+Prints a human-readable decision summary. Use `--decision <file>` to run any
+decision JSON in `examples/` (e.g. `nomos-demo --decision examples/baidu_org.json`)
+and `--json` for the full machine-readable result:
+
+```bash
+nomos-demo --decision examples/baidu_org.json --json
+```
+
 NOMOS (Intelligent Decision Hub) with two stress scenarios:
 
 ```bash
