@@ -607,10 +607,20 @@ def apply_delta_vars(
             found = any(c.id == criterion_id for c in patched.criteria)
             if not found:
                 raise ValueError(f"delta path '{dv.path}' does not name a declared criterion")
+            from decimal import Decimal as _Decimal
+
+            try:
+                new_weight = _Decimal(str(dv.value))
+            except Exception as exc:  # pragma: no cover - defensive
+                raise ValueError(
+                    f"delta path '{dv.path}' requires a numeric weight, got {dv.value!r}"
+                ) from exc
+            if not (new_weight >= _Decimal("0") and new_weight <= _Decimal("1")):
+                raise ValueError(f"delta path '{dv.path}' weight out of range 0..1: {new_weight}")
             patched = patched.model_copy(
                 update={
                     "criteria": [
-                        c.model_copy(update={"weight": dv.value}) if c.id == criterion_id else c
+                        c.model_copy(update={"weight": new_weight}) if c.id == criterion_id else c
                         for c in patched.criteria
                     ]
                 }
