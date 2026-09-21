@@ -6,118 +6,118 @@
 </p>
 
 <blockquote align="center">
-  <em>全球认知审计引擎（GCAE）· 第二视角语言</em>
+  <em>Global Cognitive Audit Engine (GCAE) · Second-Perspective Language</em>
 </blockquote>
 
 <div style="max-width:880px;margin:0 auto;padding:0 16px">
 
-## ✦ 关于
+## ✦ About
 
 <p style="font-size:15px;line-height:1.8;color:#2C2C2C">
-<strong>全球认知审计引擎（GCAE）</strong>是全球首个中立、核心离线、与决策无关的认知偏差审计引擎。它为 AI 系统与企业决策提供独立的第三方安全与合规审计，且无需修改内部模型代码。
+<strong>Global Cognitive Audit Engine (GCAE)</strong> is the world's first neutral, core-offline, decision-agnostic cognitive-bias audit engine. It provides independent third-party security and compliance auditing for AI systems and enterprise decisions, without requiring modification of internal model code.
 </p>
 
 <p style="font-size:15px;line-height:1.8;color:#2C2C2C">
-<strong>核心使命</strong>——一切不确定性、一切灾难、一切苦难，最终都源于我们对因果链的无知。引擎通过系统性识别隐含假设、客观不确定性与人类认知偏差，为高风险理性决策提供中立、可追溯的结构支撑。
+<strong>Core mission</strong> — all uncertainty, all disasters, all suffering ultimately stem from our ignorance of causal chains. The engine provides neutral, traceable structural support for high-stakes rational decisions by systematically identifying implicit assumptions, objective uncertainty, and human cognitive biases.
 </p>
 
 <p style="font-size:15px;line-height:1.8;color:#2C2C2C">
-✅ <strong>通过 IMDA AI Verify 评估，总分 95</strong>——完整报告见 <code>IMDA_AI_Verify_Causal_Audit_Report.pdf</code>。
+✅ <strong>Passed IMDA AI Verify assessment, total score 95</strong> — full report in <code>IMDA_AI_Verify_Causal_Audit_Report.pdf</code>.
 </p>
 
 </div>
 
 <p align="center">— ✦ —</p>
 
-## ✦ 在线体验
+## ✦ Live Demo
 
 <div style="max-width:880px;margin:0 auto;padding:0 16px">
 
-在浏览器中直接体验完整的五算子因果审计流水线——零安装、零上传、完全确定性：
+Experience the full five-operator causal audit pipeline directly in your browser — zero installation, zero upload, fully deterministic:
 
-🌐 **在线演示**：[https://nohnlins.com/audit/](https://nohnlins.com/audit/)
+🌐 **Live demo**: [https://nohnlins.com/audit/](https://nohnlins.com/audit/)
 
-> 完全在客户端运行。你的决策数据永远不会离开浏览器。
+> Runs entirely client-side. Your decision data never leaves the browser.
 
 </div>
 
 <p align="center">— ✦ —</p>
 
-## ✦ 五算子
+## ✦ Five Operators
 
 <div style="max-width:880px;margin:0 auto;padding:0 16px">
 
-每个算子以插件形式随附在 `plugins/` 中：
+Each operator ships as a plugin under `plugins/`:
 
-| 算子 | 插件 | 说明 |
+| Operator | Plugin | Description |
 |---|---|---|
-| 叙事剥离（NS） | `plugins/ns.py` | 剥离修辞、情绪与模糊量词，提取逻辑内核 |
-| 内隐假设透视（IAP） | `plugins/iap.py` | 揭示隐藏假设、特权绕过、循环论证 |
-| 脆弱性闩锁（LCH） | `plugins/lch.py` | 计算每个假设的 ΔD 崩塌概率，找出最脆弱变量 |
-| 因果链同步（CCS） | `plugins/ccs.py` | 逆向校验 + 反事实验证 + 黑洞检测 |
-| 状态锚定（STATE） | `plugins/state.py` | 责任锚定 + SHA-256 审计证书 |
+| Narrative Stripping (NS) | `plugins/ns.py` | Strip rhetoric, emotion, and vague quantifiers; extract the logical core |
+| Implicit Assumption Perspective (IAP) | `plugins/iap.py` | Reveal hidden assumptions, privilege bypass, and circular reasoning |
+| Fragility Latch (LCH) | `plugins/lch.py` | Compute the ΔD collapse probability of each assumption; find the most fragile variable |
+| Causal Chain Synchronization (CCS) | `plugins/ccs.py` | Reverse verification + counterfactual validation + black-hole detection |
+| State Anchoring (STATE) | `plugins/state.py` | Responsibility anchoring + SHA-256 audit certificate |
 
 </div>
 
 <p align="center">— ✦ —</p>
 
-## ✦ 恒常公式
+## ✦ Invariant Formulas
 
 <div style="max-width:880px;margin:0 auto;padding:0 16px">
 
 <p style="font-size:15px;line-height:1.8;color:#2C2C2C">
-<strong>p → Q</strong>——其中 <strong>p</strong> 代表原则、规则或约束，<strong>Q</strong> 代表结果、状态或后果。箭头表示不可割裂、连续、不可绕过的因果连接。
+<strong>p → Q</strong> — where <strong>p</strong> stands for principle, rule, or constraint, and <strong>Q</strong> stands for result, state, or consequence. The arrow denotes an inseparable, continuous, non-bypassable causal connection.
 </p>
 
 <p style="font-size:15px;line-height:1.8;color:#2C2C2C">
-若 p 与 Q 之间的连续性被切断、遮蔽或悄然改变，系统便不再处于治理之下，而处于叙事之中。
+If the continuity between p and Q is severed, obscured, or quietly altered, the system is no longer under governance — it is under narrative.
 </p>
 
 <p style="font-size:15px;line-height:1.8;color:#2C2C2C">
-<strong>结构审计谓词</strong>——Φ{f_s, x, y} → {True, False}：依据系统函数 f_s 与输入条件 x、y，核验给定决策结构是否满足理性一致的最低要求。它只产出审计结论，不产出建议或优化。
+<strong>Structural Audit Predicate</strong> — Φ{f_s, x, y} → {True, False}: based on the system function f_s and input conditions x, y, verify whether a given decision structure meets the minimum requirement of rational consistency. It produces only audit conclusions, not recommendations or optimizations.
 </p>
 
 <p style="font-size:15px;line-height:1.8;color:#2C2C2C">
-<strong>第二视角决策式</strong>——有效决策是三分结构：决策（D）· 假设前提（A）· 分支响应（ΔD），即 <strong>¬A ⇒ ΔD</strong>（当核心假设失效时，分支响应触发）。
+<strong>Second-Perspective Decision Formula</strong> — a valid decision is a three-part structure: Decision (D) · Assumption Premise (A) · Branch Response (ΔD), i.e. <strong>¬A ⇒ ΔD</strong> (when the core assumption fails, the branch response triggers).
 </p>
 
 </div>
 
-## ✦ 核心特性
+## ✦ Core Features
 
-| 特性 | 说明 |
+| Feature | Description |
 |---|---|
-| 🛡️ **中立审计** | 100% 中立第三方立场，不与任何 LLM 厂商绑定 |
-| 🔒 **核心离线** | 核心审计离线确定性；LLM 增强可选（默认关闭，启用须境内端点） |
-| 🔐 **隐私优先** | 零用户数据采集，本地闭环数据隔离 |
-| 🔍 **偏差检测** | 识别隐藏假设、不确定性、认知盲区 |
-| 🔧 **不修改模型** | 兼容所有主流 LLM，无需改动源代码 |
-| 📊 **结构化分析** | 仅做决策结构核验，不产出主观结论 |
+| 🛡️ **Neutral Audit** | 100% neutral third-party stance, not bound to any LLM vendor |
+| 🔒 **Core Offline** | Core audit is offline and deterministic; LLM enhancement is optional (off by default; enabling requires a domestic endpoint) |
+| 🔐 **Privacy First** | Zero user data collection, local closed-loop data isolation |
+| 🔍 **Bias Detection** | Identify hidden assumptions, uncertainty, and cognitive blind spots |
+| 🔧 **No Model Modification** | Compatible with all mainstream LLMs; no source code changes required |
+| 📊 **Structured Analysis** | Decision-structure verification only; no subjective conclusions |
 
 <p align="center">— ✦ —</p>
 
-## ✦ 快速开始
+## ✦ Quick Start
 
 ```bash
-# 主源：GitHub
+# Primary: GitHub
 git clone https://github.com/nohn3043-arch/second-perspective.git
-# 镜像：Gitee（本仓库）
+# Mirror: Gitee (this repository)
 # git clone https://gitee.com/nohn-ecosystem/second-perspective.git
 cd second-perspective
-pip install -r requirements.txt          # 核心依赖
-# 可选：pip install -r requirements-openai.txt   # OpenAI 叙事适配器
+pip install -r requirements.txt          # Core dependencies
+# Optional: pip install -r requirements-openai.txt   # OpenAI narrative adapter
 
-# 运行五算子端到端演示
+# Run the five-operator end-to-end demo
 python demo_audit.py
 ```
 
 <p align="center">— ✦ —</p>
 
-## ✦ 使用
+## ✦ Usage
 
 <div style="max-width:880px;margin:0 auto;padding:0 16px">
 
-引擎文件按设计使用空格命名——用 `importlib` 加载：
+The engine file uses space-separated naming by design — load it with `importlib`:
 
 ```python
 import importlib.util
@@ -134,20 +134,20 @@ account = ca.ResponsibilityAccount(
 
 config = ca.AuditConfigLoader.load_from_dict({
     "allowed_stages": ["pre_decision", "in_decision", "post_decision", "review"],
-    "disclaimer": "仅作结构审计——不替代人类判断。",
+    "disclaimer": "Structural audit only — does not replace human judgment.",
     "custom_fields": {"standard_version": "2026"},
 })
 
 engine = ca.CognitiveAuditEngine(account=account, config=config)
-engine.load_core_plugins()               # 注册 NS / IAP / LCH / CCS / STATE
+engine.load_core_plugins()               # Register NS / IAP / LCH / CCS / STATE
 
-report = engine.audit(decision_context)  # 静态诊断
+report = engine.audit(decision_context)  # Static diagnosis
 
-# 因果重构：注入修正变量并测试收敛
+# Causal reconstruction: inject correction variables and test convergence
 result = engine.reconstruct(decision_context, delta_vars={"assumption_x": False})
 ```
 
-五算子也可作为插件直接导入：
+The five operators can also be imported directly as plugins:
 
 ```python
 from plugins import (
@@ -159,27 +159,27 @@ from plugins import (
 )
 ```
 
-可选的叙事生成适配器见 [`llm_adapters/openai_adapter.py`](llm_adapters/openai_adapter.py)。
+The optional narrative generation adapter is at [`llm_adapters/openai_adapter.py`](llm_adapters/openai_adapter.py).
 
 </div>
 
 <p align="center">— ✦ —</p>
 
-## ✦ 项目结构
+## ✦ Project Structure
 
 ```
 second-perspective/
-├── cognitive audit engine.py      # 核心引擎（按设计使用空格命名）
-├── demo_audit.py                  # 五算子端到端演示
-├── plugins/                       # 五算子作为插件
-│   ├── ns.py                      #   叙事剥离
-│   ├── iap.py                     #   内隐假设透视
-│   ├── lch.py                     #   脆弱性闩锁
-│   ├── ccs.py                     #   因果链同步
-│   └── state.py                   #   状态锚定
-├── llm_adapters/openai_adapter.py # 可选 OpenAI 叙事适配器
-├── language Standard/             # 语言标准 2026
-├── 全新决策结构语言/              # 决策结构语言规范
+├── cognitive audit engine.py      # Core engine (space-separated naming by design)
+├── demo_audit.py                  # Five-operator end-to-end demo
+├── plugins/                       # Five operators as plugins
+│   ├── ns.py                      #   Narrative Stripping
+│   ├── iap.py                     #   Implicit Assumption Perspective
+│   ├── lch.py                     #   Fragility Latch
+│   ├── ccs.py                     #   Causal Chain Synchronization
+│   └── state.py                   #   State Anchoring
+├── llm_adapters/openai_adapter.py # Optional OpenAI narrative adapter
+├── language Standard/             # Language Standard 2026
+├── 全新决策结构语言/              # Decision-structure language specification
 ├── IMDA_AI_Verify_Causal_Audit_Report.pdf
 ├── requirements.txt · requirements-openai.txt
 └── LICENSE
@@ -187,46 +187,46 @@ second-perspective/
 
 <p align="center">— ✦ —</p>
 
-## ✦ 生态
+## ✦ Ecosystem
 
-GCAE 是 NOHN AI 生态的一员——围绕第二视角因果审计与确定性执行构建的项目家族：
+GCAE is a member of the NOHN AI ecosystem — a family of projects built around second-perspective causal audit and deterministic execution:
 
-| 项目 | 仓库 | 定位 |
+| Project | Repository | Role |
 |---|---|---|
-| **Second-Perspective (GCAE)** | [nohn3043-arch/second-perspective](https://github.com/nohn3043-arch/second-perspective) | 全局认知审计引擎——五算子因果审计内核（IMDA 95/100） |
-| **NOMOS** | [nohn3043-arch/second-perspective](https://github.com/nohn3043-arch/second-perspective)（`Intelligent-Decision-Hub--Nomos` 分支） | 可审计确定性决策中心（IMDA 95/100） |
-| **SPL-G1** | [nohn3043-arch/SPL-G1](https://github.com/nohn3043-arch/SPL-G1) | 硬件因果审计可信计算单元（TCU） |
-| **SPL-Virtual-World-Base** | [nohn3043-arch/Second-Reality](https://github.com/nohn3043-arch/Second-Reality) | 虚拟世界与元宇宙基础设施（宪法 / 法律 / 桥梁） |
-| **Story-Engine** | [nohn3043-arch/story-engine](https://github.com/nohn3043-arch/story-engine) | 长篇叙事一致性引擎 |
-| **Antares** | [nohn3043-arch/Antares](https://github.com/nohn3043-arch/Antares) | GFSIP v1.0——带因果审计的联邦稳定互操作协议 |
-| **Anthropomorphic-Agent-Engine** | [nohn3043-arch/Anthropomorphic-Agent-Engine](https://github.com/nohn3043-arch/Anthropomorphic-Agent-Engine) | 确定性拟人心理引擎（SPL Pure Core V8.0） |
-| **PAGES** | [nohn3043-arch/pages](https://github.com/nohn3043-arch/pages) | NOHN AI 生态官方落地页 |
+| **Second-Perspective (GCAE)** | [nohn3043-arch/second-perspective](https://github.com/nohn3043-arch/second-perspective) | Global cognitive audit engine — five-operator causal audit core (IMDA 95/100) |
+| **NOMOS** | [nohn3043-arch/second-perspective](https://github.com/nohn3043-arch/second-perspective) (`Intelligent-Decision-Hub--Nomos` branch) | Auditable deterministic decision hub (IMDA 95/100) |
+| **SPL-G1** | [nohn3043-arch/SPL-G1](https://github.com/nohn3043-arch/SPL-G1) | Hardware causal-audit trusted compute unit (TCU) |
+| **SPL-Virtual-World-Base** | [nohn3043-arch/Second-Reality](https://github.com/nohn3043-arch/Second-Reality) | Virtual-world and metaverse infrastructure (Constitution / Law / Bridge) |
+| **Story-Engine** | [nohn3043-arch/story-engine](https://github.com/nohn3043-arch/story-engine) | Long-form narrative consistency engine |
+| **Antares** | [nohn3043-arch/Antares](https://github.com/nohn3043-arch/Antares) | GFSIP v1.0 — federated stable interoperability protocol with causal audit |
+| **Anthropomorphic-Agent-Engine** | [nohn3043-arch/Anthropomorphic-Agent-Engine](https://github.com/nohn3043-arch/Anthropomorphic-Agent-Engine) | Deterministic anthropomorphic psychology engine (SPL Pure Core V8.0) |
+| **PAGES** | [nohn3043-arch/pages](https://github.com/nohn3043-arch/pages) | Official NOHN AI ecosystem landing page |
 
 <p align="center">— ✦ —</p>
 
-## ✦ 许可与授权
+## ✦ License & Authorization
 
-本仓库是<strong>全球认知审计引擎（GCAE）</strong>的技术展示。本仓库**非开源**。双轨模式：个人非商业研究免费；政府 / 企业需付费商业授权。详见 [LICENSE](./LICENSE)。
+This repository is the technical showcase of the <strong>Global Cognitive Audit Engine (GCAE)</strong>. This repository is <strong>not open source</strong>. Dual-track model: free for personal non-commercial research; government / enterprise use requires a paid commercial license. See [LICENSE](./LICENSE) for details.
 
-| 用户 | 用途 | 许可要求 |
+| User | Purpose | License Requirement |
 |---|---|---|
-| 个人（自然人） | 非商业学术研究 / 学习 / 个人实验 | [LICENSE](./LICENSE)「个人免费研究许可」下**免费** |
-| 政府机关 / 公共机构 / 企业 | 任何用途（含内部部署、产品开发、服务提供） | **须事先签署付费商业授权** |
+| Individual (natural person) | Non-commercial academic research / study / personal experiments | **Free** under [LICENSE](./LICENSE) "Personal Free Research License" |
+| Government agency / public institution / enterprise | Any purpose (including internal deployment, product development, service provision) | **Must sign a paid commercial license in advance** |
 
-- **个人研究者**可免费用于非商业研究，但不得用于任何商业用途，也不得向任何企业或政府机构提供服务。
-- **政府 / 企业用户**在签署商业授权协议并支付约定费用前，不得复制、部署、运行、集成或分发本工作。
-- **申请授权**：国际 / 全球 — [ai@nohnlins.com](mailto:ai@nohnlins.com) · 中国 — [lin@secondai.top](mailto:lin@secondai.top)
+- **Individual researchers** may use it free for non-commercial research, but may not use it for any commercial purpose, nor provide services to any enterprise or government agency.
+- **Government / enterprise users** may not copy, deploy, run, integrate, or distribute this work before signing a commercial license agreement and paying the agreed fee.
+- **Apply for a license**: International / Global — [ai@nohnlins.com](mailto:ai@nohnlins.com) · China — [lin@secondai.top](mailto:lin@secondai.top)
 
-许可人、适用法律与争议解决依 [LICENSE](./LICENSE) 按用户所在地确定：中国境内用户 → 上海霖铭骏华科技有限公司（中国法律）；境外用户 → NOHN AI TECHNOLOGY PTE. LTD.（新加坡法律，SIAC 仲裁）。
+The licensor, applicable law, and dispute resolution are determined by the user's location per [LICENSE](./LICENSE): users within China → Shanghai Linming Junhua Technology Co., Ltd. (PRC law); users outside China → NOHN AI TECHNOLOGY PTE. LTD. (Singapore law, SIAC arbitration).
 
-- **上海合规说明**：[COMPLIANCE_SHANGHAI](./docs/COMPLIANCE_SHANGHAI.md)
-- **数据出境**：LLM 增强默认关闭；启用须用境内端点 + 输入脱敏 + 用户同意，必要时依法开展出境安全评估。
+- **Shanghai compliance note**: [COMPLIANCE_SHANGHAI](./docs/COMPLIANCE_SHANGHAI.md)
+- **Data export**: LLM enhancement is off by default; enabling requires a domestic endpoint + input desensitization + user consent, and a data-export security assessment must be conducted as required by law when necessary.
 
-### 净室声明
+### Clean-Room Declaration
 
-任何独立开发出与本工作核心功能、架构或决策模型实质相似产品的当事方，除非能提供完整、连续、可追溯的独立开发证据，否则应被推定为构成实质性衍生侵权。
+Any party that independently develops a product substantially similar to the core functions, architecture, or decision model of this work shall be presumed to constitute substantial derivative infringement, unless it can provide complete, continuous, and traceable evidence of independent development.
 
-**免责声明**：本语言系统仅用于决策过程中的结构性审查与拆解。它不参与决策制定，也不干预最终决定。作者对任何后续执行结果不承担法律责任或运营责任。
+**Disclaimer**: This language system is used only for structural review and decomposition in the decision process. It does not participate in decision-making, nor does it intervene in final decisions. The author assumes no legal or operational liability for any subsequent execution results.
 
 <p align="center">
   <a href="https://github.com/nohn3043-arch">GitHub</a>
