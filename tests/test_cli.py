@@ -35,7 +35,9 @@ def test_run_demo_json_output(capsys):
     out = capsys.readouterr().out
     data = json.loads(out)
     assert data["decision_id"]
-    assert data["status"]
+    from second_perspective.models.enums import DecisionStatus
+
+    assert data["status"] in {s.value for s in DecisionStatus}
 
 
 @pytest.mark.skipif(
