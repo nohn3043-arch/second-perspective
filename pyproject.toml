@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nomos-decision-engine"
-version = "0.3.0"
+version = "0.4.0"
 description = "NOMOS deterministic decision-hub with structured evaluation, algorithm audit, scenario stress tests, and human governance."
 readme = "README.md"
 requires-python = ">=3.11"

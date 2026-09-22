@@ -127,3 +127,16 @@ class ConvergenceKind(StrEnum):
     FIXED_POINT = "fixed_point"
     NO_GAIN = "no_gain"
     BUDGET = "budget"
+
+
+class InteractionEffectType(StrEnum):
+    """How a multi-assumption interaction deviates from first-order additivity.
+
+    - CONJUNCTIVE: Δ > 0 — joint failure amplifies impact (worse than sum of parts).
+    - DISJUNCTIVE: Δ < 0 — joint failure is redundant (better than sum of parts).
+    - DEGENERATE:  Δ = 0 — no interaction, kept as evidence of inspection.
+    """
+
+    CONJUNCTIVE = "conjunctive"
+    DISJUNCTIVE = "disjunctive"
+    DEGENERATE = "degenerate"

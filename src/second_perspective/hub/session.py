@@ -257,6 +257,11 @@ class ReconstructionSessionEngine:
     ) -> tuple[SessionStatus, ConvergenceKind | None]:
         """Deterministic stop judgement for the current session.
 
+        Delegates to ``ConvergenceChecker`` (introduced in v0.4) for the
+        formal classification, then maps the result back to the existing
+        ``SessionStatus`` / ``ConvergenceKind`` API surface so callers are
+        unaffected.
+
         Returns (status, convergence_kind):
           - FIXED_POINT: delta re-evaluation changed neither candidates nor
             the hypothesis set (nothing further to learn).
@@ -264,25 +269,62 @@ class ReconstructionSessionEngine:
             assumptions left to verify.
           - BUDGET: iteration or evidence budget exhausted.
         """
-        # Budget
+        # Lazy import: convergence module is pure increment, no hard dependency
+        from ..convergence.checker import ConvergenceChecker
+        from ..convergence.types import ConvergenceStatus as CS
+
         evidence_requests = sum(
             len(round_.applied_delta_vars) + len(round_.hypotheses) for round_ in session.rounds
         ) + (len(hypotheses) if hypotheses else 0)
-        if round_index + 1 >= session.max_iterations or evidence_requests >= session.max_evidence_requests:
+
+        # Build candidate sets for fixed-point detection (P-2)
+        if session.rounds and session.rounds[-1].convergence is not None:
+            prev_candidates = session.rounds[-1].convergence.after_leading_candidate_ids
+        else:
+            prev_candidates = []
+        curr_candidates = (
+            convergence.after_leading_candidate_ids if convergence is not None else []
+        )
+
+        checker = ConvergenceChecker(
+            max_iterations=session.max_iterations,
+            max_evidence_requests=session.max_evidence_requests,
+        )
+
+        # Fixed-point requires a real previous round's candidate set.
+        # On round 0 there is no previous round, so pass a sentinel set
+        # that guarantees fp_holds is False (empty == empty is a false
+        # positive on the very first round).
+        has_prev_round = bool(session.rounds) and session.rounds[-1].convergence is not None
+        result = checker.evaluate(
+            round_index=round_index,
+            candidate_set_prev=prev_candidates if has_prev_round else [""],
+            candidate_set_curr=curr_candidates,
+            iterations_used=round_index + 1,
+            evidence_requests_used=evidence_requests,
+            unresolved_branches=len(unresolved),
+        )
+
+        if result.status == CS.FIXED_POINT:
+            # Only meaningful when a delta reconstruction actually ran
+            if convergence is not None and convergence.is_converged and not hypotheses:
+                return SessionStatus.CONVERGED, ConvergenceKind.FIXED_POINT
+            return SessionStatus.AWAITING_HUMAN, None
+
+        if result.status == CS.NO_GAIN:
+            # Domain constraint: no-gain also requires all assumptions settled
+            open_assumptions = sum(
+                1 for state in session.assumption_states.values()
+                if state == AssumptionState.ASSUMED
+            )
+            if not unresolved and open_assumptions == 0:
+                return SessionStatus.CONVERGED, ConvergenceKind.NO_GAIN
+            return SessionStatus.AWAITING_HUMAN, None
+
+        if result.status == CS.BUDGET_EXHAUSTED:
             return SessionStatus.BUDGET_EXCEEDED, ConvergenceKind.BUDGET
 
-        # Fixed point (only meaningful when a delta reconstruction ran)
-        if convergence is not None and convergence.is_converged and not hypotheses:
-            return SessionStatus.CONVERGED, ConvergenceKind.FIXED_POINT
-
-        # No gain: no unresolved signals and every assumption is settled
-        open_assumptions = sum(
-            1 for state in session.assumption_states.values() if state == AssumptionState.ASSUMED
-        )
-        if not unresolved and open_assumptions == 0:
-            return SessionStatus.CONVERGED, ConvergenceKind.NO_GAIN
-
-        # Still work to do → await a human decision
+        # BLOCKED or DIVERGED → still work to do
         return SessionStatus.AWAITING_HUMAN, None
 
 

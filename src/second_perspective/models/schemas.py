@@ -17,6 +17,7 @@ from .enums import (
     DecisionStatus,
     EvaluationMode,
     EvidenceStatus,
+    InteractionEffectType,
     IssueSeverity,
     ReconstructionKind,
     ScoringRule,
@@ -149,6 +150,77 @@ class Alternative(StrictModel):
     evidence_ids: list[str] = Field(default_factory=list)
 
 
+class InteractionDecl(StrictModel):
+    """A single declared interaction between two or more assumptions.
+
+    The interaction strength Δ is *always* explicitly declared — the engine
+    never estimates or learns it.  A positive Δ means conjunctive amplification
+    (joint failure is worse than the sum), a negative Δ means disjunctive
+    redundancy (joint failure is less severe than the sum).
+    """
+
+    id: str = Field(pattern=r"^I[0-9A-Za-z_-]+$", description="交互声明 ID")
+    member_ids: list[str] = Field(
+        min_length=2,
+        description="参与交互的假设 ID 列表（至少 2 个）",
+    )
+    interaction_strength: Decimal = Field(description="交互强度 Δ，由责任人显式声明")
+    effect_type: InteractionEffectType = Field(
+        default=InteractionEffectType.CONJUNCTIVE,
+        description="交互效果类型：放大/冗余/退化",
+    )
+    responsibility: ResponsibilityRef | None = None
+
+    @model_validator(mode="after")
+    def _dedupe_members(self) -> "InteractionDecl":
+        if len(self.member_ids) != len(set(self.member_ids)):
+            raise ValueError(f"interaction {self.id} has duplicate member_ids")
+        return self
+
+
+class InteractionDeclaration(StrictModel):
+    """Full interaction declaration block attached to a DecisionRequest.
+
+    When absent, the engine behaves exactly like v0.3 (first-order only).
+    """
+
+    interactions: list[InteractionDecl] = Field(
+        default_factory=list,
+        description="已声明的假设间交互列表",
+    )
+    first_order_effects: dict[str, Decimal] = Field(
+        default_factory=dict,
+        description="每个假设的一阶失效效应 {assumption_id: effect}",
+    )
+    amplification_ceiling: Decimal = Field(
+        default=Decimal("2.0"),
+        gt=Decimal("0"),
+        description="累计交互效应上限系数（相对于一阶效应绝对值之和的倍数）",
+    )
+
+    @model_validator(mode="after")
+    def _validate_members_in_first_order(self) -> "InteractionDeclaration":
+        fo_set = set(self.first_order_effects.keys())
+        for inter in self.interactions:
+            unknown = set(inter.member_ids) - fo_set
+            if unknown:
+                raise ValueError(
+                    f"interaction {inter.id} references assumptions without "
+                    f"declared first-order effects: {sorted(unknown)}"
+                )
+        # I-3 效应有界性预校验：所有交互强度之和不得超过 ceiling × Σ|一阶|
+        total_fo_abs = sum((abs(v) for v in self.first_order_effects.values()), Decimal("0"))
+        ceiling_total = self.amplification_ceiling * total_fo_abs
+        total_inter = sum(abs(inter.interaction_strength) for inter in self.interactions)
+        if total_inter > ceiling_total and self.interactions:
+            raise ValueError(
+                f"total interaction magnitude {total_inter} exceeds "
+                f"amplification ceiling {ceiling_total} "
+                f"(ceiling={self.amplification_ceiling})"
+            )
+        return self
+
+
 class DecisionRequest(StrictModel):
     decision_id: str | None = Field(default=None, pattern=r"^DEC-[0-9A-Za-z_-]+$")
     objective: str = Field(min_length=1)
@@ -164,6 +236,10 @@ class DecisionRequest(StrictModel):
     assumptions: list[Assumption] = Field(default_factory=list)
     alternatives: list[Alternative] = Field(min_length=1)
     evidence: list[Evidence] = Field(default_factory=list)
+    interaction_declaration: InteractionDeclaration | None = Field(
+        default=None,
+        description="可选：假设交互声明。不传则为一阶失效（v0.3 行为）。",
+    )
     metadata: dict[str, Any] = Field(default_factory=dict)
 
     @model_validator(mode="after")
@@ -212,6 +288,16 @@ class DecisionRequest(StrictModel):
                     f"alternative {alternative.id} references unknown evidence: "
                     f"{sorted(unknown_evidence)}"
                 )
+
+        # Interaction member references must exist in assumptions
+        if self.interaction_declaration is not None:
+            for inter in self.interaction_declaration.interactions:
+                unknown_members = set(inter.member_ids) - assumption_ids
+                if unknown_members:
+                    raise ValueError(
+                        f"interaction {inter.id} references unknown assumptions: "
+                        f"{sorted(unknown_members)}"
+                    )
 
         if self.evaluation_mode == EvaluationMode.WEIGHTED:
             if not self.criteria:
@@ -266,6 +352,14 @@ class FailureBranch(StrictModel):
     affected_leading_candidate_ids: list[str]
     candidate_exposure_ratio: Decimal
     structural_effect: str
+    triggered_interaction_ids: list[str] = Field(
+        default_factory=list,
+        description="该失效分支触发的交互声明 ID 列表",
+    )
+    interaction_contribution: Decimal | None = Field(
+        default=None,
+        description="交互效应对该分支的额外贡献量（Δ），None 表示未启用交互层",
+    )
 
 
 class ResponsibilityEntry(StrictModel):
