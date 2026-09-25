@@ -1,58 +1,54 @@
-# 超强决策底座迭代方案：Decision Foundation v0.2
+# Decision Foundation v0.2: From Prototype to Deterministic Core
 
-## 结论
+## Verdict
 
-原分支已经是一个可运行的确定性 MCDA 原型，但还不能直接称为“超强决策底座”。
-最稳妥的“一步到位”不是一次塞入所有算法，而是一次把不可轻易推翻的核心契约定好：
-输入不造假、规则可版本化、因果可追踪、结果可复现、审批可问责、记录不可静默覆盖。
+The previous branch is already a runnable deterministic MCDA prototype, but it cannot yet be called a "decision foundation." The safest one-step approach is not to cram in every algorithm at once, but to lock down the core contract that is hard to overturn: no fabricated inputs, versioned rules, traceable causality, reproducible results, accountable approvals, and no silent record overwrites.
 
-本次 v0.2 已经把这套核心契约做成代码。后续能力可以围绕它增加，而不需要重写
-DecisionRequest、DecisionResult 和治理边界。
+v0.2 codifies this core contract. Future capabilities can be added around it without rewriting `DecisionRequest`, `DecisionResult`, or the governance boundary.
 
-## 完整分支审计结论
+## Full Branch Audit
 
-原始实现具备：严格输入模型、硬约束、线性加权评分、假设与证据引用、结构审计、
-人工审批、FastAPI、内存仓库和基础测试。
+What the original implementation already has: strict input models, hard constraints, linear weighted scoring, assumption and evidence references, structural auditing, human approval, FastAPI, in-memory repository, and basic tests.
 
-原始实现的关键缺口：
+Key gaps in the original implementation:
 
-1. 软约束只检查、不影响结果。
-2. 假设失效只看直接引用，不做传递传播。
-3. 证据只有状态，没有质量、时效与内容指纹。
-4. 单一加权总分容易掩盖 Pareto 支配和权重脆弱性。
-5. 审批只比较显示名称，没有核验授权凭据。
-6. 未设置 API key 时生产环境会放行。
-7. 内存仓库覆盖历史，没有修订链和完整性证明。
-8. 规则、引擎版本和输入摘要没有随结果固化。
-9. OpenAPI、Dockerfile、包元数据与 README 文件名已发生漂移。
-10. 测试覆盖面不足，缺少治理、安全和鲁棒性测试。
+1. Soft constraints were only checked but did not affect results.
+2. Assumption failure only looked at direct references, with no transitive propagation.
+3. Evidence had only status, not quality, timeliness, or content fingerprint.
+4. A single weighted total score easily masked Pareto dominance and weight fragility.
+5. Approval only compared display names; no credential verification.
+6. Production environments allowed access when no API key was set.
+7. The in-memory repository overwrote history; no revision chain or integrity proof.
+8. Rules, engine version, and input summary were not frozen with the result.
+9. OpenAPI spec, Dockerfile, package metadata, and README filenames had drifted.
+10. Test coverage was insufficient; governance, security, and robustness tests were missing.
 
-## v0.2 不变量
+## v0.2 Invariants
 
-这些约束是底座的长期边界：
+These constraints are the long-term boundary of the foundation:
 
-- 引擎不得猜测缺失的权重、证据、指标、负责人、阈值或授权关系。
-- 硬约束决定资格；软约束必须显式给出惩罚值，不能暗中改变评分。
-- 所有影响行为的策略必须有 `policy_id` 和 `version`，并嵌入结果。
-- 关键证据的质量由具名责任节点评估，引擎不替用户编造可信度。
-- 假设依赖失败必须沿依赖图传递，并明确受影响方案。
-- 算法输出只能叫“当前参数下的领先候选”，最终状态必须经过独立人工审批。
-- 审批者名称和 `authorization_ref` 必须同时匹配输入中锚定的决策所有者。
-- 每次评估或审批都是新修订，不覆盖旧记录；每条记录指向上一条记录的哈希。
-- 相同输入、`evaluation_as_of`、策略和引擎版本应产生相同的评估内容；记录修订除外。
+- The engine must never guess missing weights, evidence, metrics, responsible parties, thresholds, or authorization relationships.
+- Hard constraints determine eligibility; soft constraints must carry an explicit penalty value and must not silently alter scores.
+- Every policy that affects behavior must carry a `policy_id` and `version`, embedded into the result.
+- The quality of critical evidence is assessed by a named responsibility node; the engine never fabricates credibility on behalf of the user.
+- Assumption dependency failures must propagate along the dependency graph and explicitly flag affected alternatives.
+- Algorithm output can only be called "leading candidate under current parameters"; the final state must pass independent human approval.
+- The approver name and `authorization_ref` must both match the decision owner anchored in the input.
+- Every evaluation or approval is a new revision and never overwrites old records; each record points to the previous record's hash.
+- Identical inputs, `evaluation_as_of`, policy, and engine version must produce identical evaluation content (revision metadata excepted).
 
-## 已实现架构
+## Implemented Architecture
 
 ```text
 DecisionRequest
   │
-  ├─ Pydantic 严格校验：ID、引用、范围、权重、软约束价格
+  ├─ Pydantic strict validation: IDs, references, ranges, weights, soft penalty
   │
   ├─ StructuralAuditor
-  │    ├─ 责任归属
-  │    ├─ 证据状态/时效/质量
-  │    ├─ 关键假设证据
-  │    └─ 假设依赖环
+  │    ├─ Responsibility attribution
+  │    ├─ Evidence status / timeliness / quality
+  │    ├─ Critical-assumption evidence
+  │    └─ Assumption dependency cycle detection
   │
   ├─ Deterministic Evaluator
   │    ├─ hard constraint eligibility
@@ -60,11 +56,11 @@ DecisionRequest
   │    └─ normalized weighted / constraint-only scoring
   │
   ├─ Causal invalidation closure
-  │    └─ ¬A -> 传递失效假设 -> 受影响方案
+  │    └─ ¬A -> transitive failed assumptions -> affected alternatives
   │
   ├─ Robustness Analyzer
   │    ├─ Pareto frontier
-  │    └─ 单因素权重 ±δ 敏感性
+  │    └─ Single-factor weight ±δ sensitivity
   │
   ├─ Human Governance Gate
   │    └─ owner + authorization_ref
@@ -73,104 +69,101 @@ DecisionRequest
        └─ revision + parent_record_hash + record_hash
 ```
 
-## v0.2 结果契约
+## v0.2 Result Contract
 
-每个 `DecisionResult` 现在同时包含：
+Every `DecisionResult` now contains:
 
-- 符合资格、信息不完整和不符合资格的方案；
-- 基础分、软约束惩罚与最终分；
-- 阻断与非阻断审计问题；
-- 传递式失败分支及候选暴露比例；
-- Pareto 前沿、敏感性用例、脆弱指标和稳定领先者；
-- 责任映射与未解决变量；
-- 可读规则轨迹 `trace`；
-- 完整策略快照、引擎版本、固化评估时点和输入 SHA-256 指纹。
+- Eligible, information-incomplete, and ineligible alternatives;
+- Base scores, soft-constraint penalties, and final scores;
+- Blocking and non-blocking audit findings;
+- Transitive failure branches and candidate exposure ratios;
+- Pareto frontier, sensitivity cases, fragile metrics, and stable leaders;
+- Responsibility mapping and unresolved variables;
+- A human-readable rule trace;
+- A complete policy snapshot, engine version, frozen evaluation timestamp, and input SHA-256 fingerprint.
 
-每个 `DecisionRecord` 另外包含 `revision`、`parent_record_hash` 和
-`record_hash`，形成追加式历史链。
-仓库在写入和读取时都会重算记录摘要并验证整条父哈希链；不匹配时拒绝继续使用记录。
+Every `DecisionRecord` additionally contains `revision`, `parent_record_hash`, and `record_hash`, forming an append-only history chain.
 
-## 文件映射
+The repository recomputes the record digest on both write and read and verifies the entire parent-hash chain; mismatches cause the record to be rejected.
 
-| 领域 | 文件 | 责任 |
+## File Mapping
+
+| Domain | File | Responsibility |
 |---|---|---|
-| 输入/输出契约 | `models/schemas.py` | 严格模型和跨引用校验 |
-| 行为策略 | `decision/policy.py` | 版本化、可快照的确定性规则 |
-| 方案求值 | `decision/evaluator.py` | 约束、归一化和显式惩罚 |
-| 因果传播 | `decision/causal.py` | 假设失效的传递闭包 |
-| 鲁棒性 | `decision/robustness.py` | Pareto 与权重敏感性 |
-| 完整性 | `decision/integrity.py` | 输入指纹和记录哈希 |
-| 结构审计 | `audit/auditor.py` | 证据、责任和依赖缺口 |
-| 治理 | `governance/approval.py` | 人工批准/拒绝和授权匹配 |
-| 版本存储 | `repository.py` | 追加式历史接口与开发实现 |
-| 用例编排 | `service.py` | 评估、审批、修订和历史 |
-| 外部接口 | `api/` | API、安全边界和状态码 |
+| Input / output contract | `models/schemas.py` | Strict models and cross-reference validation |
+| Behavior policies | `decision/policy.py` | Versioned, snapshotable deterministic rules |
+| Alternative evaluation | `decision/evaluator.py` | Constraints, normalization, explicit penalties |
+| Causal propagation | `decision/causal.py` | Transitive closure of assumption failure |
+| Robustness | `decision/robustness.py` | Pareto and weight sensitivity |
+| Integrity | `decision/integrity.py` | Input fingerprint and record hashing |
+| Structural audit | `audit/auditor.py` | Evidence, responsibility, and dependency gaps |
+| Governance | `governance/approval.py` | Human approve/reject and authorization matching |
+| Versioned storage | `repository.py` | Append-only history interface and dev implementation |
+| Use-case orchestration | `service.py` | Evaluate, approve, revise, and history |
+| External interface | `api/` | API, security boundaries, and status codes |
 
-## 后续迭代路线
+## Iteration Roadmap
 
-### v0.3：生产控制面
+### v0.3: Production Control Plane
 
-目标是“可部署、可隔离、可恢复”，不改变 v0.2 决策契约。
+Goal: "deployable, isolated, recoverable" — without changing the v0.2 decision contract.
 
-- PostgreSQL 事件仓库、乐观锁、迁移和备份恢复演练；
-- 租户隔离、OIDC 身份、服务身份，以及 RBAC/ABAC 授权；
-- 策略注册表、策略签名、灰度发布与回滚；
-- 幂等键、请求大小限制、速率限制和任务队列；
-- 指标、结构化日志、追踪、告警、审计导出与保留策略；
-- 对记录哈希使用 KMS/HSM 签名，而不只是本地 SHA-256 链。
+- PostgreSQL event repository, optimistic locking, migrations, and backup/recovery drills;
+- Tenant isolation, OIDC identity, service identities, and RBAC/ABAC authorization;
+- Policy registry, policy signing, canary release, and rollback;
+- Idempotency keys, request size limits, rate limiting, and task queues;
+- Metrics, structured logs, tracing, alerts, audit export, and retention policies;
+- KMS/HSM signatures on record hashes instead of only a local SHA-256 chain.
 
-完成标准：多实例并发下不丢修订；跨租户访问被自动测试阻断；策略可回放；备份可恢复。
+Completion criteria: no revisions lost under multi-instance concurrency; cross-tenant access blocked by automated tests; policies replayable; backups restorable.
 
-### v0.4：高级决策智能
+### v0.4: Advanced Decision Intelligence
 
-目标是增强分析，而不是让语言模型接管决定。
+Goal: enhance analysis without letting language models take over decisions.
 
-- 为指标增加区间与概率分布；
-- 带固定随机种子的 Monte Carlo 和情景压力测试；
-- 多策略比较：加权和、TOPSIS、ELECTRE/排序法，输出一致性差异；
-- 价值信息分析（VoI），指出最值得补充的证据；
-- 真正的反事实重算：删除失效假设支撑的方案后重算候选与鲁棒性；
-- 组合约束和方案组合优化；
-- 版本化归一化、缺失值和异常值策略。
+- Interval and probability distributions for metrics;
+- Fixed-seed Monte Carlo and declared scenario stress tests;
+- Multi-strategy comparison: weighted sum, TOPSIS, ELECTRE/ranking, outputting consistency gaps;
+- Value of Information (VoI) analysis pointing to the most worthwhile evidence to gather;
+- True counterfactual recomputation: remove alternatives that lose invalidated-assumption support and recompute candidates and robustness;
+- Compositional constraints and alternative-portfolio optimization;
+- Versioned normalization, missing-value, and outlier policies.
 
-完成标准：所有随机分析可复现；不同算法不被混成一个“神秘总分”；反事实结果可逐规则解释。
+Completion criteria: all stochastic analyses reproducible; different algorithms are not blended into one "mystery total score"; counterfactual results explainable rule-by-rule.
 
-### v0.5：证据与组织知识层
+### v0.5: Evidence and Organizational Knowledge Layer
 
-- 证据连接器、内容哈希、签名验证和数据血缘；
-- 时态证据和自动过期复审；
-- 责任委托链、授权有效期和职责冲突检查；
-- 可选图数据库，用于大规模假设/证据/责任网络查询；
-- 行业控制包：采购、投融资、产品、事故处置等独立策略模板。
+- Evidence connectors, content hashing, signature verification, and data lineage;
+- Temporal evidence and automatic expiry reviews;
+- Responsibility delegation chains, authorization validity periods, and duty-conflict checks;
+- Optional graph database for large-scale assumption/evidence/responsibility network queries;
+- Industry control packs: procurement, investment/financing, product, incident response, and other independent policy templates.
 
-完成标准：任何事实都能追到来源、责任人、有效期和使用它的决策修订。
+Completion criteria: every fact can be traced to a source, responsible party, validity period, and the decision revisions that used it.
 
-### v1.0：企业级决策平台
+### v1.0: Enterprise Decision Platform
 
-- 把 LLM 限定在“收集、结构化、质疑、解释”层；确定性引擎独立运行；
-- 人机双轨审计：原始输入、模型建议、用户确认、最终结构分别保存；
-- 离线基准集、历史回放、漂移检测、红队和领域准确性门槛；
-- 审批工作流、会签、否决权、利益冲突与升级机制；
-- SDK、Webhook、批量评估和可嵌入式前端组件。
+- Constrain LLMs to the "collect, structure, challenge, explain" layer; the deterministic engine runs independently;
+- Dual-track human-machine audit: raw input, model suggestions, user confirmation, and final structure are stored separately;
+- Offline benchmark sets, historical replay, drift detection, red-teaming, and domain accuracy thresholds;
+- Approval workflows, countersign, veto, conflict-of-interest, and escalation mechanisms;
+- SDK, webhooks, batch evaluation, and embeddable frontend components.
 
-完成标准：可以证明“谁在什么权限下，依据哪版事实和策略，为什么形成这个结果”。
+Completion criteria: provably answering "who, under what authority, based on which version of facts and policies, formed this result, and why."
 
-## 迁移方式
+## Migration
 
-v0.1 请求升级到 v0.2 时：
+When upgrading v0.1 requests to v0.2:
 
-1. 所有 `kind=soft` 的约束补充 `penalty`；硬约束不得携带该字段。
-2. 建议给关键证据补充 `valid_until`、`quality` 和可选 `content_hash`。
-3. 建议显式提供带时区的 `evaluation_as_of`；未提供时引擎会固化首次评估时点。
-4. 决策所有者必须提供 `authorization_ref`，否则不能审批。
-5. 消费端应接受 `DecisionResult` 新增的 `robustness`、`trace`、`policy`、
-   `engine_version` 和 `input_fingerprint`。
-6. 不再覆盖同一 `decision_id`；客户端可通过 `/history` 查看全部修订。
+1. All constraints with `kind=soft` must supply `penalty`; hard constraints must not carry this field.
+2. Critical evidence should be supplemented with `valid_until`, `quality`, and optional `content_hash`.
+3. A timezone-aware `evaluation_as_of` should be provided explicitly; if omitted the engine freezes the first-evaluation timestamp.
+4. Decision owners must supply `authorization_ref` or approval is denied.
+5. Consumers must accept the new fields on `DecisionResult`: `robustness`, `trace`, `policy`, `engine_version`, and `input_fingerprint`.
+6. The same `decision_id` is no longer overwritten; clients can view all revisions via `/history`.
 
-## 安全与责任边界
+## Security and Responsibility Boundaries
 
-v0.2 的 Bearer API key 只适合开发和受控试部署，不能证明真实人的身份。生产审批必须
-接入组织身份提供商并验证授权链。哈希链可以暴露被修改的记录，但没有外部签名和可信
-时间戳时，不能单独证明存储系统从未整体重写。
+The v0.2 Bearer API key is suitable only for development and controlled pilot deployments; it cannot prove the identity of a real person. Production approval must integrate with the organization's identity provider and verify the authorization chain. The hash chain can expose tampered records, but without external signatures and trusted timestamps it cannot by itself prove that the storage system was never rewritten wholesale.
 
-该引擎用于提高决策透明度，不替代法律、医疗、财务或安全领域的专业责任人。
+This engine exists to increase decision transparency; it does not replace the professional responsible parties in legal, medical, financial, or security domains.
